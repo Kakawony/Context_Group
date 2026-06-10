@@ -1,0 +1,987 @@
+---
+import Layout from '../layouts/Layout.astro';
+import AiSphere from '../components/AiSphere.astro';
+import ServicesSection from '../components/ServicesSection.astro';
+---
+
+<Layout title="Context Group — Внедрение AI в бизнес и AI-автоматизация маркетинга в РФ">
+	<!-- Декоративный элемент - AI-сфера, следящая за курсором -->
+	<AiSphere alwaysVisible={false} scale={1} />
+
+	<!-- Секция Hero с анимированным фоном -->
+	<section class="hero">
+		<div class="hero-bg-glow"></div>
+		<div class="container hero-container">
+			<div class="hero-content">
+				<h1>
+					Внедрение <span class="gradient-text">Искусственного Интеллекта</span> <br />
+					в бизнес и маркетинг
+				</h1>
+				<p class="hero-lead">
+					Создаем автономные AI-решения, автоматизируем рутинные операции, настраиваем умных ботов и интегрируем нейросети в ваши бизнес-процессы. Сокращаем ФОТ, исключаем человеческий фактор и ускоряем работу 24/7.
+				</p>
+
+				<!-- Хештеги AI-услуг -->
+				<div class="hero-tags">
+					<span class="hero-tag"># AI-автоматизация процессов</span>
+					<span class="hero-tag"># AI-парсинг данных конкурентов/клиентов</span>
+					<span class="hero-tag"># AI-разработка стратегии</span>
+					<span class="hero-tag"># AI-SWOT анализы</span>
+				</div>
+
+				<!-- Открытая форма захвата -->
+				<form action="/thanks" method="GET" class="hero-form">
+					<div class="hero-form-row">
+						<input type="text" name="name" required placeholder="Ваше имя" />
+						<input type="text" name="contact" required placeholder="Телефон или Telegram" />
+						<button type="submit" class="btn btn-primary hero-form-submit">
+							<span>Узнать возможности для моего бизнеса</span>
+						</button>
+					</div>
+					<div class="privacy-agreement hero-privacy">
+						<label class="checkbox-label">
+							<input type="checkbox" name="agree" value="yes" required checked />
+							<span class="privacy-text">Я согласен с <a href="/privacy" target="_blank">политикой конфиденциальности</a></span>
+						</label>
+					</div>
+				</form>
+			</div>
+			
+			<!-- Декоративный элемент - AI-сфера, следящая за курсором -->
+			<div class="hero-visual">
+			</div>
+		</div>
+	</section>
+
+	<!-- Секция Услуг (4 штуки, некликабельные) -->
+	<ServicesSection />
+
+	<!-- Секция Кейсов (1 штука с детализацией) -->
+	<section class="cases-section">
+		<div class="container">
+			<div class="section-header">
+				<h2>Наши <span class="gradient-text">кейсы</span></h2>
+				<p>Примеры успешной автоматизации и внедрения AI под реальные бизнес-задачи</p>
+			</div>
+
+			<div class="cases-grid">
+				<!-- Кейс 1 -->
+				<div class="glass-card case-card">
+					<div class="case-meta">Архитектура AI</div>
+					<h3>Внедрение фильтров, создание страниц, наполнение и оптимизация</h3>
+					<p>Полностью переделали этот сайт с помощью искусственного интеллекта без привлечения дизайнера и программиста. AI спроектировал логику, настроил семантику и стили за рекордные сроки.</p>
+					<div class="case-result-badge">Результат: экономия 35 000 ₽ на разработчиках, 20 000 ₽ на дизайнере</div>
+					<a href="/blog/kak-ai-sozdal-etot-sayt" class="case-link case-link-1">Подробнее &rarr;</a>
+				</div>
+
+			</div>
+		</div>
+	</section>
+
+	<!-- Раздел: AI-инструменты по отраслям (без плашки, компактно) -->
+	<section class="industries-section">
+		<div class="container">
+			<div class="section-header">
+				<h2>AI-инструменты по <span class="gradient-text">отраслям</span></h2>
+				<p>Специализированные стеки нейросетей и сценарии интеграции под конкретные направления</p>
+			</div>
+
+			<div class="industries-grid-clean">
+				<!-- Блок 1 -->
+				<div class="industry-clean-item glass-card">
+					<div class="industry-clean-header">
+						<div class="service-icon purple">
+							<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+								<path d="M3 21h18"></path><path d="M9 8h1"></path><path d="M9 12h1"></path><path d="M9 16h1"></path><path d="M14 8h1"></path><path d="M14 12h1"></path><path d="M14 16h1"></path><path d="M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16"></path>
+							</svg>
+						</div>
+						<h3>AI для агентств недвижимости</h3>
+					</div>
+					<p>Полная картотека AI-инструментов, сценариев внедрения и готовых промптов для риелторов, брокеров и застройщиков. Автоматизация карточек объектов и боты-подборщики.</p>
+					<a href="/ai-real-estate" class="industry-clean-link industry-link-1">Смотреть AI-инструменты &rarr;</a>
+				</div>
+			</div>
+		</div>
+	<!-- Большой экспертный SEO-текст -->
+	<section class="seo-text-section">
+		<div class="container">
+			<div class="seo-text-content">
+				<h2>Как внедрение AI меняет правила игры в бизнесе и маркетинге</h2>
+				<p>
+					Современный рынок в Москве, Санкт-Петербурге и по всей России диктует жесткие условия: побеждают те компании, которые умеют оптимизировать свои расходы без потери качества продукта и сервиса. Именно здесь ключевым фактором роста становится <strong>внедрение искусственного интеллекта в бизнес-процессы</strong>. Использование генеративных нейросетей, интеграция LLM-моделей в CRM-системы и автоматизация рутинных задач больше не являются прерогативой гигантских IT-корпораций. Сегодня это доступный инструмент для малого и среднего бизнеса.
+				</p>
+				
+				<h3>Почему классический подход к маркетингу и продажам устарел?</h3>
+				<p>
+					Содержание раздутых штатов операторов поддержки, копирайтеров начального уровня и ассистентов, выполняющих механическую работу по заполнению CRM-систем, становится неоправданно дорогим. Человеческий фактор ведет к потере лидов: менеджеры не успевают ответить клиенту в течение первых 5 минут, забывают зафиксировать договоренности, совершают орфографические ошибки в диалогах или банально выгорают от монотонности. 
+				</p>
+				<p>
+					Интеграция искусственного интеллекта позволяет переложить до 80% рутинных операций на плечи AI-агентов. Они не устают, работают в режиме 24/7/365, выдают стабильно высокий уровень сервиса и моментально реагируют на запросы пользователей из любой точки мира.
+				</p>
+				
+				<h3>Основные точки роста при интеграции искусственного интеллекта</h3>
+				<ul>
+					<li><strong>Моментальный отклик и круглосуточный саппорт:</strong> Умные AI-боты на базе LLM обучаются на регламентах вашей компании и отвечают в чатах Telegram, WhatsApp или на сайте за 2 секунды. Они способны квалифицировать клиента, ответить на сложные технические вопросы и передать прогретого лида менеджеру для совершения сделки.</li>
+					<li><strong>Контент-маркетинг на автопилоте:</strong> Создание семантического ядра и кластеризация силами AI позволяют генерировать десятки экспертных SEO-статей и постов для социальных сетей в неделю. Это снижает расходы на копирайтинг в разы и обеспечивает постоянный приток органического трафика.</li>
+					<li><strong>Умная автоматизация в CRM:</strong> AI анализирует аудиозаписи телефонных разговоров ваших менеджеров, автоматически формирует краткое саммари сделки, выписывает задачи и фиксирует ключевые договоренности в amoCRM или Битрикс24.</li>
+				</ul>
+				
+				<p>
+					Агентство <strong>Context Group</strong> предлагает профессиональные услуги по аудиту, подбору и интеграции AI-технологий под специфику вашего бизнеса. Мы не просто настраиваем ботов — мы выстраиваем автоматизированную воронку продаж, которая сокращает ваши расходы и стабильно генерирует прибыль.
+				</p>
+			</div>
+		</div>
+	</section>
+
+	<!-- Форма обратной связи -->
+	<section id="contact" class="contact-section">
+		<div class="container">
+			<div class="contact-wrapper glass-card">
+				<div class="contact-header">
+					<h2>Начнем <span class="gradient-text">ваш проект</span>?</h2>
+					<p>Оставьте контакты. Мы изучим ваш сайт и процессы, подготовим AI-аудит и предложим конкретные точки автоматизации.</p>
+				</div>
+				<form action="/thanks" method="GET" class="contact-form">
+					<div class="form-row">
+						<div class="form-group">
+							<label for="name">Ваше имя</label>
+							<input type="text" id="name" name="name" required placeholder="Александр" />
+						</div>
+						<div class="form-group">
+							<label for="contact-field">Телефон или Telegram</label>
+							<input type="text" id="contact-field" name="contact" required placeholder="+7 (999) 200-48-07 или @mrlapin" />
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="message">Опишите ваш бизнес и задачи</label>
+						<textarea id="message" name="message" rows="4" placeholder="Нужен бот для поддержки интернет-магазина, автопостинг контента в Telegram и оптимизация сайта..."></textarea>
+					</div>
+					<div class="privacy-agreement">
+						<label class="checkbox-label">
+							<input type="checkbox" name="agree" value="yes" required checked />
+							<span class="privacy-text">Я согласен с <a href="/privacy" target="_blank">политикой конфиденциальности</a></span>
+						</label>
+					</div>
+					<button type="submit" class="btn btn-primary form-submit"><span>Отправить заявку</span></button>
+				</form>
+			</div>
+		</div>
+	</section>
+</Layout>
+
+<style>
+	/* Защита контента от перекрытия fixed-сферой */
+	section {
+		position: relative;
+		z-index: 2;
+	}
+	/* Стили секции Hero */
+	.hero {
+		position: relative;
+		padding: 120px 0 100px 0;
+		overflow: hidden;
+	}
+
+	.hero-bg-glow {
+		position: absolute;
+		top: -200px;
+		left: 50%;
+		transform: translateX(-50%);
+		width: 1000px;
+		height: 500px;
+		background: radial-gradient(circle, var(--accent-purple-glow) 0%, rgba(13,15,20,0) 100%);
+		filter: blur(80px);
+		pointer-events: none;
+		z-index: 1;
+	}
+
+	.hero-container {
+		display: grid;
+		grid-template-columns: 1.2fr 0.8fr;
+		gap: 60px;
+		align-items: center;
+		position: relative;
+		z-index: 2;
+	}
+
+	.hero-content {
+		max-width: 780px;
+	}
+
+	.hero h1 {
+		font-size: 3.5rem;
+		line-height: 1.15;
+		letter-spacing: -1px;
+		margin-bottom: 24px;
+	}
+
+	.hero-lead {
+		font-size: 1.15rem;
+		color: var(--text-muted);
+		margin-bottom: 30px;
+		line-height: 1.6;
+	}
+
+	/* Хештеги AI-услуг */
+	.hero-tags {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 10px;
+		margin-bottom: 30px;
+	}
+
+	.hero-tag {
+		background: rgba(255, 255, 255, 0.02);
+		border: 1px solid var(--glass-border);
+		padding: 6px 14px;
+		border-radius: 6px;
+		font-family: 'Outfit', sans-serif;
+		font-size: 0.8rem;
+		font-weight: 600;
+		color: var(--text-muted);
+		transition: all var(--transition-fast);
+	}
+
+	html.light .hero-tag {
+		background: rgba(0, 0, 0, 0.02);
+	}
+
+	.hero-tag:hover {
+		border-color: var(--accent-purple);
+		color: #ffffff;
+		transform: translateY(-1px);
+	}
+
+	html.light .hero-tag:hover {
+		color: hsl(224, 25%, 12%);
+	}
+
+	/* Открытая форма в Hero */
+	.hero-form {
+		width: 100%;
+		max-width: 820px;
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+		align-items: flex-start;
+	}
+
+	.hero-form-row {
+		display: flex;
+		flex-direction: row;
+		width: 100%;
+		gap: 12px;
+		align-items: stretch;
+	}
+
+	.hero-form-row input {
+		background: rgba(255, 255, 255, 0.03);
+		border: 1px solid var(--glass-border);
+		border-radius: 8px;
+		padding: 12px 16px;
+		color: #ffffff;
+		font-family: inherit;
+		font-size: 0.9rem;
+		outline: none;
+		flex: 1;
+		min-width: 200px; /* Гарантирует одинаковый достаточный размер полей на десктопе */
+		transition: border-color var(--transition-fast), background-color var(--transition-fast), color var(--transition-fast);
+	}
+
+	html.light .hero-form input {
+		background: rgba(0, 0, 0, 0.02);
+		border: 1px solid rgba(0, 0, 0, 0.06);
+		color: hsl(224, 25%, 12%);
+	}
+
+	.hero-form input:focus {
+		border-color: var(--accent-cyan);
+	}
+
+	/* Стили для чекбокса политики */
+	.privacy-agreement {
+		margin-top: 4px;
+	}
+
+	.hero-privacy {
+		margin-left: 0;
+		align-self: flex-end;
+		margin-right: 4px;
+	}
+
+	.checkbox-label {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		cursor: pointer;
+	}
+
+	.checkbox-label input {
+		width: 16px;
+		height: 16px;
+		margin-top: 1px;
+		accent-color: var(--accent-cyan);
+		cursor: pointer;
+	}
+
+	.privacy-text {
+		font-size: 0.8rem;
+		color: var(--text-muted);
+		line-height: 1.3;
+		white-space: nowrap;
+	}
+
+	.privacy-text a {
+		color: var(--accent-cyan);
+		text-decoration: underline;
+		text-underline-offset: 2px;
+	}
+
+	.privacy-text a:hover {
+		color: #ffffff;
+	}
+
+	html.light .privacy-text a:hover {
+		color: hsl(224, 25%, 12%);
+	}
+
+	.hero-form-submit {
+		padding: 12px 20px;
+		font-size: 0.9rem;
+		white-space: nowrap;
+		flex-shrink: 0;
+		height: 46px;
+	}
+
+	/* Анимация AI-сферы */
+	.hero-visual {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		pointer-events: none;
+	}
+
+	.ai-sphere-container {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 300px;
+		height: 300px;
+		pointer-events: none;
+		z-index: 1;
+		opacity: 0;
+		transition: opacity 0.5s ease;
+	}
+
+	.ai-sphere-core {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		width: 120px;
+		height: 120px;
+		border-radius: 50%;
+		background: var(--grad-primary);
+		box-shadow: 0 0 60px var(--accent-purple-glow);
+		filter: blur(10px);
+		animation: pulse 4s infinite alternate;
+		transition: background 0.6s ease, box-shadow 0.6s ease, width 0.6s ease, height 0.6s ease, filter 0.6s ease;
+	}
+
+	.ai-sphere-container.at-form .ai-sphere-core {
+		background: linear-gradient(135deg, #a855f7 0%, #6366f1 100%) !important;
+		box-shadow: 0 0 80px rgba(168, 85, 247, 0.45), 0 0 40px rgba(99, 102, 241, 0.25) !important;
+		width: 140px;
+		height: 140px;
+		filter: blur(15px);
+	}
+
+	.ai-sphere-orbit-1 {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		border: 1px dashed rgba(197, 90, 60, 0.2);
+		border-radius: 50%;
+		animation: spin 20s linear infinite;
+	}
+
+	.ai-sphere-orbit-2 {
+		position: absolute;
+		top: 25px;
+		left: 25px;
+		width: 250px;
+		height: 250px;
+		border: 1px solid rgba(147, 51, 234, 0.15);
+		border-radius: 50%;
+		animation: spin-reverse 15s linear infinite;
+	}
+
+	@keyframes pulse {
+		0% { transform: translate(-50%, -50%) scale(0.9); opacity: 0.8; }
+		100% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; }
+	}
+
+	@keyframes spin {
+		0% { transform: rotate(0deg); }
+		100% { transform: rotate(360deg); }
+	}
+
+	@keyframes spin-reverse {
+		0% { transform: rotate(360deg); }
+		100% { transform: rotate(0deg); }
+	}
+
+	/* Общие стили заголовков секций */
+	.section-header {
+		text-align: center;
+		margin-bottom: 48px;
+	}
+
+	.section-header h2 {
+		font-size: 2.5rem;
+		margin-bottom: 16px;
+	}
+
+	.section-header p {
+		color: var(--text-muted);
+		font-size: 1.1rem;
+		max-width: 700px;
+		margin: 0 auto;
+	}
+
+	/* Кейсы */
+	.cases-section {
+		padding: 80px 0;
+	}
+
+	.cases-grid {
+		display: grid;
+		grid-template-columns: 1fr;
+		max-width: 800px;
+		margin: 0 auto;
+		gap: 30px;
+	}
+
+	.case-card {
+		padding: 40px;
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+	}
+
+	.case-meta {
+		font-size: 0.85rem;
+		color: var(--accent-cyan);
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 1px;
+	}
+
+	.case-card h3 {
+		font-size: 1.5rem;
+	}
+
+	.case-card p {
+		color: var(--text-muted);
+		font-size: 0.95rem;
+		line-height: 1.6;
+		flex-grow: 1;
+	}
+
+	.case-result-badge {
+		background: rgba(6, 182, 212, 0.08);
+		border: 1px solid rgba(6, 182, 212, 0.15);
+		color: var(--accent-cyan);
+		padding: 10px 16px;
+		border-radius: 8px;
+		font-weight: 600;
+		font-size: 0.9rem;
+		display: inline-block;
+		margin-top: 10px;
+		align-self: flex-start;
+	}
+
+	.case-link {
+		font-weight: 700;
+		font-size: 0.95rem;
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+		margin-top: 16px;
+		align-self: flex-start;
+		background: linear-gradient(120deg, var(--accent-cyan) 0%, var(--accent-purple) 50%, var(--accent-cyan) 100%);
+		background-size: 200% auto;
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
+		animation: textShine 4s linear infinite;
+		transition: transform var(--transition-fast);
+	}
+
+	.case-link.case-link-2 {
+		animation-delay: 1.5s;
+	}
+
+	.case-card:hover .case-link {
+		transform: translateX(6px);
+	}
+
+	/* Отраслевые решения (без плашек, компактно) */
+	.industries-section {
+		padding: 60px 0;
+	}
+
+	.industries-grid-clean {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 40px;
+		margin-top: 20px;
+		max-width: 600px;
+		margin-inline: auto;
+	}
+
+	.industry-clean-item {
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+		padding: 32px;
+		border-radius: 16px;
+	}
+
+	.industry-clean-header {
+		display: flex;
+		align-items: center;
+		gap: 16px;
+		margin-bottom: 20px;
+	}
+
+	.industry-clean-header h3 {
+		font-size: 1.4rem;
+		font-weight: 700;
+		margin: 0;
+	}
+
+	.industry-clean-item p {
+		color: var(--text-muted);
+		font-size: 0.95rem;
+		line-height: 1.65;
+		margin: 0 0 20px 0;
+		flex-grow: 1;
+	}
+
+	.industry-clean-link {
+		font-weight: 700;
+		font-size: 0.95rem;
+		align-self: flex-start;
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+		background: linear-gradient(120deg, var(--accent-cyan) 0%, var(--accent-purple) 50%, var(--accent-cyan) 100%);
+		background-size: 200% auto;
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
+		animation: textShine 4s linear infinite;
+		transition: transform var(--transition-fast);
+	}
+
+	.industry-clean-link.industry-link-2 {
+		animation-delay: 2s;
+	}
+
+	.industry-clean-item:hover .industry-clean-link {
+		transform: translateX(6px);
+	}
+
+	/* SEO текст */
+	.seo-text-section {
+		padding: 80px 0;
+	}
+
+	.seo-text-content {
+		padding: 40px 0;
+		position: relative;
+		z-index: 2;
+	}
+
+	.seo-text-content h2 {
+		font-size: 2rem;
+		margin-bottom: 24px;
+	}
+
+	.seo-text-content h3 {
+		font-size: 1.4rem;
+		margin: 36px 0 16px 0;
+	}
+
+	.seo-text-content p {
+		color: var(--text-muted);
+		font-size: 1rem;
+		line-height: 1.7;
+		margin-bottom: 20px;
+	}
+
+	.seo-text-content ul {
+		list-style: none;
+		margin-bottom: 24px;
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+	}
+
+	.seo-text-content li {
+		padding-left: 24px;
+		position: relative;
+		color: var(--text-muted);
+		font-size: 1rem;
+		line-height: 1.6;
+	}
+
+	.seo-text-content li::before {
+		content: '⚡';
+		position: absolute;
+		left: 0;
+		top: 2px;
+		color: var(--accent-cyan);
+	}
+
+	.seo-text-content strong {
+		color: #ffffff;
+		font-weight: 600;
+	}
+
+	html.light .seo-text-content strong {
+		color: hsl(224, 25%, 12%);
+	}
+
+	/* Контакты */
+	.contact-section {
+		padding: 20px 0 80px 0;
+	}
+
+	.contact-wrapper {
+		max-width: 800px;
+		margin: 0 auto;
+		padding: 60px;
+	}
+
+	.contact-header {
+		text-align: center;
+		margin-bottom: 40px;
+	}
+
+	.contact-header h2 {
+		font-size: 2.5rem;
+		margin-bottom: 12px;
+	}
+
+	.contact-header p {
+		color: var(--text-muted);
+		font-size: 1rem;
+	}
+
+	.contact-form {
+		display: flex;
+		flex-direction: column;
+		gap: 24px;
+	}
+
+	.form-row {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 24px;
+	}
+
+	.form-group {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+	}
+
+	.form-group label {
+		font-size: 0.9rem;
+		font-weight: 500;
+		color: var(--text-muted);
+	}
+
+	.form-group input,
+	.form-group textarea {
+		background: rgba(255, 255, 255, 0.03);
+		border: 1px solid rgba(255, 255, 255, 0.08);
+		border-radius: 8px;
+		padding: 12px 16px;
+		color: #ffffff;
+		font-family: inherit;
+		outline: none;
+		transition: border-color var(--transition-fast), color var(--transition-fast), background-color var(--transition-fast);
+	}
+
+	html.light .form-group input,
+	html.light .form-group textarea {
+		background: rgba(0, 0, 0, 0.02);
+		border: 1px solid rgba(0, 0, 0, 0.06);
+		color: hsl(224, 25%, 12%);
+	}
+
+	.form-group input:focus,
+	.form-group textarea:focus {
+		border-color: var(--accent-cyan);
+	}
+
+	.form-submit {
+		align-self: center;
+		margin-top: 12px;
+		min-width: 200px;
+	}
+
+	/* Адаптивность */
+
+
+	@media (max-width: 992px) {
+		.hero-container {
+			grid-template-columns: 1fr;
+			text-align: left;
+			gap: 20px;
+		}
+		.hero-content {
+			margin: 0;
+		}
+		.hero-visual {
+			display: none; /* Полностью скрываем сферу на мобилках/планшетах, чтобы убрать пустой зазор */
+		}
+		.seo-text-content {
+			padding: 40px 20px;
+		}
+	}
+
+	@media (max-width: 768px) {
+		.hero {
+			padding: 60px 0 24px 0; /* Делаем Hero компактным */
+		}
+		.hero h1 {
+			font-size: 1.85rem;
+			margin-bottom: 12px;
+		}
+		.hero-lead {
+			font-size: 0.95rem;
+			margin-bottom: 16px;
+		}
+		.hero-tags {
+			margin-bottom: 16px;
+			gap: 6px;
+		}
+		.hero-tag {
+			padding: 4px 8px;
+			font-size: 0.72rem;
+		}
+		.hero-form {
+			flex-direction: column;
+			align-items: stretch;
+			gap: 8px;
+			max-width: 100%;
+		}
+		.hero-form input {
+			width: 100%;
+			padding: 10px 12px;
+			font-size: 0.88rem;
+		}
+		.hero-form-submit {
+			width: 100%;
+			white-space: normal;
+			text-align: center;
+			padding: 12px 16px;
+			height: auto;
+		}
+		
+		/* Сжатие отступов секций на мобилке для уплотнения контента */
+		.cases-section,
+		.industries-section,
+		.seo-text-section,
+		.contact-section {
+			padding: 30px 0;
+		}
+		
+		.section-header {
+			margin-bottom: 20px;
+		}
+		.section-header h2 {
+			font-size: 1.7rem;
+		}
+		
+		.cases-grid {
+			grid-template-columns: 1fr;
+			gap: 16px;
+		}
+		
+		.case-card {
+			padding: 20px 16px !important;
+		}
+		
+		.form-row {
+			grid-template-columns: 1fr;
+			gap: 12px;
+		}
+		.contact-wrapper {
+			padding: 24px 16px;
+		}
+		.industries-grid-clean {
+			grid-template-columns: 1fr;
+			gap: 20px;
+		}
+		.industry-clean-item {
+			padding: 24px !important;
+		}
+		
+		.industry-clean-header {
+			align-items: flex-start;
+		}
+		
+		.industry-clean-header h3 {
+			word-break: break-word;
+		}
+		
+		.hero-form-row {
+			flex-direction: column;
+			gap: 12px;
+		}
+		
+		.hero-form input,
+		.hero-form-submit {
+			width: 100%;
+			min-width: 0;
+		}
+		
+		.hero-privacy {
+			align-self: flex-start;
+			margin-top: 12px;
+		}
+		
+		.hero-form-submit {
+			height: 52px;
+		}
+	}
+
+	@keyframes textShine {
+		0% { background-position: 0% center; }
+		100% { background-position: 200% center; }
+	}
+</style>
+
+<!-- Скрипт следования AI-сферы за курсором в блоках Hero, SEO и формы -->
+<script>
+	const sphere = document.getElementById('interactive-sphere') as HTMLElement;
+	const hero = document.querySelector('.hero') as HTMLElement;
+	const seoSection = document.querySelector('.seo-text-section') as HTMLElement;
+	const contactSection = document.querySelector('.contact-section') as HTMLElement;
+	const heroForm = document.querySelector('.hero-form') as HTMLElement;
+	const contactWrapper = document.querySelector('.contact-wrapper') as HTMLElement;
+	
+	if (sphere && hero && seoSection && contactSection) {
+		let mouseX = window.innerWidth / 2;
+		let mouseY = window.innerHeight / 2;
+		let sphereX = mouseX - 150;
+		let sphereY = mouseY - 150;
+		let targetX = sphereX;
+		let targetY = sphereY;
+		let isInside = false;
+		let initialized = false;
+		
+		const speed = 0.06; // Коэффициент сглаживания (lerp)
+		
+		window.addEventListener('mousemove', (e) => {
+			const clientX = e.clientX;
+			const clientY = e.clientY;
+			
+			const heroRect = hero.getBoundingClientRect();
+			const seoRect = seoSection.getBoundingClientRect();
+			const contactRect = contactSection.getBoundingClientRect();
+			
+			const inHero = (
+				clientX >= heroRect.left && clientX <= heroRect.right &&
+				clientY >= heroRect.top && clientY <= heroRect.bottom
+			);
+			const inSeo = (
+				clientX >= seoRect.left && clientX <= seoRect.right &&
+				clientY >= seoRect.top && clientY <= seoRect.bottom
+			);
+			const inContact = (
+				clientX >= contactRect.left && clientX <= contactRect.right &&
+				clientY >= contactRect.top && clientY <= contactRect.bottom
+			);
+			
+			isInside = inHero || inSeo || inContact;
+			
+			targetX = clientX - 150;
+			targetY = clientY - 150;
+			
+			if (!initialized && isInside) {
+				sphereX = targetX;
+				sphereY = targetY;
+				initialized = true;
+			}
+			
+			if (isInside) {
+				sphere.style.opacity = '1';
+			} else {
+				sphere.style.opacity = '0';
+			}
+			
+			// Проверяем нахождение над формами
+			let overForm = false;
+			if (heroForm) {
+				const rect = heroForm.getBoundingClientRect();
+				if (clientX >= rect.left && clientX <= rect.right && clientY >= rect.top && clientY <= rect.bottom) {
+					overForm = true;
+				}
+			}
+			if (contactWrapper) {
+				const rect = contactWrapper.getBoundingClientRect();
+				if (clientX >= rect.left && clientX <= rect.right && clientY >= rect.top && clientY <= rect.bottom) {
+					overForm = true;
+				}
+			}
+			
+			if (overForm) {
+				sphere.classList.add('at-form');
+			} else {
+				sphere.classList.remove('at-form');
+			}
+		});
+		
+		document.addEventListener('mouseleave', () => {
+			sphere.style.opacity = '0';
+			isInside = false;
+		});
+		
+		document.addEventListener('mouseenter', () => {
+			// Проверяется ли внутри активных зон при заходе мыши,
+			// но это обновится при первом движении мыши (mousemove).
+		});
+		
+		function animate() {
+			sphereX += (targetX - sphereX) * speed;
+			sphereY += (targetY - sphereY) * speed;
+			
+			const distX = targetX - sphereX;
+			const distY = targetY - sphereY;
+			const distance = Math.sqrt(distX * distX + distY * distY);
+			
+			const velocity = Math.min(distance * 0.05, 10);
+			const blurVal = isInside ? velocity * 0.3 : 0;
+			const scaleVal = isInside ? 1 + velocity * 0.01 : 1;
+			
+			sphere.style.transform = `translate3d(${sphereX}px, ${sphereY}px, 0) scale(${scaleVal})`;
+			
+			const core = sphere.querySelector('.ai-sphere-core') as HTMLElement;
+			if (core) {
+				core.style.filter = `blur(${10 + blurVal}px)`;
+			}
+			
+			requestAnimationFrame(animate);
+		}
+		
+		animate();
+	}
+</script>

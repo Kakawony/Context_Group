@@ -1,0 +1,871 @@
+---
+import '../styles/global.css';
+import StickyContact from '../components/StickyContact.astro';
+
+interface Props {
+	title: string;
+	description?: string;
+}
+
+const { 
+	title, 
+	description = "Context Group — высокотехнологичный маркетинг на территории России с применением искусственного интеллекта. Автоматизация, AI-боты, автопостинг, SEO контент-планы." 
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="ru">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="generator" content={Astro.generator} />
+		
+		<!-- SEO Meta Tags -->
+		<title>{title}</title>
+		<meta name="description" content={description} />
+		<meta name="robots" content="index, follow" />
+		
+		<!-- Open Graph / Facebook -->
+		<meta property="og:type" content="website" />
+		<meta property="og:url" content="https://context-group.ru/" />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		
+		<!-- Twitter -->
+		<meta property="twitter:card" content="summary_large_image" />
+		<meta property="twitter:title" content={title} />
+		<meta property="twitter:description" content={description} />
+
+		<!-- Инициализация темы без мерцания (FOUC) -->
+		<script is:inline>
+			const theme = (() => {
+				if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
+					return localStorage.getItem('theme');
+				}
+				// Если настроек нет, проверяем системную темную тему (iOS, MacOS, Windows и т.д.)
+				if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+					return 'dark';
+				}
+				return 'light'; // По умолчанию для всех остальных — светлая
+			})();
+			if (theme === 'light') {
+				document.documentElement.classList.add('light');
+			} else {
+				document.documentElement.classList.remove('light');
+			}
+		</script>
+	</head>
+	<body>
+		<header class="header">
+			<div class="container header-container">
+				<a href="/" class="logo">
+					<span class="logo-accent">Context</span>Group
+				</a>
+				
+				<nav class="nav">
+					<!-- Выпадающее меню Услуги -->
+					<div class="dropdown">
+						<a href="/#services" class="nav-link dropdown-toggle" aria-haspopup="true" aria-expanded="false">
+							Услуги
+							<svg class="dropdown-chevron" xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+						</a>
+						<div class="dropdown-menu">
+							<a href="/service" class="dropdown-item">AI Ассистент продаж</a>
+						</div>
+					</div>
+					<!-- Выпадающее меню AI-решения -->
+					<div class="dropdown">
+						<a href="/ai-solutions" class="nav-link dropdown-toggle" aria-haspopup="true" aria-expanded="false">
+							AI-решения
+							<svg class="dropdown-chevron" xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+						</a>
+						<div class="dropdown-menu">
+							<a href="/ai-solutions" class="dropdown-item" style="font-weight: 600; color: var(--accent-purple);">Все AI-решения</a>
+							<a href="/ai-real-estate" class="dropdown-item">Агентство недвижимости</a>
+						</div>
+					</div>
+					<a href="/blog" class="nav-link">AI-информация</a>
+					<a href="/contacts" class="nav-link">Контакты</a>
+				</nav>
+				
+				<div class="header-cta-group">
+					<!-- Кнопка переключения темы (левее) -->
+					<button id="theme-toggle" class="theme-toggle-btn" aria-label="Переключить тему" title="Переключить тему">
+						<!-- Иконка Солнца -->
+						<svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+						<!-- Иконка Луны -->
+						<svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+					</button>
+
+					<!-- Блок консультации (крайний справа) -->
+					<div class="header-consultation">
+						<span class="consult-text">Консультация:</span>
+						<!-- Пульсирующая стрелочка для мобильных -->
+						<svg class="consult-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+						<div class="social-icons">
+							<a href="https://t.me/mrlapin" target="_blank" class="social-icon tg" aria-label="Telegram" title="Написать в Telegram">
+								<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 0 0-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .24z"/></svg>
+							</a>
+							<a href="https://wa.me/79992004807" target="_blank" class="social-icon wa" aria-label="WhatsApp" title="Написать в WhatsApp">
+								<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12.012 2c-5.506 0-9.988 4.482-9.988 9.988 0 1.761.459 3.477 1.332 5.002L2 22l5.166-1.355c1.472.802 3.125 1.227 4.834 1.227h.005c5.505 0 9.987-4.482 9.987-9.988C22 6.482 17.518 2 12.012 2zm6.1 13.918c-.244.688-1.196 1.25-1.637 1.3-.437.049-.982.083-1.602-.116-.388-.124-.875-.327-1.528-.609-2.775-1.2-4.577-4.027-4.716-4.213-.139-.187-1.127-1.503-1.127-2.868s.707-2.037.958-2.31c.252-.273.548-.342.73-.342h.519c.164 0 .385.062.585.541.205.492.703 1.716.764 1.84.062.124.103.269.02.434-.082.166-.123.27-.246.414-.123.145-.259.324-.369.434-.123.124-.252.259-.109.508.143.249.638 1.053 1.368 1.706.942.842 1.733 1.103 1.979 1.227.246.124.389.103.533-.062.143-.166.615-.717.779-.96.164-.244.328-.207.549-.124.221.083 1.401.661 1.64.779.24.118.399.176.459.279.06.103.06.602-.184 1.29z"/></svg>
+							</a>
+						</div>
+					</div>
+
+					<!-- Кнопка бургер-меню (только на мобильных) -->
+					<button id="mobile-menu-toggle" class="mobile-menu-btn" aria-label="Открыть меню">
+						<span></span>
+						<span></span>
+						<span></span>
+					</button>
+				</div>
+			</div>
+			
+			<!-- Выезжающее мобильное меню -->
+			<div id="mobile-nav" class="mobile-nav">
+				<div class="mobile-nav-links">
+					<!-- Выпадающая вкладка Услуг для мобильного -->
+					<div class="mobile-dropdown">
+						<button class="mobile-nav-link mobile-dropdown-toggle">
+							Услуги
+							<svg class="mobile-chevron" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+						</button>
+						<div class="mobile-dropdown-menu">
+							<a href="/service" class="mobile-dropdown-item">AI Ассистент продаж</a>
+						</div>
+					</div>
+					
+					<!-- Выпадающая вкладка AI-решений для мобильного -->
+					<div class="mobile-dropdown">
+						<button class="mobile-nav-link mobile-dropdown-toggle">
+							AI-решения
+							<svg class="mobile-chevron" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+						</button>
+						<div class="mobile-dropdown-menu">
+							<a href="/ai-solutions" class="mobile-dropdown-item" style="font-weight: 600; color: var(--accent-purple);">Все AI-решения</a>
+							<a href="/ai-real-estate" class="mobile-dropdown-item">Агентство недвижимости</a>
+						</div>
+					</div>
+					
+					<a href="/blog" class="mobile-nav-link">AI-информация</a>
+					<a href="/contacts" class="mobile-nav-link">Контакты</a>
+				</div>
+			</div>
+		</header>
+
+		{ !['/', '/404', '/thanks'].includes(Astro.url.pathname.replace(/\/$/, '') || '/') && !Astro.url.pathname.startsWith('/blog') && <StickyContact /> }
+
+		<main>
+			<slot />
+		</main>
+
+		<footer class="footer">
+			<div class="container footer-grid">
+				<div class="footer-brand">
+					<a href="/" class="logo footer-logo">
+						<span class="logo-accent">Context</span>Group
+					</a>
+					<p class="footer-desc">AI-маркетинг для роста бизнеса. Автоматизируем рутину, повышаем конверсии, приводим клиентов.</p>
+				</div>
+				<div class="footer-links">
+					<h4>Навигация</h4>
+					<ul>
+						<li><a href="/services">Услуги</a></li>
+						<li><a href="/ai-solutions">AI-решения</a></li>
+						<li><a href="/blog">AI-информация</a></li>
+						<li><a href="/contacts">Контакты</a></li>
+						<li><a href="/privacy">Политика конфиденциальности</a></li>
+					</ul>
+				</div>
+				<div class="footer-contacts">
+					<h4>Контакты</h4>
+					<p>Санкт-Петербург / Москва</p>
+					<p><a href="mailto:info@context-group.ru" class="footer-email">info@context-group.ru</a></p>
+					<p class="footer-time">Работаем по всей России</p>
+				</div>
+			</div>
+			<div class="container footer-bottom">
+				<p>&copy; {new Date().getFullYear()} Context Group. Сделано с помощью AI.</p>
+			</div>
+		</footer>
+
+		<!-- Скрипт переключения темы и мобильного меню -->
+		<script is:inline>
+			document.addEventListener('DOMContentLoaded', () => {
+				// Переключение темы
+				const themeToggle = document.getElementById('theme-toggle');
+				if (themeToggle) {
+					themeToggle.addEventListener('click', () => {
+						const element = document.documentElement;
+						element.classList.toggle('light');
+						const isLight = element.classList.contains('light');
+						localStorage.setItem('theme', isLight ? 'light' : 'dark');
+					});
+				}
+
+				// Мобильное бургер-меню
+				const menuToggle = document.getElementById('mobile-menu-toggle');
+				const mobileNav = document.getElementById('mobile-nav');
+				
+				if (menuToggle && mobileNav) {
+					menuToggle.addEventListener('click', () => {
+						menuToggle.classList.toggle('active');
+						mobileNav.classList.toggle('active');
+						document.body.classList.toggle('overflow-hidden'); // Запретить скролл страницы
+					});
+				}
+
+				// Мобильный аккордеон
+				const mobileDropdowns = document.querySelectorAll('.mobile-dropdown');
+				mobileDropdowns.forEach(dropdown => {
+					const toggleBtn = dropdown.querySelector('.mobile-dropdown-toggle');
+					if (toggleBtn) {
+						toggleBtn.addEventListener('click', (e) => {
+							e.preventDefault();
+							dropdown.classList.toggle('open');
+						});
+					}
+				});
+
+				// Закрывать мобильное меню при переходе по обычным ссылкам
+				const mobileLinks = document.querySelectorAll('.mobile-nav-link:not(.mobile-dropdown-toggle), .mobile-dropdown-item');
+				mobileLinks.forEach(link => {
+					link.addEventListener('click', () => {
+						if (menuToggle && mobileNav) {
+							menuToggle.classList.remove('active');
+							mobileNav.classList.remove('active');
+							document.body.classList.remove('overflow-hidden');
+						}
+					});
+				});
+			});
+		</script>
+	</body>
+</html>
+
+<style>
+	/* Стили для липкой шапки */
+	.header {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100%;
+		z-index: 100;
+		background: rgba(13, 15, 20, 0.7);
+		backdrop-filter: blur(12px);
+		-webkit-backdrop-filter: blur(12px);
+		border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+		height: 80px;
+		display: flex;
+		align-items: center;
+		transition: background-color var(--transition-normal), border-color var(--transition-normal);
+	}
+
+	html.light .header {
+		background: rgba(255, 255, 255, 0.7);
+		border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+	}
+
+	.header-container {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+	}
+
+	.logo {
+		font-family: 'Outfit', sans-serif;
+		font-size: 1.5rem;
+		font-weight: 800;
+		letter-spacing: -0.5px;
+		color: #ffffff;
+		display: flex;
+		align-items: center;
+		transition: color var(--transition-normal);
+	}
+
+	html.light .logo {
+		color: hsl(224, 25%, 12%);
+	}
+
+	.logo-accent {
+		background: var(--grad-primary);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
+		margin-right: 2px;
+	}
+
+	.nav {
+		display: flex;
+		gap: 32px;
+		align-items: center;
+	}
+
+	.nav-link {
+		font-family: 'Outfit', sans-serif;
+		font-weight: 500;
+		font-size: 0.95rem;
+		color: var(--text-muted);
+		position: relative;
+		padding: 4px 0;
+		transition: color var(--transition-normal);
+		background: transparent;
+		border: none;
+		cursor: pointer;
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+	}
+
+	.nav-link::after {
+		content: '';
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		width: 0;
+		height: 2px;
+		background: var(--grad-primary);
+		transition: width var(--transition-fast);
+	}
+
+	.nav-link:hover {
+		color: #ffffff;
+	}
+
+	html.light .nav-link:hover {
+		color: hsl(224, 25%, 12%);
+	}
+
+	.nav-link:hover::after {
+		width: 100%;
+	}
+
+	/* Выпадающий список (Dropdown) */
+	.dropdown {
+		position: relative;
+		display: inline-block;
+	}
+
+	.dropdown-toggle {
+		padding-right: 0;
+	}
+
+	.dropdown-chevron {
+		transition: transform var(--transition-fast);
+		color: var(--text-dim);
+	}
+
+	.dropdown:hover .dropdown-chevron {
+		transform: rotate(180deg);
+		color: #ffffff;
+	}
+
+	html.light .dropdown:hover .dropdown-chevron {
+		color: hsl(224, 25%, 12%);
+	}
+
+	.dropdown-menu {
+		display: none;
+		position: absolute;
+		top: 100%;
+		left: 50%;
+		transform: translateX(-50%) translateY(8px);
+		background: rgba(15, 17, 23, 0.95);
+		border: 1px solid rgba(255, 255, 255, 0.08);
+		border-radius: 12px;
+		min-width: 260px;
+		box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+		padding: 8px 0;
+		z-index: 200;
+		backdrop-filter: blur(20px);
+		-webkit-backdrop-filter: blur(20px);
+	}
+
+	html.light .dropdown-menu {
+		background: rgba(255, 255, 255, 0.95);
+		border: 1px solid rgba(0, 0, 0, 0.06);
+		box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+	}
+
+	/* Мост для предотвращения пропадания ховера при переходе мыши */
+	.dropdown-menu::before {
+		content: '';
+		position: absolute;
+		top: -12px;
+		left: 0;
+		width: 100%;
+		height: 12px;
+		background: transparent;
+	}
+
+	.dropdown:hover .dropdown-menu {
+		display: block;
+		animation: dropdownFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+	}
+
+	.dropdown-item {
+		display: block;
+		padding: 12px 20px;
+		font-size: 0.9rem;
+		color: var(--text-muted);
+		font-weight: 600;
+		transition: background var(--transition-fast), color var(--transition-fast);
+	}
+
+	.dropdown-item:hover {
+		background: var(--bg-dark-hover);
+		color: #ffffff;
+	}
+
+	html.light .dropdown-item:hover {
+		color: hsl(224, 25%, 12%);
+		background: rgba(0, 0, 0, 0.03);
+	}
+
+	@keyframes dropdownFadeIn {
+		from { opacity: 0; transform: translateX(-50%) translateY(14px); }
+		to { opacity: 1; transform: translateX(-50%) translateY(8px); }
+	}
+
+	/* Группа CTA */
+	.header-cta-group {
+		display: flex;
+		align-items: center;
+		gap: 20px;
+	}
+
+	/* Консультация & Мессенджеры */
+	.header-consultation {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		white-space: nowrap;
+	}
+
+	.consult-text {
+		font-family: 'Outfit', sans-serif;
+		font-size: 0.85rem;
+		font-weight: 600;
+		color: var(--text-muted);
+		letter-spacing: 0.5px;
+		white-space: nowrap;
+	}
+
+	/* Пульсирующая стрелочка для мобильных */
+	.consult-arrow {
+		display: none;
+		color: var(--accent-cyan);
+		animation: arrowPulse 1.5s infinite ease-in-out;
+		margin-right: 4px;
+	}
+
+	@keyframes arrowPulse {
+		0%, 100% {
+			transform: translateX(0) scale(1);
+			opacity: 0.6;
+		}
+		50% {
+			transform: translateX(3px) scale(1.15);
+			opacity: 1;
+		}
+	}
+
+	.social-icons {
+		display: flex;
+		gap: 8px;
+	}
+
+	.social-icon {
+		width: 36px;
+		height: 36px;
+		border-radius: 6px;
+		border: 1px solid var(--glass-border);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: var(--text-muted);
+		transition: all var(--transition-fast);
+	}
+
+	/* CSS Анимация пульсации рамочки (теперь CYAN для консультаций) */
+	@keyframes borderPulseCyan {
+		0%, 100% { 
+			border-color: var(--glass-border); 
+			box-shadow: none;
+		}
+		50% { 
+			border-color: var(--accent-cyan); 
+			box-shadow: 0 0 6px var(--accent-cyan-glow);
+		}
+	}
+
+	.social-icon.tg {
+		animation: borderPulseCyan 3s infinite ease-in-out;
+	}
+
+	.social-icon.wa {
+		animation: borderPulseCyan 3s infinite ease-in-out 1.5s;
+	}
+
+	.social-icon:hover {
+		transform: translateY(-2px);
+		animation: none;
+	}
+
+	.social-icon.tg:hover {
+		color: #38bdf8;
+		border-color: #38bdf8 !important;
+		background: rgba(56, 189, 248, 0.05);
+	}
+
+	.social-icon.wa:hover {
+		color: #4ade80;
+		border-color: #4ade80 !important;
+		background: rgba(74, 222, 128, 0.05);
+	}
+
+	/* Кнопка переключения темы с пульсирующей фиолетовой рамкой */
+	.theme-toggle-btn {
+		background: transparent;
+		border: 1px solid var(--glass-border);
+		color: var(--text-main);
+		width: 36px;
+		height: 36px;
+		border-radius: 50%;
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		transition: all var(--transition-normal);
+		animation: borderPulsePurple 3s infinite ease-in-out;
+	}
+
+	@keyframes borderPulsePurple {
+		0%, 100% {
+			border-color: var(--glass-border);
+			box-shadow: none;
+		}
+		50% {
+			border-color: var(--accent-purple);
+			box-shadow: 0 0 6px var(--accent-purple-glow);
+		}
+	}
+
+	.theme-toggle-btn:hover {
+		background: var(--accent-purple-glow);
+		border-color: var(--accent-purple);
+		color: var(--accent-purple);
+		transform: scale(1.05);
+		animation: none;
+	}
+
+	html.light .theme-toggle-btn:hover {
+		background: var(--accent-purple-glow);
+		border-color: var(--accent-purple);
+		color: var(--accent-purple);
+	}
+
+	/* Показ иконки в зависимости от темы */
+	.sun-icon {
+		display: none;
+	}
+	.moon-icon {
+		display: block;
+	}
+
+	html.light .sun-icon {
+		display: block;
+		color: var(--text-main);
+	}
+	html.light .moon-icon {
+		display: none;
+	}
+
+	/* Отступ для контента, чтобы шапка его не перекрывала */
+	main {
+		margin-top: 80px;
+		flex-grow: 1;
+	}
+
+	/* Стили для подвала */
+	.footer {
+		background: hsl(224, 25%, 4%);
+		border-top: 1px solid rgba(255, 255, 255, 0.05);
+		padding: 80px 0 40px 0;
+		margin-top: auto;
+		transition: background-color var(--transition-normal), border-color var(--transition-normal);
+	}
+
+	html.light .footer {
+		background: hsl(224, 25%, 96%);
+		border-top: 1px solid rgba(0, 0, 0, 0.05);
+	}
+
+	.footer-grid {
+		display: grid;
+		grid-template-columns: 2fr 1fr 1fr;
+		gap: 60px;
+		margin-bottom: 60px;
+	}
+
+	.footer-brand {
+		display: flex;
+		flex-direction: column;
+		gap: 20px;
+	}
+
+	.footer-logo {
+		font-size: 1.8rem;
+	}
+
+	.footer-desc {
+		color: var(--text-muted);
+		max-width: 320px;
+		font-size: 0.95rem;
+	}
+
+	.footer-links h4,
+	.footer-contacts h4 {
+		font-size: 1.1rem;
+		margin-bottom: 24px;
+		letter-spacing: 0.5px;
+		transition: color var(--transition-normal);
+	}
+
+	html.light .footer-links h4,
+	html.light .footer-contacts h4 {
+		color: hsl(224, 25%, 12%);
+	}
+
+	.footer-links ul {
+		list-style: none;
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
+	}
+
+	.footer-links a {
+		color: var(--text-muted);
+		font-size: 0.95rem;
+	}
+
+	.footer-links a:hover {
+		color: #ffffff;
+	}
+
+	html.light .footer-links a:hover {
+		color: hsl(224, 25%, 12%);
+	}
+
+	.footer-contacts {
+		color: var(--text-muted);
+		font-size: 0.95rem;
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
+	}
+
+	.footer-email {
+		color: var(--accent-cyan);
+		font-weight: 500;
+	}
+
+	.footer-email:hover {
+		color: #ffffff;
+		text-decoration: underline;
+	}
+
+	html.light .footer-email:hover {
+		color: hsl(224, 25%, 12%);
+	}
+
+	.footer-bottom {
+		border-top: 1px solid rgba(255, 255, 255, 0.05);
+		padding-top: 36px;
+		padding-bottom: 24px;
+		text-align: center;
+		color: var(--text-dim);
+		font-size: 0.85rem;
+		transition: border-color var(--transition-normal);
+	}
+
+	html.light .footer-bottom {
+		border-top: 1px solid rgba(0, 0, 0, 0.05);
+	}
+
+	/* Стили для предотвращения прокрутки при открытом меню */
+	body.overflow-hidden {
+		overflow: hidden;
+	}
+
+	/* Стили для бургер-кнопки */
+	.mobile-menu-btn {
+		display: none;
+		flex-direction: column;
+		justify-content: space-between;
+		width: 22px;
+		height: 16px;
+		background: transparent;
+		border: none;
+		cursor: pointer;
+		z-index: 210;
+		padding: 0;
+		position: relative;
+	}
+
+	.mobile-menu-btn span {
+		width: 100%;
+		height: 2px;
+		background-color: var(--text-main);
+		border-radius: 2px;
+		transition: all var(--transition-fast);
+	}
+
+	/* Анимация бургера в крестик */
+	.mobile-menu-btn.active span:nth-child(1) {
+		transform: translateY(7px) rotate(45deg);
+	}
+	.mobile-menu-btn.active span:nth-child(2) {
+		opacity: 0;
+	}
+	.mobile-menu-btn.active span:nth-child(3) {
+		transform: translateY(-7px) rotate(-45deg);
+	}
+
+	/* Мобильное навигационное меню */
+	.mobile-nav {
+		position: fixed;
+		top: 80px;
+		left: 0;
+		width: 100%;
+		height: calc(100vh - 80px);
+		background: rgba(13, 15, 20, 0.98);
+		backdrop-filter: blur(20px);
+		-webkit-backdrop-filter: blur(20px);
+		border-top: 1px solid var(--glass-border);
+		z-index: 199;
+		display: flex;
+		flex-direction: column;
+		padding: 40px 24px;
+		transform: translateY(-100%);
+		opacity: 0;
+		visibility: hidden;
+		transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease, visibility 0.3s ease;
+		overflow-y: auto;
+	}
+
+	html.light .mobile-nav {
+		background: rgba(255, 255, 255, 0.98);
+	}
+
+	.mobile-nav.active {
+		transform: translateY(0);
+		opacity: 1;
+		visibility: visible;
+	}
+
+	.mobile-nav-links {
+		display: flex;
+		flex-direction: column;
+		gap: 20px;
+	}
+
+	.mobile-nav-link {
+		font-family: 'Outfit', sans-serif;
+		font-size: 1.3rem;
+		font-weight: 600;
+		color: var(--text-main);
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		width: 100%;
+		background: transparent;
+		border: none;
+		padding: 10px 0;
+		cursor: pointer;
+		text-align: left;
+		border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+	}
+
+	html.light .mobile-nav-link {
+		border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+	}
+
+	/* Аккордеон для мобильного выпадающего меню */
+	.mobile-dropdown {
+		display: flex;
+		flex-direction: column;
+		width: 100%;
+	}
+
+	.mobile-dropdown .mobile-nav-link {
+		border-bottom: none;
+	}
+
+	.mobile-chevron {
+		transition: transform var(--transition-normal);
+		color: var(--text-muted);
+	}
+
+	.mobile-dropdown.open .mobile-chevron {
+		transform: rotate(180deg);
+		color: var(--accent-purple);
+	}
+
+	.mobile-dropdown-menu {
+		max-height: 0;
+		overflow: hidden;
+		transition: max-height 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+		padding-left: 16px;
+	}
+
+	.mobile-dropdown.open .mobile-dropdown-menu {
+		max-height: 100px;
+		margin-bottom: 10px;
+	}
+
+	.mobile-dropdown-item {
+		font-size: 1.1rem;
+		color: var(--text-muted);
+		font-weight: 500;
+		padding: 8px 0;
+		display: block;
+	}
+
+	/* Адаптивность для планшетов и телефонов */
+	@media (max-width: 768px) {
+		.header {
+			height: 70px;
+		}
+		main {
+			margin-top: 70px;
+		}
+		.nav {
+			display: none;
+		}
+		.footer-grid {
+			grid-template-columns: 1fr;
+			gap: 40px;
+		}
+		.header-cta-group {
+			gap: 16px;
+		}
+		.consult-text {
+			display: none; /* Скрываем текст "Консультация:" на мобилках */
+		}
+		.consult-arrow {
+			display: inline-block; /* Показываем стрелочку на мобилках */
+		}
+		.mobile-menu-btn {
+			display: flex; /* Показываем бургер на мобилках */
+		}
+		.mobile-nav {
+			top: 70px;
+			height: calc(100vh - 70px);
+		}
+	}
+</style>

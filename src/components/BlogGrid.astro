@@ -1,0 +1,164 @@
+---
+interface Props {
+	limit?: number;
+}
+
+const { limit } = Astro.props;
+
+// Получаем все Markdown статьи
+const rawPosts = Object.values(import.meta.glob('../pages/blog/*.md', { eager: true })) as any[];
+let posts = rawPosts.sort((a, b) => {
+	const parseDate = (dStr: string) => {
+		if (!dStr) return 0;
+		const parts = dStr.split('.');
+		if (parts.length === 3) {
+			const [d, m, y] = parts.map(Number);
+			return new Date(y, m - 1, d).getTime();
+		}
+		return 0;
+	};
+	return parseDate(b.frontmatter.date) - parseDate(a.frontmatter.date);
+});
+
+if (limit && limit > 0) {
+	posts = posts.slice(0, limit);
+}
+
+// Нормализация категории
+function getNormalizedCategory(categoryName: string) {
+	if (!categoryName) return 'industry';
+	const lower = categoryName.toLowerCase();
+	if (lower.includes('кейс')) return 'cases';
+	if (lower.includes('отрасл') || lower.includes('решен')) return 'industry';
+	if (lower.includes('инструмент')) return 'tools';
+	if (lower.includes('карьер')) return 'career';
+	return 'industry';
+}
+---
+
+<div class="hub-grid" id="hubGrid">
+	{posts.map((post) => {
+		const filterCategory = getNormalizedCategory(post.frontmatter.category);
+		return (
+			<a href={post.url} class="glass-card hub-card" data-category={filterCategory}>
+
+				<div class="hub-card-content">
+					<div class="hub-card-meta">
+						<span class="category-tag">{post.frontmatter.category}</span>
+						<span class="meta-separator">&bull;</span>
+						<time>{post.frontmatter.date}</time>
+					</div>
+					<h3>{post.frontmatter.title}</h3>
+					<p>{post.frontmatter.description}</p>
+					<span class="read-more">Читать материал &rarr;</span>
+				</div>
+			</a>
+		)
+	})}
+</div>
+
+<style>
+	/* Сетка карточек */
+	.hub-grid {
+		display: grid;
+		grid-template-columns: repeat(4, 1fr);
+		gap: 20px;
+		position: relative;
+		z-index: 2;
+	}
+
+	@media (max-width: 1024px) {
+		.hub-grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
+	}
+
+	.hub-card {
+		padding: 0;
+		display: flex;
+		flex-direction: column;
+		overflow: hidden;
+		transition: all 0.3s ease;
+		transform-origin: center;
+	}
+
+	.hub-card:hover {
+		transform: translateY(-5px);
+		border-color: var(--glass-border-hover);
+		box-shadow: 0 10px 30px rgba(0,0,0, 0.2);
+	}
+	html.light .hub-card:hover {
+		box-shadow: 0 10px 30px rgba(147, 51, 234, 0.1);
+	}
+
+
+
+	.hub-card-content {
+		padding: 24px;
+		display: flex;
+		flex-direction: column;
+		gap: 14px;
+		flex-grow: 1;
+	}
+
+	.hub-card-meta {
+		display: flex;
+		align-items: center;
+		flex-wrap: wrap;
+		gap: 8px;
+		font-size: 0.8rem;
+		color: var(--text-dim);
+	}
+
+	.category-tag {
+		background: #f0f9ff;
+		border: 1px solid #bae6fd;
+		color: #0284c7;
+		padding: 2px 8px;
+		border-radius: 9999px;
+		font-weight: 600;
+		font-size: 0.7rem;
+		letter-spacing: 0.5px;
+		text-transform: uppercase;
+	}
+
+	.meta-separator {
+		color: var(--text-dim);
+	}
+
+	.hub-card h3 {
+		font-size: 1.15rem;
+		line-height: 1.35;
+		margin-bottom: 12px;
+	}
+
+	.hub-card p {
+		color: var(--text-muted);
+		font-size: 0.9rem;
+		line-height: 1.5;
+		flex-grow: 1;
+		margin-bottom: 24px;
+	}
+
+	.read-more {
+		color: var(--accent-cyan);
+		font-weight: 600;
+		font-size: 0.95rem;
+		align-self: flex-start;
+		margin-top: auto;
+		display: flex;
+		align-items: center;
+		gap: 6px;
+		transition: gap 0.2s ease;
+	}
+	
+	.hub-card:hover .read-more {
+		gap: 10px;
+	}
+
+	@media (max-width: 768px) {
+		.hub-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>

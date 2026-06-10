@@ -1,0 +1,82 @@
+---
+interface Item {
+  label: string;
+  href?: string;
+}
+
+interface Props {
+  items: Item[];
+}
+
+const { items } = Astro.props;
+---
+
+<nav aria-label="Breadcrumb" class="breadcrumbs container">
+  <ol>
+    <li>
+      <a href="/">Главная</a>
+    </li>
+    {items.map((item, index) => {
+      const isLast = index === items.length - 1;
+      return (
+        <li class="separator">/</li>
+        <li>
+          {isLast || !item.href ? (
+            <span class="current" aria-current="page">{item.label}</span>
+          ) : (
+            <a href={item.href}>{item.label}</a>
+          )}
+        </li>
+      );
+    })}
+  </ol>
+</nav>
+
+<style>
+  .breadcrumbs {
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    margin-bottom: 24px;
+  }
+
+  .breadcrumbs ol {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .breadcrumbs li {
+    display: flex;
+    align-items: center;
+  }
+
+  .breadcrumbs a {
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+  }
+
+  .breadcrumbs a:hover {
+    color: var(--accent-cyan);
+  }
+
+  .breadcrumbs .separator {
+    color: rgba(255, 255, 255, 0.15);
+    user-select: none;
+    font-size: 0.75rem;
+  }
+
+  html.light .breadcrumbs .separator {
+    color: rgba(0, 0, 0, 0.15);
+  }
+
+  .breadcrumbs .current {
+    color: var(--accent-cyan);
+    font-weight: 600;
+  }
+</style>

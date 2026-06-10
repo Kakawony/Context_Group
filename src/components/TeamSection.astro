@@ -1,0 +1,307 @@
+---
+// TeamSection.astro
+---
+<div class="team-wrapper glass-card">
+	<div class="team-header">
+		<h3>Над проектом будут работать:</h3>
+		<p>Я и моя команда AI-ассистентов готовы проанализировать ваши процессы и подобрать оптимальное решение. Отвечаю лично.</p>
+		
+		<div class="leader-card">
+			<div class="leader-avatar-placeholder">
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+			</div>
+			
+			<div class="leader-details">
+				<div class="detail-row">
+					<span class="label">Имя:</span>
+					<span class="value">Виталий Лапин</span>
+				</div>
+				<div class="detail-row">
+					<span class="label">Роль:</span>
+					<span class="value">Архитектор и основатель проекта (13 лет в маркетинге)</span>
+				</div>
+				<div class="detail-row">
+					<span class="label">Телефон / TG:</span>
+					<a href="tel:+79992004807" class="value link">+7 (999) 200-48-07</a>
+				</div>
+			</div>
+
+			<div class="leader-socials">
+				<a href="https://t.me/mrlapin" target="_blank" class="social-link tg" title="Telegram">
+					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"></path><path d="M22 2l-7 20-4-9-9-4 20-7z"></path></svg>
+				</a>
+				<a href="https://wa.me/79992004807" target="_blank" class="social-link wa" title="WhatsApp">
+					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+				</a>
+			</div>
+		</div>
+	</div>
+	
+	<div class="agents-grid">
+		<div class="agent-item">
+			<img src="/images/agents/vector.png" alt="Вектор" class="agent-icon" />
+			<div class="agent-text">
+				<strong>Вектор (Vector)</strong> — сбор информации, парсинг конкурентов и баз.
+			</div>
+		</div>
+		<div class="agent-item">
+			<img src="/images/agents/nexus.png" alt="Нексус" class="agent-icon" />
+			<div class="agent-text">
+				<strong>Нексус (Nexus)</strong> — анализ информации, SWOT и выводы.
+			</div>
+		</div>
+		<div class="agent-item">
+			<img src="/images/agents/codex.png" alt="Кодекс" class="agent-icon" />
+			<div class="agent-text">
+				<strong>Кодекс (Codex)</strong> — разработка кода, скриптов и API интеграций.
+			</div>
+		</div>
+		<div class="agent-item">
+			<img src="/images/agents/pixel.png" alt="Пиксель" class="agent-icon" />
+			<div class="agent-text">
+				<strong>Пиксель (Pixel)</strong> — UI/UX дизайн и создание визуального стиля.
+			</div>
+		</div>
+		<div class="agent-item">
+			<img src="/images/agents/audit.png" alt="Аудит" class="agent-icon" />
+			<div class="agent-text">
+				<strong>Аудит (Audit)</strong> — автотесты, контроль багов и проверка кода.
+			</div>
+		</div>
+		<div class="agent-item">
+			<img src="/images/agents/spectre.png" alt="Спектр" class="agent-icon" />
+			<div class="agent-text">
+				<strong>Спектр (Spectre)</strong> — координация, исправление ошибок и отчет.
+			</div>
+		</div>
+	</div>
+</div>
+
+<style>
+	.team-wrapper {
+		max-width: 1000px;
+		margin: 0 auto;
+		padding: 40px;
+		display: flex;
+		flex-direction: column;
+		gap: 32px;
+	}
+
+	.team-header {
+		max-width: 800px;
+	}
+
+	.team-header h3 {
+		font-size: 1.5rem;
+		margin-bottom: 12px;
+		color: var(--text-main);
+	}
+
+	.team-header p {
+		color: var(--text-muted);
+		font-size: 1rem;
+		line-height: 1.6;
+		margin-bottom: 24px;
+	}
+
+	.leader-card {
+		display: flex;
+		align-items: center;
+		gap: 24px;
+		background: rgba(255,255,255, 0.02);
+		padding: 24px;
+		border-radius: 12px;
+		border: 1px solid rgba(255,255,255, 0.05);
+		width: 100%;
+	}
+	html.light .leader-card {
+		background: rgba(0,0,0, 0.02);
+		border-color: rgba(0,0,0, 0.05);
+	}
+
+	.leader-avatar-placeholder {
+		width: 80px;
+		height: 80px;
+		border-radius: 50%;
+		background: var(--grad-primary);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: white;
+		flex-shrink: 0;
+	}
+
+	.leader-avatar-placeholder svg {
+		width: 40px;
+		height: 40px;
+		opacity: 0.8;
+	}
+
+	.leader-details {
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
+	}
+
+	.detail-row {
+		display: flex;
+		gap: 16px;
+		align-items: flex-start;
+	}
+
+	.label {
+		color: var(--text-dim);
+		font-size: 0.9rem;
+		min-width: 110px;
+		flex-shrink: 0;
+	}
+
+	.value {
+		color: var(--text-main);
+		font-weight: 600;
+		font-size: 0.95rem;
+		flex: 1;
+		line-height: 1.4;
+	}
+
+	.link {
+		color: var(--accent-cyan);
+		text-decoration: none;
+		transition: opacity 0.2s;
+	}
+	.link:hover {
+		opacity: 0.8;
+	}
+
+	.leader-socials {
+		display: flex;
+		gap: 12px;
+		margin-left: auto;
+		border-left: 1px solid var(--glass-border);
+		padding-left: 24px;
+	}
+	
+	html.light .leader-socials {
+		border-color: rgba(0,0,0,0.1);
+	}
+
+	.social-link {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 40px;
+		height: 40px;
+		border-radius: 50%;
+		border: 1px solid rgba(255,255,255,0.05);
+		transition: all 0.2s ease;
+	}
+	
+	html.light .social-link {
+		border: 1px solid rgba(0,0,0,0.05);
+	}
+
+	.social-link.tg {
+		color: #38bdf8 !important;
+		background: rgba(56, 189, 248, 0.1) !important;
+		border-color: rgba(56, 189, 248, 0.5) !important;
+	}
+
+	.social-link.wa {
+		color: #4ade80 !important;
+		background: rgba(74, 222, 128, 0.1) !important;
+		border-color: rgba(74, 222, 128, 0.5) !important;
+	}
+
+	.social-link.tg:hover, .social-link.wa:hover {
+		background: rgba(255,255,255,0.05) !important;
+		border-color: rgba(255,255,255,0.15) !important;
+		color: #ffffff !important;
+		transform: translateY(-2px);
+	}
+
+	html.light .social-link.tg:hover, html.light .social-link.wa:hover {
+		background: rgba(0,0,0,0.05) !important;
+		border-color: rgba(0,0,0,0.15) !important;
+		color: hsl(224, 25%, 12%) !important;
+	}
+
+	.social-link svg {
+		width: 20px;
+		height: 20px;
+	}
+
+	/* Сетка агентов */
+	.agents-grid {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 20px;
+		margin-top: 10px;
+	}
+
+	.agent-item {
+		display: flex;
+		align-items: flex-start;
+		gap: 12px;
+		padding: 12px;
+		border-radius: 8px;
+		transition: background 0.2s ease;
+	}
+	.agent-item:hover {
+		background: rgba(255,255,255, 0.03);
+	}
+	html.light .agent-item:hover {
+		background: rgba(0,0,0, 0.02);
+	}
+
+	.agent-icon {
+		width: 48px;
+		height: 48px;
+		border-radius: 10px;
+		object-fit: cover;
+		flex-shrink: 0;
+		box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+	}
+
+	.agent-text {
+		font-size: 0.85rem;
+		line-height: 1.4;
+		color: var(--text-muted);
+	}
+
+	.agent-text strong {
+		color: var(--text-main);
+		font-weight: 600;
+	}
+
+	@media (max-width: 900px) {
+		.agents-grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
+	}
+
+	@media (max-width: 768px) {
+		.leader-card {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 20px;
+		}
+		.leader-socials {
+			margin-left: 0;
+			border-left: none;
+			padding-left: 0;
+			border-top: 1px solid var(--glass-border);
+			padding-top: 20px;
+			width: 100%;
+			justify-content: flex-start;
+		}
+	}
+
+	@media (max-width: 600px) {
+		.agents-grid {
+			grid-template-columns: 1fr;
+		}
+		.team-wrapper {
+			padding: 24px;
+		}
+	}
+</style>

@@ -1,0 +1,291 @@
+---
+interface Props {
+	alwaysVisible?: boolean;
+	scale?: number;
+	hideOnSelector?: string;
+	disableMobile?: boolean;
+}
+
+const { alwaysVisible = false, scale = 1, hideOnSelector = "", disableMobile = false } = Astro.props;
+---
+
+<div 
+	class="ai-sphere-container" 
+	id="interactive-sphere" 
+	data-always-visible={alwaysVisible ? "true" : "false"} 
+	data-hide-selector={hideOnSelector} 
+	data-disable-mobile={disableMobile ? "true" : "false"}
+	style={`--sphere-scale: ${scale};`}
+>
+	<div class="ai-sphere-core"></div>
+	<div class="ai-sphere-orbit-1"></div>
+	<div class="ai-sphere-orbit-2"></div>
+</div>
+
+<script>
+	document.addEventListener('DOMContentLoaded', () => {
+		const sphere = document.getElementById('interactive-sphere');
+		if (!sphere) return;
+		
+		const alwaysVisible = sphere.getAttribute('data-always-visible') === 'true';
+		const hideSelector = sphere.getAttribute('data-hide-selector');
+		const disableMobile = sphere.getAttribute('data-disable-mobile') === 'true';
+		
+		function isMobileDevice() {
+			return window.innerWidth <= 992 || window.matchMedia("(hover: none)").matches || window.matchMedia("(pointer: coarse)").matches;
+		}
+
+		function checkHeaderFooter(y) {
+			const header = document.querySelector('.header');
+			const footer = document.querySelector('.footer');
+			if (header) {
+				const r = header.getBoundingClientRect();
+				if (y >= r.top && y <= r.bottom) return true;
+			}
+			if (footer) {
+				const r = footer.getBoundingClientRect();
+				if (y >= r.top && y <= r.bottom) return true;
+			}
+			return false;
+		}
+
+		function checkAtForm(x, y) {
+			const forms = document.querySelectorAll('form, .hero-form, .contact-form, .lead-form, .form-container, .contact-wrapper');
+			for (let i = 0; i < forms.length; i++) {
+				const r = forms[i].getBoundingClientRect();
+				if (x >= r.left && x <= r.right && y >= r.top && y <= r.bottom) return true;
+			}
+			return false;
+		}
+
+		let mouseX = window.innerWidth / 2;
+		let mouseY = window.innerHeight / 2;
+		let sphereX = mouseX - 150;
+		let sphereY = mouseY - 150;
+		let targetX = sphereX;
+		let targetY = sphereY;
+		let isInside = alwaysVisible;
+		let initialized = false;
+		const speedLerp = 0.08;
+
+		window.addEventListener('pointermove', (e) => {
+			if (!e.pointerType || e.pointerType === 'touch' || e.pointerType === 'pen') return;
+			if (isMobileDevice()) return;
+
+			const clientX = e.clientX;
+			const clientY = e.clientY;
+			
+			if (checkHeaderFooter(clientY)) {
+				isInside = false;
+			} else {
+				if (hideSelector) {
+					const hideEl = document.querySelector(hideSelector);
+					let inHideZone = false;
+					if (hideEl) {
+						const rect = hideEl.getBoundingClientRect();
+						inHideZone = (clientY >= rect.top && clientY <= rect.bottom);
+					}
+					isInside = !inHideZone;
+				} else if (!alwaysVisible) {
+					const hero = document.querySelector('.hero, .animated-hero');
+					const seoSection = document.querySelector('.seo-text-section, .seo-intro-section, .seo-detailed-section');
+					const servicesSection = document.querySelector('.services-section');
+					let inZone = false;
+					if (hero && clientY >= hero.getBoundingClientRect().top && clientY <= hero.getBoundingClientRect().bottom) inZone = true;
+					if (seoSection && clientY >= seoSection.getBoundingClientRect().top && clientY <= seoSection.getBoundingClientRect().bottom) inZone = true;
+					if (servicesSection && clientY >= servicesSection.getBoundingClientRect().top && clientY <= servicesSection.getBoundingClientRect().bottom) inZone = true;
+					isInside = inZone;
+				} else {
+					isInside = true;
+				}
+			}
+			
+			targetX = clientX - 150;
+			targetY = clientY - 150;
+			
+			if (!initialized && isInside) {
+				sphereX = targetX;
+				sphereY = targetY;
+				initialized = true;
+			}
+			
+			if (checkAtForm(clientX, clientY)) {
+				sphere.classList.add('at-form');
+			} else {
+				sphere.classList.remove('at-form');
+			}
+		});
+		
+		document.addEventListener('mouseleave', () => {
+			isInside = false;
+		});
+
+		function updateMobileVisibility() {
+			if (disableMobile) {
+				sphere.style.display = 'none';
+				return;
+			}
+			sphere.style.display = '';
+
+			const testY = window.innerHeight / 3;
+			let isVisible = true;
+			
+			if (checkHeaderFooter(testY)) {
+				isVisible = false;
+			} else if (hideSelector) {
+				const hideEl = document.querySelector(hideSelector);
+				if (hideEl) {
+					const r = hideEl.getBoundingClientRect();
+					if (testY >= r.top && testY <= r.bottom) isVisible = false;
+				}
+			} else if (!alwaysVisible) {
+				const hero = document.querySelector('.hero, .animated-hero');
+				const seoSection = document.querySelector('.seo-text-section, .seo-intro-section, .seo-detailed-section');
+				const servicesSection = document.querySelector('.services-section');
+				let inZone = false;
+				if (hero && testY >= hero.getBoundingClientRect().top && testY <= hero.getBoundingClientRect().bottom) inZone = true;
+				if (seoSection && testY >= seoSection.getBoundingClientRect().top && testY <= seoSection.getBoundingClientRect().bottom) inZone = true;
+				if (servicesSection && testY >= servicesSection.getBoundingClientRect().top && testY <= servicesSection.getBoundingClientRect().bottom) inZone = true;
+				isVisible = inZone;
+			}
+			
+			sphere.style.opacity = isVisible ? '0.5' : '0';
+		}
+
+		window.addEventListener('scroll', () => {
+			if (isMobileDevice()) {
+				updateMobileVisibility();
+			}
+		}, { passive: true });
+		
+		function render() {
+			const mobile = isMobileDevice();
+			
+			if (mobile) {
+				sphere.classList.add('is-mobile-active');
+				sphere.style.transform = ''; // Clear inline transform so CSS animation works
+				// Opacity is handled by updateMobileVisibility
+			} else {
+				sphere.classList.remove('is-mobile-active');
+				sphere.style.display = '';
+				sphere.style.opacity = isInside ? '1' : '0';
+				
+				sphereX += (targetX - sphereX) * speedLerp;
+				sphereY += (targetY - sphereY) * speedLerp;
+				sphere.style.transform = `translate3d(${sphereX}px, ${sphereY}px, 0) scale(var(--sphere-scale, 1))`;
+			}
+			
+			requestAnimationFrame(render);
+		}
+		
+		if (isMobileDevice()) {
+			updateMobileVisibility();
+		}
+		render();
+	});
+</script>
+
+<style>
+	.ai-sphere-container {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 300px;
+		height: 300px;
+		pointer-events: none;
+		z-index: -1;
+		opacity: 0;
+		transition: opacity 0.5s ease;
+	}
+
+	.ai-sphere-core {
+		position: absolute;
+		top: calc(50% - 60px);
+		left: calc(50% - 60px);
+		width: 120px;
+		height: 120px;
+		border-radius: 50%;
+		background: var(--grad-primary);
+		box-shadow: 0 0 60px var(--accent-purple-glow);
+		filter: blur(10px);
+		animation: pulse-sphere 4s infinite alternate;
+		transition: background 0.6s ease, box-shadow 0.6s ease, width 0.6s ease, height 0.6s ease, filter 0.6s ease, top 0.6s ease, left 0.6s ease;
+	}
+
+	.ai-sphere-container.at-form .ai-sphere-core {
+		background: linear-gradient(135deg, #a855f7 0%, #6366f1 100%) !important;
+		box-shadow: 0 0 80px rgba(168, 85, 247, 0.45), 0 0 40px rgba(99, 102, 241, 0.25) !important;
+		width: 140px;
+		height: 140px;
+		top: calc(50% - 70px);
+		left: calc(50% - 70px);
+		filter: blur(15px);
+	}
+
+	.ai-sphere-orbit-1 {
+		position: absolute;
+		top: calc(50% - 100px);
+		left: calc(50% - 100px);
+		width: 200px;
+		height: 200px;
+		border: 1px dashed rgba(197, 90, 60, 0.2);
+		border-radius: 50%;
+		animation: spin-orbit 20s linear infinite;
+	}
+
+	.ai-sphere-orbit-2 {
+		position: absolute;
+		top: calc(50% - 120px);
+		left: calc(50% - 120px);
+		width: 240px;
+		height: 240px;
+		border: 1px solid rgba(6, 182, 212, 0.1);
+		border-radius: 50%;
+		animation: spin-reverse 30s linear infinite;
+	}
+
+	html.light .ai-sphere-core {
+		box-shadow: 0 0 60px rgba(147, 51, 234, 0.3);
+	}
+	
+	html.light .ai-sphere-orbit-1 {
+		border-color: rgba(6, 182, 212, 0.2);
+	}
+	
+	html.light .ai-sphere-orbit-2 {
+		border-color: rgba(147, 51, 234, 0.2);
+	}
+
+	@keyframes spin-orbit {
+		0% { transform: rotate(0deg); }
+		100% { transform: rotate(360deg); }
+	}
+
+	@keyframes spin-reverse {
+		0% { transform: rotate(0deg); }
+		100% { transform: rotate(-360deg); }
+	}
+
+	@keyframes pulse-sphere {
+		0% { transform: scale(1); opacity: 0.8; }
+		100% { transform: scale(1.05); opacity: 1; }
+	}
+
+	/* CSS-анимация для мобильных, чтобы избежать тормозов JS */
+	.ai-sphere-container.is-mobile-active {
+		position: fixed;
+		left: 50%;
+		top: 50%;
+		animation: mobFlySphere 20s infinite alternate ease-in-out;
+		opacity: 0.5;
+	}
+
+	@keyframes mobFlySphere {
+		0% { transform: translate3d(-50%, -50%, 0) translate(0, 0) scale(1); }
+		20% { transform: translate3d(-50%, -50%, 0) translate(25vw, -20vh) scale(1.05); }
+		40% { transform: translate3d(-50%, -50%, 0) translate(-20vw, 25vh) scale(0.95); }
+		60% { transform: translate3d(-50%, -50%, 0) translate(-30vw, -15vh) scale(1.1); }
+		80% { transform: translate3d(-50%, -50%, 0) translate(15vw, 30vh) scale(1); }
+		100% { transform: translate3d(-50%, -50%, 0) translate(10vw, -30vh) scale(1.05); }
+	}
+</style>

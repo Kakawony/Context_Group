@@ -1,0 +1,410 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+
+// Экспортируем возможные пути
+export async function getStaticPaths() {
+	const hubCategories = [
+		{ id: 'cases', name: 'Кейсы' },
+		{ id: 'industry', name: 'Отраслевые решения' },
+		{ id: 'tools', name: 'Инструменты' },
+		{ id: 'career', name: 'Моя карьера' }
+	];
+
+	return hubCategories.map(cat => ({
+		params: { category: cat.id },
+		props: { categoryName: cat.name }
+	}));
+}
+
+const { category } = Astro.params;
+const { categoryName } = Astro.props;
+
+// Получаем все Markdown статьи
+const rawPosts = Object.values(import.meta.glob('./*.md', { eager: true })) as any[];
+const allPosts = rawPosts.sort((a, b) => {
+	const parseDate = (dStr: string) => {
+		const [d, m, y] = dStr.split('.').map(Number);
+		return new Date(y, m - 1, d).getTime();
+	};
+	return parseDate(b.frontmatter.date) - parseDate(a.frontmatter.date);
+});
+
+// Категории для хаба (чтобы вывести фильтры)
+const hubCategories = [
+	{ id: 'all', name: 'Все материалы' },
+	{ id: 'cases', name: 'Кейсы' },
+	{ id: 'industry', name: 'Отраслевые решения' },
+	{ id: 'tools', name: 'Инструменты' },
+	{ id: 'career', name: 'Моя карьера' }
+];
+
+function getNormalizedCategory(categoryName: string) {
+	const lower = categoryName.toLowerCase();
+	if (lower.includes('кейс')) return 'cases';
+	if (lower.includes('отрасл') || lower.includes('решен')) return 'industry';
+	if (lower.includes('инструмент')) return 'tools';
+	if (lower.includes('карьер')) return 'career';
+	return 'industry';
+}
+
+// Фильтруем посты под текущую категорию
+const posts = allPosts.filter(post => getNormalizedCategory(post.frontmatter.category) === category);
+---
+
+<Layout title={`${categoryName} — База знаний AI | Context Group`} description={`Материалы из раздела "${categoryName}" в базе знаний о внедрении искусственного интеллекта.`}>
+	<section class="hub-section">
+		<div class="hub-glow"></div>
+		<div class="container">
+			<Breadcrumbs items={[
+				{ label: 'База знаний', url: '/blog' },
+				{ label: categoryName }
+			]} />
+			
+			<div class="hub-header">
+				<span class="badge">📚 База знаний</span>
+				<h1>{categoryName}</h1>
+				<p>Открытая библиотека нашего опыта: детальные разборы кейсов, готовые AI-стеки для разных отраслей и лучшие инструменты рынка.</p>
+			</div>
+
+			<!-- Фильтры-табы -->
+			<div class="hub-filters">
+				{hubCategories.map(cat => (
+					<a 
+						href={cat.id === 'all' ? '/blog' : `/blog/${cat.id}`} 
+						class={`filter-btn ${cat.id === category ? 'active' : ''}`}
+					>
+						{cat.name}
+					</a>
+				))}
+			</div>
+
+			<div class="hub-grid" id="hubGrid">
+				{posts.length > 0 ? (
+					posts.map((post) => {
+						const filterCategory = getNormalizedCategory(post.frontmatter.category);
+						return (
+							<a href={post.url} class="glass-card hub-card" data-category={filterCategory}>
+								<div class="hub-card-visual">
+								{post.frontmatter.image ? (
+									<img src={post.frontmatter.image} alt={post.frontmatter.title} class="hub-card-image" />
+								) : (
+									<div class="hub-card-icon">
+										<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+											<path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line>
+										</svg>
+									</div>
+								)}
+							</div>
+								<div class="hub-card-content">
+									<div class="hub-card-meta">
+										<span class="category-tag">{post.frontmatter.category}</span>
+										<span class="meta-separator">&bull;</span>
+										<time>{post.frontmatter.date}</time>
+										<span class="meta-separator">&bull;</span>
+										<span>{post.frontmatter.readTime}</span>
+									</div>
+									<h3>{post.frontmatter.title}</h3>
+									<p>{post.frontmatter.description}</p>
+									<span class="read-more">Читать материал &rarr;</span>
+								</div>
+							</a>
+						)
+					})
+				) : (
+					<div class="empty-state">
+						<div class="empty-icon">⏳</div>
+						<h3>Материалы готовятся</h3>
+						<p>Мы собираем экспертный контент для раздела "{categoryName}". Загляните сюда чуть позже!</p>
+					</div>
+				)}
+			</div>
+
+			<!-- Большой экспертный SEO-текст -->
+			<section class="seo-text-section" style="margin-top: 40px; border-top: 1px solid var(--glass-border); padding-top: 60px;">
+				<div class="seo-text-content">
+					<h2>Обучение и внедрение AI-технологий в бизнес</h2>
+					<p>
+						В нашем информационном хабе мы делимся реальным опытом интеграции искусственного интеллекта в маркетинг, отделы продаж и операционную деятельность. Мы не просто обозреваем новые нейросети, а показываем конкретные <strong>сценарии использования LLM-моделей</strong> для автоматизации рутины.
+					</p>
+					<p>
+						Здесь вы найдете пошаговые руководства "как внедрить AI", готовые промпты для ChatGPT и Claude, а также разборы архитектуры наших AI-агентов. Отраслевые решения помогают адаптировать технологии под вашу нишу — будь то недвижимость, медицина, ритейл или сфера услуг.
+					</p>
+				</div>
+			</section>
+		</div>
+	</section>
+</Layout>
+
+<style>
+	.hub-section {
+		position: relative;
+		padding: 60px 0 100px 0;
+		overflow: hidden;
+		min-height: calc(100vh - 200px);
+	}
+
+	.hub-glow {
+		position: absolute;
+		top: -100px;
+		left: 50%;
+		transform: translateX(-50%);
+		width: 800px;
+		height: 500px;
+		background: radial-gradient(circle, var(--accent-purple-glow) 0%, rgba(13,15,20,0) 100%);
+		filter: blur(80px);
+		pointer-events: none;
+		z-index: 1;
+	}
+
+	.hub-header {
+		text-align: center;
+		max-width: 700px;
+		margin: 0 auto 50px auto;
+		position: relative;
+		z-index: 2;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
+
+	.badge {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		background: rgba(147, 51, 234, 0.1);
+		border: 1px solid rgba(147, 51, 234, 0.2);
+		padding: 6px 16px;
+		border-radius: 9999px;
+		font-size: 0.85rem;
+		font-family: 'Outfit', sans-serif;
+		font-weight: 500;
+		color: var(--accent-purple);
+		margin-bottom: 24px;
+	}
+
+	.hub-header h1 {
+		font-size: 3rem;
+		margin-bottom: 20px;
+		letter-spacing: -1px;
+	}
+
+	.hub-header p {
+		color: var(--text-muted);
+		font-size: 1.1rem;
+		line-height: 1.6;
+	}
+
+	/* Табы (фильтры) */
+	.hub-filters {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		gap: 12px;
+		margin-bottom: 50px;
+		position: relative;
+		z-index: 2;
+	}
+
+	.filter-btn {
+		background: var(--bg-dark-card);
+		border: 1px solid var(--glass-border);
+		color: var(--text-muted);
+		padding: 10px 24px;
+		border-radius: 8px;
+		font-family: 'Inter', sans-serif;
+		font-size: 0.95rem;
+		font-weight: 500;
+		cursor: pointer;
+		transition: all 0.3s ease;
+		text-decoration: none;
+	}
+
+	.filter-btn:hover {
+		background: var(--bg-dark-hover);
+		color: var(--text-main);
+		border-color: rgba(147, 51, 234, 0.3);
+		transform: translateY(-2px);
+	}
+
+	.filter-btn.active {
+		background: var(--grad-primary);
+		border-color: transparent;
+		color: #fff;
+		box-shadow: 0 4px 15px rgba(147, 51, 234, 0.3);
+	}
+
+	/* Сетка карточек */
+	.hub-grid {
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		gap: 30px;
+		position: relative;
+		z-index: 2;
+		margin-bottom: 80px;
+	}
+
+	.hub-card {
+		padding: 0;
+		display: flex;
+		flex-direction: column;
+		overflow: hidden;
+		transition: all 0.3s ease; /* Для анимации фильтра */
+		transform-origin: center;
+		text-decoration: none;
+	}
+
+	.hub-card:hover {
+		transform: translateY(-5px);
+		border-color: var(--glass-border-hover);
+		box-shadow: 0 10px 30px rgba(0,0,0, 0.2);
+	}
+	html.light .hub-card:hover {
+		box-shadow: 0 10px 30px rgba(147, 51, 234, 0.1);
+	}
+
+	.hub-card-visual {
+		width: 100%;
+		height: 180px;
+		background: linear-gradient(135deg, rgba(6, 182, 212, 0.1) 0%, rgba(147, 51, 234, 0.05) 100%);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border-bottom: 1px solid var(--glass-border);
+		position: relative;
+		overflow: hidden;
+	}
+	
+	.hub-card-image {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		transition: transform 0.5s ease;
+	}
+	
+	.hub-card:hover .hub-card-image {
+		transform: scale(1.05);
+	}
+
+	.hub-card-icon {
+		width: 64px;
+		height: 64px;
+		background: var(--bg-dark);
+		border: 1px solid var(--glass-border);
+		border-radius: 16px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: var(--accent-purple);
+		box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+	}
+	html.light .hub-card-icon {
+		background: #fff;
+		box-shadow: 0 8px 24px rgba(147, 51, 234, 0.1);
+	}
+
+	.hub-card-content {
+		padding: 30px;
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+		flex-grow: 1;
+	}
+
+	.hub-card-meta {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		font-size: 0.85rem;
+		color: var(--text-dim);
+	}
+
+	.category-tag {
+		background: rgba(6, 182, 212, 0.1);
+		border: 1px solid rgba(6, 182, 212, 0.2);
+		color: var(--accent-cyan);
+		padding: 2px 10px;
+		border-radius: 9999px;
+		font-weight: 500;
+		font-size: 0.75rem;
+	}
+
+	.meta-separator {
+		color: var(--text-dim);
+	}
+
+	.hub-card h3 {
+		font-size: 1.4rem;
+		line-height: 1.35;
+	}
+
+	.hub-card p {
+		color: var(--text-muted);
+		font-size: 0.95rem;
+		line-height: 1.6;
+		flex-grow: 1;
+	}
+
+	.read-more {
+		color: var(--accent-cyan);
+		font-weight: 600;
+		font-size: 0.95rem;
+		align-self: flex-start;
+		margin-top: auto;
+		display: flex;
+		align-items: center;
+		gap: 6px;
+		transition: gap 0.2s ease;
+	}
+	
+	.hub-card:hover .read-more {
+		gap: 10px; /* Эффект стрелочки при наведении */
+	}
+
+	/* Пустое состояние (Заглушка) */
+	.empty-state {
+		grid-column: 1 / -1;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		padding: 60px 20px;
+		text-align: center;
+		background: var(--glass-bg);
+		border: 1px dashed var(--glass-border);
+		border-radius: 24px;
+	}
+
+	.empty-icon {
+		font-size: 3rem;
+		margin-bottom: 20px;
+		opacity: 0.5;
+	}
+
+	.empty-state h3 {
+		font-size: 1.5rem;
+		margin-bottom: 10px;
+	}
+
+	.empty-state p {
+		color: var(--text-muted);
+		max-width: 400px;
+	}
+
+	@media (max-width: 768px) {
+		.hub-header h1 {
+			font-size: 2.3rem;
+		}
+		.hub-filters {
+			gap: 8px;
+			margin-bottom: 30px;
+		}
+		.filter-btn {
+			padding: 8px 16px;
+			font-size: 0.85rem;
+		}
+		.hub-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>

@@ -1,0 +1,678 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+---
+
+<Layout title="Контакты и информация о разработчике | Context Group" description="Основатель Context Group Виталий Лапин. 13 лет опыта в маркетинге. Разработка и внедрение AI-решений для автоматизации бизнеса в России.">
+	<section class="contacts-page">
+		<div class="contacts-glow"></div>
+		<Breadcrumbs items={[{ label: 'Контакты' }]} />
+		<div class="container contacts-container">
+			<!-- Колонка с информацией о Виталии Лапине -->
+			<div class="profile-card glass-card">
+				<div class="profile-header">
+					<!-- Декоративный аватар с AI-эффектом -->
+					<div class="avatar-wrapper">
+						<div class="avatar-placeholder">
+							<span class="avatar-initials">ВЛ</span>
+						</div>
+						<div class="avatar-glow-ring"></div>
+					</div>
+					<div class="profile-title">
+						<h1>Виталий Лапин</h1>
+						<p class="role-badge">Основатель & AI-интегратор</p>
+					</div>
+				</div>
+				
+				<div class="profile-body">
+					<h3>Обо мне и разработках</h3>
+					<p>
+						В интернет-маркетинге я уже более 13 лет. Застал эпоху классической настройки контекстной рекламы, создание сайтов на MODX с тяжелыми админками и ручные рассылки. 
+					</p>
+					<p>
+						Сегодня я понимаю, что старые методы неэффективны и дороги. Моя специализация сейчас — <strong>внедрение искусственного интеллекта</strong> и автоматизация процессов под ключ. Я помогаю бизнесу отказаться от дорогой рутины, заменяя ее умными AI-агентами на базе современных LLM.
+					</p>
+					
+					<h3>Где я нахожусь</h3>
+					<p class="location-info">
+						🌴 Живу в Таиланде 4 года, но активно работаю на рынке России (все проекты внедряю удаленно по всей стране).
+					</p>
+
+					<div class="profile-socials">
+						<h3>Контакты и мессенджеры</h3>
+						<div class="social-icons">
+							<a href="https://t.me/mrlapin" target="_blank" class="social-icon tg" aria-label="Telegram" title="Написать в Telegram">
+								<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 0 0-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .24z"/></svg>
+							</a>
+							<a href="https://wa.me/79992004807" target="_blank" class="social-icon wa" aria-label="WhatsApp" title="Написать в WhatsApp">
+								<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12.012 2c-5.506 0-9.988 4.482-9.988 9.988 0 1.761.459 3.477 1.332 5.002L2 22l5.166-1.355c1.472.802 3.125 1.227 4.834 1.227h.005c5.505 0 9.987-4.482 9.987-9.988C22 6.482 17.518 2 12.012 2zm6.1 13.918c-.244.688-1.196 1.25-1.637 1.3-.437.049-.982.083-1.602-.116-.388-.124-.875-.327-1.528-.609-2.775-1.2-4.577-4.027-4.716-4.213-.139-.187-1.127-1.503-1.127-2.868s.707-2.037.958-2.31c.252-.273.548-.342.73-.342h.519c.164 0 .385.062.585.541.205.492.703 1.716.764 1.84.062.124.103.269.02.434-.082.166-.123.27-.246.414-.123.145-.259.324-.369.434-.123.124-.252.259-.109.508.143.249.638 1.053 1.368 1.706.942.842 1.733 1.103 1.979 1.227.246.124.389.103.533-.062.143-.166.615-.717.779-.96.164-.244.328-.207.549-.124.221.083 1.401.661 1.64.779.24.118.399.176.459.279.06.103.06.602-.184 1.29z"/></svg>
+							</a>
+							<a href="#" target="_blank" class="social-icon vk" aria-label="VK" title="Профиль ВКонтакте">
+								<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M13.162 18.994c.609 0 .858-.406.851-.915-.026-1.966.822-2.62 1.682-1.724 1.014 1.057 1.204 1.914 2.107 2.639h1.613c-1.012-1.567-2.316-3.003-3.136-4.256-.479-.731-.383-1.004.184-1.798 1.126-1.577 2.222-3.149 2.507-4.257h-1.613c-.456.883-1.442 2.378-2.122 3.238-.344.436-.61.569-.877.569-.328 0-.586-.232-.586-.897v-3.91c0-.915-.246-1.238-1.01-1.238H9.362c-.456 0-.822.316-.822.612 0 .548.729.684.802 2.224v2.793c0 .641-.161.765-.415.765-.688 0-2.368-2.34-3.344-5.018-.283-.78-.584-1.125-1.266-1.125H2.704c-.609 0-.832.285-.832.612 0 1.137 2.455 6.786 5.253 9.479 2.138 2.062 4.411 2.392 6.037 2.392z"/></svg>
+							</a>
+							<a href="#" target="_blank" class="social-icon insta" aria-label="Instagram" title="Профиль Instagram">
+								<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+							</a>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Колонка с карьерой (без плашек и двойных обводок, компактно) -->
+			<div class="career-block-clean">
+				<h2>Моя карьера</h2>
+				<p class="section-desc">Поэтапный опыт развития в технологиях, интеграции систем и AI:</p>
+				
+				<div class="contacts-cases-list">
+					<a href="/blog" class="contacts-case-item">
+						<div class="case-number">01</div>
+						<div class="case-info">
+							<div class="career-year">2013 - 2015 годы</div>
+							<h4>Старт в маркетинге и веб-разработке</h4>
+							<p>Настройка первых рекламных кампаний в Яндекс.Директ и Google AdWords, разработка посадочных страниц и сайтов.</p>
+						</div>
+					</a>
+
+					<a href="/blog" class="contacts-case-item">
+						<div class="case-number">02</div>
+						<div class="case-info">
+							<div class="career-year">2015 - 2018 годы</div>
+							<h4>Работа в агентствах и сквозная аналитика</h4>
+							<p>Ведение крупных клиентов, оптимизация конверсий, сквозная аналитика и построение первых автоматизаций.</p>
+						</div>
+					</a>
+
+					<a href="/blog" class="contacts-case-item">
+						<div class="case-number">03</div>
+						<div class="case-info">
+							<div class="career-year">2018 - 2020 годы</div>
+							<h4>Автоворонки и интеграция CRM</h4>
+							<p>Проектирование и разработка сложных автоматизированных воронок продаж, интеграция Битрикс24 и amoCRM.</p>
+						</div>
+					</a>
+
+					<a href="/blog/avtootvety-i-boti-ekonomiya-fot" class="contacts-case-item">
+						<div class="case-number">04</div>
+						<div class="case-info">
+							<div class="career-year">2020 - 2025 годы</div>
+							<h4>iGaming проекты и консалтинг</h4>
+							<p>Консалтинг в нише трафика, разработка маркетинговых стратегий и построение распределенных автоматических систем.</p>
+						</div>
+					</a>
+
+					<a href="/blog/kak-ai-sozdal-etot-sayt" class="contacts-case-item">
+						<div class="case-number">05</div>
+						<div class="case-info">
+							<div class="career-year">2025 год и далее</div>
+							<h4>Глубокое внедрение AI-технологий</h4>
+							<p>Глубоко внедряю и изучаю AI по настоящее время — проектирование автономных агентов и автоматизация процессов.</p>
+						</div>
+					</a>
+				</div>
+			</div>
+		</div>
+
+		<!-- Секция AI-агентов (команда роботов) -->
+		<div class="container agents-section">
+			<div class="agents-header">
+				<h2>Мой отдел <span class="gradient-text">AI-роботов</span></h2>
+				<p class="agents-desc">Автономные агенты, которые выполняют 90% рутины под моим контролем:</p>
+			</div>
+			
+			<div class="agents-grid">
+				<!-- Агент 1: Вектор -->
+				<div class="agent-row-clean">
+					<div class="agent-avatar-box tg" title="Вектор (Vector)">
+						<img src="/images/agents/vector.png" alt="Вектор (Vector)" width="32" height="32" />
+					</div>
+					<div class="agent-text-inline">
+						<strong>Вектор (Vector)</strong> — сбор информации, парсинг конкурентов и баз.
+					</div>
+				</div>
+
+				<!-- Агент 2: Нексус -->
+				<div class="agent-row-clean">
+					<div class="agent-avatar-box vk" title="Нексус (Nexus)">
+						<img src="/images/agents/nexus.png" alt="Нексус (Nexus)" width="32" height="32" />
+					</div>
+					<div class="agent-text-inline">
+						<strong>Нексус (Nexus)</strong> — анализ информации, SWOT и выводы.
+					</div>
+				</div>
+
+				<!-- Агент 3: Кодекс -->
+				<div class="agent-row-clean">
+					<div class="agent-avatar-box wa" title="Кодекс (Codex)">
+						<img src="/images/agents/codex.png" alt="Кодекс (Codex)" width="32" height="32" />
+					</div>
+					<div class="agent-text-inline">
+						<strong>Кодекс (Codex)</strong> — разработка кода, скриптов и API интеграций.
+					</div>
+				</div>
+
+				<!-- Агент 4: Пиксель -->
+				<div class="agent-row-clean">
+					<div class="agent-avatar-box insta" title="Пиксель (Pixel)">
+						<img src="/images/agents/pixel.png" alt="Пиксель (Pixel)" width="32" height="32" />
+					</div>
+					<div class="agent-text-inline">
+						<strong>Пиксель (Pixel)</strong> — UI/UX дизайн и создание визуального стиля.
+					</div>
+				</div>
+
+				<!-- Агент 5: Аудит -->
+				<div class="agent-row-clean">
+					<div class="agent-avatar-box amber" title="Аудит (Audit)">
+						<img src="/images/agents/audit.png" alt="Аудит (Audit)" width="32" height="32" />
+					</div>
+					<div class="agent-text-inline">
+						<strong>Аудит (Audit)</strong> — автотесты, контроль багов и проверка кода.
+					</div>
+				</div>
+
+				<!-- Агент 6: Спектр -->
+				<div class="agent-row-clean">
+					<div class="agent-avatar-box emerald" title="Спектр (Spectre)">
+						<img src="/images/agents/spectre.png" alt="Спектр (Spectre)" width="32" height="32" />
+					</div>
+					<div class="agent-text-inline">
+						<strong>Спектр (Spectre)</strong> — координация, исправление ошибок и отчет.
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+</Layout>
+
+<style>
+	.contacts-page {
+		position: relative;
+		padding: 60px 0 100px 0;
+		overflow: hidden;
+	}
+
+	.contacts-glow {
+		position: absolute;
+		top: -150px;
+		left: 50%;
+		transform: translateX(-50%);
+		width: 1000px;
+		height: 500px;
+		background: radial-gradient(circle, var(--accent-purple-glow) 0%, rgba(13,15,20,0) 100%);
+		filter: blur(80px);
+		pointer-events: none;
+		z-index: 1;
+	}
+
+	.contacts-container {
+		position: relative;
+		z-index: 2;
+		display: grid;
+		grid-template-columns: 0.9fr 1.1fr;
+		gap: 40px;
+		align-items: start;
+	}
+
+	/* Профиль */
+	.profile-card {
+		padding: 40px;
+		display: flex;
+		flex-direction: column;
+		gap: 30px;
+	}
+
+	.profile-header {
+		display: flex;
+		align-items: center;
+		gap: 24px;
+	}
+
+	.avatar-wrapper {
+		position: relative;
+		width: 80px;
+		height: 80px;
+	}
+
+	.avatar-placeholder {
+		width: 100%;
+		height: 100%;
+		border-radius: 50%;
+		background: var(--grad-primary);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		box-shadow: 0 0 20px var(--accent-purple-glow);
+	}
+
+	.avatar-initials {
+		font-family: 'Outfit', sans-serif;
+		font-size: 1.8rem;
+		font-weight: 800;
+		color: #ffffff;
+	}
+
+	.avatar-glow-ring {
+		position: absolute;
+		top: -4px;
+		left: -4px;
+		width: 88px;
+		height: 88px;
+		border: 1px dashed var(--accent-cyan);
+		border-radius: 50%;
+		animation: rotateRing 15s linear infinite;
+	}
+
+	@keyframes rotateRing {
+		0% { transform: rotate(0deg); }
+		100% { transform: rotate(360deg); }
+	}
+
+	.profile-title h1 {
+		font-size: 2.2rem;
+		margin-bottom: 6px;
+	}
+
+	.role-badge {
+		font-family: 'Outfit', sans-serif;
+		font-weight: 600;
+		font-size: 0.9rem;
+		color: var(--accent-cyan);
+	}
+
+	.profile-body h3 {
+		font-size: 1.2rem;
+		margin-bottom: 12px;
+		margin-top: 24px;
+	}
+
+	.profile-body p {
+		color: var(--text-muted);
+		font-size: 1rem;
+		line-height: 1.6;
+		margin-bottom: 16px;
+	}
+
+	.location-info {
+		background: rgba(255, 255, 255, 0.02);
+		border: 1px solid var(--glass-border);
+		padding: 12px 16px;
+		border-radius: 8px;
+		font-weight: 500;
+	}
+
+	html.light .location-info {
+		background: rgba(0, 0, 0, 0.01);
+	}
+
+	/* Социальные сети и мессенджеры (стилизация в точности как в шапке) */
+	.profile-socials {
+		margin-top: 30px;
+		border-top: 1px solid var(--glass-border);
+		padding-top: 24px;
+	}
+
+	.profile-socials h3 {
+		font-size: 1rem;
+		margin-bottom: 16px;
+		color: var(--text-muted);
+		text-transform: uppercase;
+		letter-spacing: 0.8px;
+	}
+
+	.profile-socials .social-icons {
+		display: flex;
+		gap: 12px;
+	}
+
+	.profile-socials .social-icon {
+		width: 38px;
+		height: 38px;
+		border-radius: 6px;
+		border: 1px solid var(--glass-border);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: var(--text-muted);
+		transition: all var(--transition-fast);
+		background: transparent;
+	}
+
+	/* Анимация пульсации рамочки для иконок в контактах */
+	@keyframes borderPulseCyanContacts {
+		0%, 100% { 
+			border-color: var(--glass-border); 
+			box-shadow: none;
+		}
+		50% { 
+			border-color: var(--accent-cyan); 
+			box-shadow: 0 0 6px var(--accent-cyan-glow);
+		}
+	}
+
+	.profile-socials .social-icon.tg {
+		animation: borderPulseCyanContacts 3s infinite ease-in-out;
+	}
+
+	.profile-socials .social-icon.wa {
+		animation: borderPulseCyanContacts 3s infinite ease-in-out 0.75s;
+	}
+
+	.profile-socials .social-icon.vk {
+		animation: borderPulseCyanContacts 3s infinite ease-in-out 1.5s;
+	}
+
+	.profile-socials .social-icon.insta {
+		animation: borderPulseCyanContacts 3s infinite ease-in-out 2.25s;
+	}
+
+	.profile-socials .social-icon:hover {
+		transform: translateY(-2px);
+		animation: none;
+	}
+
+	.profile-socials .social-icon.tg:hover {
+		color: #38bdf8;
+		border-color: #38bdf8 !important;
+		background: rgba(56, 189, 248, 0.05);
+		box-shadow: 0 0 10px rgba(56, 189, 248, 0.2);
+	}
+
+	.profile-socials .social-icon.wa:hover {
+		color: #4ade80;
+		border-color: #4ade80 !important;
+		background: rgba(74, 222, 128, 0.05);
+		box-shadow: 0 0 10px rgba(74, 222, 128, 0.2);
+	}
+
+	.profile-socials .social-icon.vk:hover {
+		color: #2787f5;
+		border-color: #2787f5 !important;
+		background: rgba(39, 135, 245, 0.05);
+		box-shadow: 0 0 10px rgba(39, 135, 245, 0.2);
+	}
+
+	.profile-socials .social-icon.insta:hover {
+		color: #f43f5e;
+		border-color: #f43f5e !important;
+		background: rgba(244, 63, 94, 0.05);
+		box-shadow: 0 0 10px rgba(244, 63, 94, 0.2);
+	}
+
+	/* Кейсы и карьера (Изначальный дизайн с карточками contacts-case-item) */
+	.contacts-content-group {
+		display: flex;
+		flex-direction: column;
+		gap: 30px;
+	}
+
+	
+
+	.section-desc {
+		color: var(--text-muted);
+		font-size: 0.95rem;
+		margin-bottom: 24px;
+	}
+
+	.contacts-cases-list {
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+	}
+
+	.career-block-clean {
+		padding: 10px 0;
+	}
+
+	.career-block-clean h2 {
+		font-size: 2.2rem;
+		margin-bottom: 8px;
+	}
+
+	.contacts-case-item {
+		display: flex;
+		gap: 20px;
+		padding: 14px 0;
+		background: transparent !important;
+		border: none !important;
+		border-bottom: 1px solid rgba(255, 255, 255, 0.04) !important;
+		border-radius: 0 !important;
+		transition: transform var(--transition-fast), border-color var(--transition-fast) !important;
+		text-decoration: none;
+		color: inherit;
+		box-shadow: none !important;
+	}
+
+	html.light .contacts-case-item {
+		background: transparent !important;
+		border-bottom: 1px solid rgba(0, 0, 0, 0.04) !important;
+	}
+
+	.contacts-case-item:last-child {
+		border-bottom: none !important;
+	}
+
+	.contacts-case-item:hover {
+		transform: translateX(6px) !important;
+		border-bottom-color: rgba(255, 255, 255, 0.1) !important;
+	}
+
+	html.light .contacts-case-item:hover {
+		border-bottom-color: rgba(0, 0, 0, 0.1) !important;
+	}
+
+	.case-number {
+		font-family: 'Outfit', sans-serif;
+		font-size: 1.8rem;
+		font-weight: 800;
+		color: var(--accent-cyan);
+		line-height: 1;
+		min-width: 35px;
+	}
+
+	.case-info {
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+	}
+
+	.career-year {
+		font-family: 'Outfit', sans-serif;
+		font-weight: 700;
+		font-size: 0.8rem;
+		color: var(--accent-cyan);
+		text-transform: uppercase;
+		letter-spacing: 0.5px;
+	}
+
+	.case-info h4 {
+		font-size: 1.15rem;
+		font-weight: 600;
+		margin-bottom: 4px;
+		transition: color var(--transition-fast);
+		color: #ffffff;
+	}
+
+	html.light .case-info h4 {
+		color: hsl(224, 25%, 12%);
+	}
+
+	.contacts-case-item:hover h4 {
+		color: var(--accent-cyan);
+	}
+
+	.case-info p {
+		font-size: 0.9rem;
+		color: var(--text-muted);
+		line-height: 1.5;
+		margin: 0;
+	}
+
+	/* Адаптивность */
+	@media (max-width: 992px) {
+		.contacts-container {
+			grid-template-columns: 1fr;
+			gap: 40px;
+		}
+	}
+
+	@media (max-width: 576px) {
+		.profile-card,
+		.cases-block {
+			padding: 30px 20px;
+		}
+		.profile-header {
+			flex-direction: column;
+			text-align: center;
+		}
+		.contacts-case-item {
+			flex-direction: column;
+			gap: 12px;
+		}
+	}
+
+
+
+
+	/* Ультра-компактные AI-агенты (2 строки по 3 агента в виде одной строки) */
+	.agents-section {
+		margin-top: 60px;
+		border-top: 1px solid var(--glass-border);
+		padding-top: 50px;
+	}
+
+	.agents-header {
+		text-align: center;
+		margin-bottom: 30px;
+	}
+
+	.agents-header h2 {
+		font-size: 2.2rem;
+		margin-bottom: 8px;
+	}
+
+	.agents-desc {
+		color: var(--text-muted);
+		font-size: 0.95rem;
+		max-width: 600px;
+		margin: 0 auto;
+	}
+
+	.agents-grid {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr) !important;
+		gap: 24px 20px;
+		margin-top: 30px;
+	}
+
+	.agent-row-clean {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		padding: 6px 0;
+	}
+
+	.agent-avatar-box {
+		width: 32px;
+		height: 32px;
+		border-radius: 6px;
+		border: 1px solid var(--glass-border);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex-shrink: 0;
+		background: transparent;
+		transition: all var(--transition-fast);
+		overflow: hidden;
+	}
+
+	.agent-avatar-box img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		display: block;
+	}
+
+	@keyframes borderPulseAgent {
+		0%, 100% { 
+			border-color: var(--glass-border); 
+			box-shadow: none;
+		}
+		50% { 
+			border-color: var(--agent-glow-color); 
+			box-shadow: 0 0 8px var(--agent-glow-shadow);
+		}
+	}
+
+	/* Настройка цветов и задержки анимации пульсации рамочки для каждого робота */
+	.agent-avatar-box.tg { 
+		--agent-glow-color: #38bdf8; 
+		--agent-glow-shadow: rgba(56, 189, 248, 0.4);
+		animation: borderPulseAgent 4s infinite ease-in-out; 
+	}
+	.agent-avatar-box.vk { 
+		--agent-glow-color: #2787f5; 
+		--agent-glow-shadow: rgba(39, 135, 245, 0.4);
+		animation: borderPulseAgent 4s infinite ease-in-out 0.6s; 
+	}
+	.agent-avatar-box.wa { 
+		--agent-glow-color: #4ade80; 
+		--agent-glow-shadow: rgba(74, 222, 128, 0.4);
+		animation: borderPulseAgent 4s infinite ease-in-out 1.2s; 
+	}
+	.agent-avatar-box.insta { 
+		--agent-glow-color: #f43f5e; 
+		--agent-glow-shadow: rgba(244, 63, 94, 0.4);
+		animation: borderPulseAgent 4s infinite ease-in-out 1.8s; 
+	}
+	.agent-avatar-box.amber { 
+		--agent-glow-color: #f59e0b; 
+		--agent-glow-shadow: rgba(245, 158, 11, 0.4);
+		animation: borderPulseAgent 4s infinite ease-in-out 2.4s; 
+	}
+	.agent-avatar-box.emerald { 
+		--agent-glow-color: #10b981; 
+		--agent-glow-shadow: rgba(16, 185, 129, 0.4);
+		animation: borderPulseAgent 4s infinite ease-in-out 3s; 
+	}
+
+	.agent-avatar-box:hover {
+		transform: scale(1.05);
+		border-color: var(--agent-glow-color) !important;
+		box-shadow: 0 0 10px var(--agent-glow-shadow) !important;
+		animation: none;
+	}
+
+	.agent-text-inline {
+		font-size: 0.9rem;
+		line-height: 1.4;
+		color: var(--text-muted);
+	}
+
+	.agent-text-inline strong {
+		color: #ffffff;
+		font-family: 'Outfit', sans-serif;
+		font-weight: 700;
+	}
+
+	html.light .agent-text-inline strong {
+		color: hsl(224, 25%, 12%);
+	}
+
+	@media (max-width: 992px) {
+		.agents-grid {
+			grid-template-columns: repeat(2, 1fr) !important;
+			gap: 20px 16px;
+		}
+	}
+
+	@media (max-width: 650px) {
+		.agents-grid {
+			grid-template-columns: 1fr !important;
+			gap: 16px;
+		}
+		.agent-row-clean {
+			padding: 4px 0;
+		}
+	}
+
+</style>

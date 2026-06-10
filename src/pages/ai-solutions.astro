@@ -1,0 +1,74 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import AiSphere from '../components/AiSphere.astro';
+
+---
+<Layout title="AI-решения для бизнеса | Context Group" description="Все специализированные AI-решения по отраслям.">
+	<AiSphere alwaysVisible={true} scale={0.5} />
+	<section class="industry-hero" style="padding: 120px 0 60px;">
+		<div class="container">
+			<Breadcrumbs items={[{ label: 'Все AI-решения' }]} />
+			<h1 style="font-size: 2.8rem; margin-bottom: 24px;">Все <span class="gradient-text">AI-решения</span></h1>
+			<p class="hero-desc" style="color: var(--text-muted); font-size: 1.15rem; max-width: 700px; line-height: 1.6;">
+				Специализированные стеки нейросетей и сценарии интеграции под конкретные направления
+			</p>
+		</div>
+	</section>
+
+	<section class="industries-section" style="padding: 0 0 80px 0;">
+		<div class="container">
+			<div class="industries-grid-clean" style="display: grid; grid-template-columns: 1fr; gap: 40px; max-width: 600px;">
+				<div class="industry-clean-item glass-card" style="display: flex; flex-direction: column; justify-content: space-between; padding: 32px; border-radius: 16px;">
+					<div class="industry-clean-header" style="display: flex; align-items: center; gap: 16px; margin-bottom: 20px;">
+						<div class="service-icon purple">
+							<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+								<path d="M3 21h18"></path><path d="M9 8h1"></path><path d="M9 12h1"></path><path d="M9 16h1"></path><path d="M14 8h1"></path><path d="M14 12h1"></path><path d="M14 16h1"></path><path d="M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16"></path>
+							</svg>
+						</div>
+						<h3 style="font-size: 1.4rem; font-weight: 700; margin: 0;">AI для агентств недвижимости</h3>
+					</div>
+					<p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.65; margin: 0 0 20px 0; flex-grow: 1;">Полная картотека AI-инструментов, сценариев внедрения и готовых промптов для риелторов, брокеров и застройщиков. Автоматизация карточек объектов и боты-подборщики.</p>
+					<a href="/ai-real-estate" class="industry-clean-link industry-link-1">Смотреть AI-инструменты &rarr;</a>
+				</div>
+			</div>
+		</div>
+	</section>
+</Layout>
+
+<style>
+	.industry-clean-link {
+		font-weight: 700;
+		font-size: 0.95rem;
+		align-self: flex-start;
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+		background: linear-gradient(120deg, var(--accent-cyan) 0%, var(--accent-purple) 50%, var(--accent-cyan) 100%);
+		background-size: 200% auto;
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
+		animation: textShine 4s linear infinite;
+		transition: transform var(--transition-fast);
+	}
+	.industry-clean-item:hover .industry-clean-link {
+		transform: translateX(6px);
+	}
+	.service-icon {
+		width: 48px;
+		height: 48px;
+		border-radius: 12px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: #ffffff;
+		flex-shrink: 0;
+	}
+	.service-icon.purple {
+		background: linear-gradient(135deg, rgba(168, 85, 247, 0.2) 0%, rgba(168, 85, 247, 0.05) 100%);
+		border: 1px solid rgba(168, 85, 247, 0.3);
+		box-shadow: 0 0 20px rgba(168, 85, 247, 0.15);
+		color: #c084fc;
+	}
+</style>
