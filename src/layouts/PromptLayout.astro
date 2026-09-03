@@ -1,0 +1,861 @@
+---
+import Layout from './Layout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import AiSphere from '../components/AiSphere.astro';
+import TableOfContents from '../components/TableOfContents.astro';
+
+interface Frontmatter {
+	title: string;
+	description?: string;
+	category?: string;
+	tags?: string[];
+	code?: string;
+	price?: string;
+	priceImplement?: string;
+	offer1Title?: string;
+	offer1Desc?: string;
+	offer1Features?: string[];
+	offer1Btn?: string;
+	offer1Label?: string;
+	offer2Title?: string;
+	offer2Desc?: string;
+	offer2Features?: string[];
+	offer2Btn?: string;
+	offer2Label?: string;
+}
+
+const { frontmatter, headings = [] } = Astro.props as { frontmatter: Frontmatter, headings: any[] };
+const {
+	title,
+	description,
+	category = 'Промпт',
+	tags = [],
+	code,
+	price = 'по запросу',
+	priceImplement = 'по запросу',
+	offer1Title = 'Купить промт',
+	offer1Desc = 'Готовый промпт с инструкцией. Копируете, вставляете в нейросеть — работает сразу.',
+	offer1Features = ['Полный текст промпта', 'Инструкция по запуску', 'Примеры результата'],
+	offer1Btn = 'Купить промт',
+	offer1Label = 'Купить промт',
+	offer2Title = 'Купить и внедрить',
+	offer2Desc = 'Промпт + внедрение в ваш процесс: настройка под нишу, интеграция, обучение команды.',
+	offer2Features = ['Всё из варианта 1', 'Адаптация под ваш бизнес', 'Интеграция и автоматизация', 'Сопровождение на старте'],
+	offer2Btn = 'Заказать внедрение',
+	offer2Label = 'Купить + внедрить',
+} = frontmatter;
+
+// Оглавление с микроразметкой (ItemList) — h2/h3 статьи
+const tocHeadings = headings.filter((h) => h.depth === 2 || h.depth === 3);
+const tocSchema = tocHeadings.length > 0 ? {
+	'@context': 'https://schema.org',
+	'@type': 'ItemList',
+	name: `Оглавление: ${title}`,
+	itemListElement: tocHeadings.map((h, i) => ({
+		'@type': 'ListItem',
+		position: i + 1,
+		name: h.text,
+		url: new URL(`#${h.slug}`, Astro.url).href,
+	})),
+} : null;
+---
+
+<Layout title={`${title} | Промпты Context Group`} description={description}>
+	<AiSphere alwaysVisible={true} scale={0.33} />
+	{tocSchema && <script type="application/ld+json" is:inline set:html={JSON.stringify(tocSchema)} />}
+
+	<article class="prompt-page">
+		<div class="prompt-glow"></div>
+		<div class="container prompt-container">
+			<div class="prompt-layout">
+				<!-- Основная колонка: описание промпта -->
+				<div class="prompt-main">
+					<Breadcrumbs items={[{ label: 'Промпты', href: '/prompts' }, { label: title }]} />
+
+					<div class="prompt-meta">
+						<a href="/prompts" class="back-link">&larr; Все промпты</a>
+						<div class="meta-row">
+							<span class="category-tag">{category}</span>
+							{code && <><span class="meta-separator">&bull;</span><code class="prompt-code">{code}</code></>}
+						</div>
+					</div>
+
+					<h1 class="prompt-title">{title}</h1>
+					{description && <p class="prompt-lead">{description}</p>}
+
+					{tags.length > 0 && (
+						<div class="prompt-tags">
+							<span class="prompt-tags-label">Подходит для:</span>
+							<div class="prompt-tags-list">
+								{tags.map((t) => <span class="prompt-tag">{t}</span>)}
+							</div>
+						</div>
+					)}
+
+					<TableOfContents headings={headings} />
+
+					<div class="prompt-content" id="promptContent">
+						<slot />
+					</div>
+				</div>
+
+				<!-- Боковая колонка: коммерческие блоки -->
+				<aside class="prompt-sidebar">
+					<!-- Блок 1 -->
+					<div class="offer-card">
+						<div class="offer-badge">Вариант 1</div>
+						<h3>{offer1Title}</h3>
+						<p class="offer-desc">{offer1Desc}</p>
+						<ul class="offer-features">
+							{offer1Features.map((f) => <li>{f}</li>)}
+						</ul>
+						<div class="offer-price">{price}</div>
+						<a href="#" class="btn btn-primary offer-btn" data-offer="buy" data-offer-title={offer1Title}><span>{offer1Btn}</span></a>
+					</div>
+
+					<!-- Блок 2 -->
+					<div class="offer-card offer-card-pro">
+						<div class="offer-badge offer-badge-pro">Вариант 2 · под ключ</div>
+						<h3>{offer2Title}</h3>
+						<p class="offer-desc">{offer2Desc}</p>
+						<ul class="offer-features">
+							{offer2Features.map((f) => <li>{f}</li>)}
+						</ul>
+						<div class="offer-price">{priceImplement}</div>
+						<a href="#" class="btn btn-primary offer-btn offer-btn-pro" data-offer="implement" data-offer-title={offer2Title}><span>{offer2Btn}</span></a>
+					</div>
+				</aside>
+			</div>
+		</div>
+	</article>
+
+	<!-- Мобильная закреплённая панель (едет за пользователем) -->
+	<div class="mobile-offer-bar">
+		<a href="#" class="mobile-offer-btn" data-offer="buy" data-offer-title={offer1Title}>
+			<span class="mobile-offer-label">{offer1Label}</span>
+			<span class="mobile-offer-price">{price}</span>
+		</a>
+		<a href="#" class="mobile-offer-btn mobile-offer-btn-pro" data-offer="implement" data-offer-title={offer2Title}>
+			<span class="mobile-offer-label">{offer2Label}</span>
+			<span class="mobile-offer-price">{priceImplement}</span>
+		</a>
+	</div>
+
+	<!-- Попап заявки -->
+	<div class="prompt-modal" id="promptModal" aria-hidden="true">
+		<div class="prompt-modal-overlay" data-close></div>
+		<div class="prompt-modal-card" role="dialog" aria-modal="true" aria-labelledby="promptModalTitle">
+			<button class="prompt-modal-close" data-close aria-label="Закрыть">&times;</button>
+			<div class="prompt-modal-badge">Заявка по промпту</div>
+			<h3 id="promptModalTitle">Обсудить промпт</h3>
+			<p class="prompt-modal-sub">Оставьте контакт — свяжемся, ответим на вопросы и поможем выбрать вариант.</p>
+
+			<form class="prompt-modal-form" id="promptModalForm" action="/send" method="POST">
+				<input type="hidden" name="offer" id="promptModalOffer" />
+				<input type="hidden" name="prompt" value={title} />
+				<input type="text" name="name" placeholder="Ваше имя" required />
+				<input type="text" name="contact" placeholder="Телефон или Telegram" required />
+				<label class="prompt-modal-policy">
+					<input type="checkbox" name="policy" checked required />
+					<span>Согласен с <a href="/privacy" target="_blank">политикой конфиденциальности</a></span>
+				</label>
+				<button type="submit" class="btn btn-primary prompt-modal-submit"><span>Обсудить</span></button>
+			</form>
+
+			<div class="prompt-modal-success" id="promptModalSuccess" hidden>
+				<div class="success-check">&check;</div>
+				<h4>Заявка отправлена</h4>
+				<p>Мы свяжемся с вами в ближайшее время.</p>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		document.addEventListener('DOMContentLoaded', () => {
+			const modal = document.getElementById('promptModal');
+			if (!modal) return;
+			const titleEl = document.getElementById('promptModalTitle');
+			const offerEl = document.getElementById('promptModalOffer') as HTMLInputElement | null;
+			const form = document.getElementById('promptModalForm') as HTMLFormElement | null;
+			const success = document.getElementById('promptModalSuccess');
+
+			const open = (title: string, offer: string) => {
+				if (titleEl) titleEl.textContent = title || 'Обсудить промпт';
+				if (offerEl) offerEl.value = offer || '';
+				if (form) form.hidden = false;
+				if (success) success.hidden = true;
+				modal.classList.add('active');
+				modal.setAttribute('aria-hidden', 'false');
+				document.body.classList.add('overflow-hidden');
+			};
+			const close = () => {
+				modal.classList.remove('active');
+				modal.setAttribute('aria-hidden', 'true');
+				document.body.classList.remove('overflow-hidden');
+			};
+
+			document.querySelectorAll('[data-offer]').forEach((btn) => {
+				btn.addEventListener('click', (e) => {
+					e.preventDefault();
+					open(btn.getAttribute('data-offer-title') || '', btn.getAttribute('data-offer') || '');
+				});
+			});
+
+			modal.querySelectorAll('[data-close]').forEach((el) => el.addEventListener('click', close));
+			document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
+
+			if (form) {
+				form.addEventListener('submit', async (e) => {
+					e.preventDefault();
+					const submitBtn = form.querySelector('button[type="submit"]') as HTMLButtonElement | null;
+					if (submitBtn) submitBtn.disabled = true;
+					try {
+						await fetch('/send', {
+							method: 'POST',
+							body: new FormData(form),
+							headers: { 'Accept': 'application/json' },
+						});
+					} catch (err) {
+						// заявка могла не уйти из-за сети — но не блокируем UX
+					}
+					if (submitBtn) submitBtn.disabled = false;
+					form.hidden = true;
+					if (success) success.hidden = false;
+				});
+			}
+		});
+	</script>
+</Layout>
+
+<style is:global>
+	.prompt-page {
+		position: relative;
+		padding: 60px 0 100px 0;
+		overflow: clip;
+	}
+
+	.prompt-glow {
+		position: absolute;
+		top: -100px;
+		left: 50%;
+		transform: translateX(-50%);
+		width: 800px;
+		height: 400px;
+		background: radial-gradient(circle, var(--accent-purple-glow) 0%, rgba(13,15,20,0) 100%);
+		filter: blur(80px);
+		pointer-events: none;
+		z-index: 1;
+	}
+
+	.prompt-container {
+		position: relative;
+		z-index: 2;
+	}
+
+	.prompt-layout {
+		display: flex;
+		align-items: flex-start;
+		gap: 40px;
+		width: 100%;
+		max-width: 100vw;
+	}
+
+	.prompt-main {
+		flex: 1;
+		min-width: 0;
+		max-width: 100%;
+		background: rgba(13, 15, 20, 0.4);
+		padding: 40px;
+		border-radius: 24px;
+		border: 1px solid var(--glass-border);
+		backdrop-filter: blur(10px);
+	}
+	html.light .prompt-main {
+		background: rgba(255, 255, 255, 0.6);
+	}
+
+	.prompt-sidebar {
+		width: 340px;
+		flex-shrink: 0;
+		position: sticky;
+		top: 100px;
+		display: flex;
+		flex-direction: column;
+		gap: 20px;
+	}
+
+	/* Мета */
+	.prompt-meta {
+		margin-bottom: 30px;
+		display: flex;
+		flex-direction: column;
+		gap: 20px;
+	}
+
+	.back-link {
+		color: var(--accent-cyan);
+		font-weight: 500;
+		font-size: 0.95rem;
+		align-self: flex-start;
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		transition: gap 0.3s ease;
+	}
+	.back-link:hover { gap: 12px; }
+
+	.meta-row {
+		display: flex;
+		align-items: center;
+		flex-wrap: wrap;
+		gap: 12px;
+		font-size: 0.9rem;
+		color: var(--text-muted);
+	}
+
+	.meta-row .category-tag {
+		background: rgba(147, 51, 234, 0.1);
+		border: 1px solid rgba(147, 51, 234, 0.2);
+		color: var(--accent-purple);
+		padding: 6px 16px;
+		border-radius: 9999px;
+		font-weight: 600;
+		font-size: 0.8rem;
+		text-transform: uppercase;
+		letter-spacing: 0.5px;
+	}
+
+	.meta-row .prompt-code {
+		font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+		font-size: 0.8rem;
+		background: rgba(255, 255, 255, 0.05);
+		padding: 4px 8px;
+		border-radius: 6px;
+		color: var(--accent-cyan);
+	}
+	html.light .meta-row .prompt-code { background: rgba(0, 0, 0, 0.04); }
+
+	.prompt-title {
+		font-size: 3rem;
+		line-height: 1.15;
+		margin-bottom: 24px;
+		letter-spacing: -1.5px;
+		background: linear-gradient(to right, #fff, var(--text-muted));
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+	}
+	html.light .prompt-title {
+		background: linear-gradient(to right, #000, var(--text-muted));
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+	}
+
+	.prompt-lead {
+		font-size: 1.25rem;
+		line-height: 1.6;
+		color: var(--text-muted);
+		margin-bottom: 40px;
+	}
+
+	/* Контент промпта (Markdown) */
+	.prompt-content {
+		font-size: 1.1rem;
+		line-height: 1.8;
+		color: var(--text-main);
+	}
+	.prompt-content p { margin-bottom: 24px; }
+
+	.prompt-content h2 {
+		font-size: 1.8rem;
+		margin: 48px 0 20px 0;
+		letter-spacing: -0.5px;
+		color: #fff;
+		display: flex;
+		align-items: center;
+		gap: 12px;
+	}
+	html.light .prompt-content h2 { color: #111; }
+	.prompt-content h2::before {
+		content: '';
+		display: block;
+		width: 24px;
+		height: 4px;
+		background: var(--grad-primary);
+		border-radius: 4px;
+		flex-shrink: 0;
+	}
+
+	.prompt-content h3 {
+		font-size: 1.35rem;
+		margin: 32px 0 14px 0;
+		color: #fff;
+	}
+	html.light .prompt-content h3 { color: #111; }
+
+	.prompt-content ul, .prompt-content ol {
+		margin-bottom: 28px;
+		padding-left: 0;
+		list-style: none;
+	}
+	.prompt-content li {
+		margin-bottom: 12px;
+		position: relative;
+		padding-left: 30px;
+	}
+	.prompt-content ul li::before {
+		content: '';
+		position: absolute;
+		left: 0;
+		top: 10px;
+		width: 8px;
+		height: 8px;
+		background: var(--accent-cyan);
+		border-radius: 50%;
+		box-shadow: 0 0 10px var(--accent-cyan);
+	}
+	.prompt-content ol { counter-reset: my-counter; }
+	.prompt-content ol li::before {
+		counter-increment: my-counter;
+		content: counter(my-counter) ".";
+		position: absolute;
+		left: 0;
+		top: 0;
+		color: var(--accent-purple);
+		font-weight: 700;
+		font-size: 1.1rem;
+	}
+
+	.prompt-content strong {
+		color: #fff;
+		font-weight: 700;
+		background: rgba(6, 182, 212, 0.1);
+		padding: 2px 6px;
+		border-radius: 4px;
+	}
+	html.light .prompt-content strong { color: #000; background: rgba(6, 182, 212, 0.15); }
+
+	.prompt-content blockquote {
+		margin: 32px 0;
+		padding: 24px 30px;
+		background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
+		border: 1px solid var(--glass-border);
+		border-left: 4px solid var(--accent-purple);
+		border-radius: 0 16px 16px 0;
+		color: #fff;
+	}
+	html.light .prompt-content blockquote { color: #111; background: rgba(0,0,0,0.02); }
+	.prompt-content blockquote p { margin-bottom: 0; }
+
+	/* Блок с готовым текстом промпта (pre/code) */
+	.prompt-content pre {
+		background: rgba(0, 0, 0, 0.4);
+		border: 1px solid var(--glass-border);
+		border-radius: 14px;
+		padding: 24px;
+		overflow-x: auto;
+		margin: 28px 0;
+		font-size: 0.9rem;
+		line-height: 1.6;
+	}
+	html.light .prompt-content pre { background: rgba(0, 0, 0, 0.04); }
+	.prompt-content code {
+		font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+		font-size: 0.92rem;
+		background: rgba(255, 255, 255, 0.08);
+		padding: 3px 7px;
+		border-radius: 6px;
+		color: var(--accent-cyan);
+	}
+	html.light .prompt-content code { background: rgba(0, 0, 0, 0.05); }
+	.prompt-content pre code { background: transparent; padding: 0; color: #e6edf3; }
+
+	.prompt-content hr {
+		border: none;
+		height: 1px;
+		background: var(--glass-border);
+		margin: 48px 0;
+	}
+
+	/* Картинка-оценка (отзыв) в конце статьи */
+	.prompt-content img {
+		max-width: 100%;
+		height: auto;
+		display: block;
+		margin: 28px 0;
+		border-radius: 16px;
+		box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+	}
+	html.light .prompt-content img {
+		box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+	}
+
+	/* ===== Коммерческие блоки (sidebar) ===== */
+	.offer-card {
+		background: rgba(13, 15, 20, 0.6);
+		border: 1px solid var(--glass-border);
+		border-radius: 20px;
+		padding: 28px;
+		backdrop-filter: blur(10px);
+		box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+		position: relative;
+		overflow: hidden;
+	}
+	html.light .offer-card {
+		background: rgba(255, 255, 255, 0.75);
+		box-shadow: 0 15px 35px rgba(0,0,0,0.05);
+	}
+
+	.offer-card-pro {
+		border-color: rgba(147, 51, 234, 0.4);
+		box-shadow: 0 20px 50px rgba(147, 51, 234, 0.15);
+	}
+
+	.offer-badge {
+		display: inline-block;
+		background: rgba(6, 182, 212, 0.1);
+		color: var(--accent-cyan);
+		font-size: 0.72rem;
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 1px;
+		padding: 4px 10px;
+		border-radius: 999px;
+		margin-bottom: 14px;
+	}
+	.offer-badge-pro {
+		background: rgba(147, 51, 234, 0.12);
+		color: var(--accent-purple);
+	}
+
+	.offer-card h3 {
+		font-size: 1.4rem;
+		margin-bottom: 10px;
+		color: #fff;
+	}
+	html.light .offer-card h3 { color: #111; }
+
+	.offer-desc {
+		font-size: 0.92rem;
+		color: var(--text-muted);
+		line-height: 1.5;
+		margin-bottom: 18px;
+	}
+
+	.offer-features {
+		list-style: none;
+		padding: 0;
+		margin: 0 0 20px 0;
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+	}
+	.offer-features li {
+		position: relative;
+		padding-left: 26px;
+		font-size: 0.9rem;
+		color: var(--text-main);
+		line-height: 1.4;
+	}
+	.offer-features li::before {
+		content: '';
+		position: absolute;
+		left: 0;
+		top: 6px;
+		width: 14px;
+		height: 14px;
+		border-radius: 50%;
+		background: var(--accent-cyan);
+		box-shadow: 0 0 10px var(--accent-cyan-glow);
+	}
+	.offer-card-pro .offer-features li::before {
+		background: var(--accent-purple);
+		box-shadow: 0 0 10px var(--accent-purple-glow);
+	}
+
+	.offer-price {
+		font-size: 1.6rem;
+		font-weight: 800;
+		color: #fff;
+		margin-bottom: 18px;
+		font-family: 'Outfit', sans-serif;
+	}
+	html.light .offer-price { color: #111; }
+
+	.offer-btn {
+		width: 100%;
+		text-align: center;
+		justify-content: center;
+		padding: 14px;
+		font-size: 1rem;
+	}
+
+	/* ===== Мобильная закреплённая панель ===== */
+	.mobile-offer-bar {
+		display: none;
+		position: fixed;
+		bottom: 0;
+		left: 0;
+		width: 100%;
+		z-index: 90;
+		gap: 10px;
+		padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+		background: rgba(13, 15, 20, 0.92);
+		backdrop-filter: blur(16px);
+		-webkit-backdrop-filter: blur(16px);
+		border-top: 1px solid var(--glass-border);
+		box-shadow: 0 -10px 30px rgba(0,0,0,0.3);
+	}
+	html.light .mobile-offer-bar {
+		background: rgba(255, 255, 255, 0.92);
+		box-shadow: 0 -10px 30px rgba(0,0,0,0.08);
+	}
+
+	.mobile-offer-btn {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 2px;
+		padding: 10px 8px;
+		border-radius: 12px;
+		border: 1px solid var(--accent-cyan);
+		color: var(--accent-cyan);
+		text-align: center;
+		transition: transform var(--transition-fast);
+	}
+	.mobile-offer-btn:active { transform: scale(0.97); }
+	.mobile-offer-btn-pro {
+		border-color: transparent;
+		background: var(--grad-primary);
+		color: #fff;
+	}
+	.mobile-offer-label {
+		font-size: 0.9rem;
+		font-weight: 700;
+		font-family: 'Outfit', sans-serif;
+	}
+	.mobile-offer-price {
+		font-size: 0.78rem;
+		opacity: 0.85;
+	}
+
+	/* ===== Теги «Подходит для» ===== */
+	.prompt-tags {
+		display: flex;
+		align-items: center;
+		flex-wrap: wrap;
+		gap: 10px;
+		margin: 0 0 36px 0;
+		padding: 16px 0;
+		border-top: 1px solid var(--glass-border);
+		border-bottom: 1px solid var(--glass-border);
+	}
+	.prompt-tags-label {
+		font-size: 0.85rem;
+		font-weight: 600;
+		color: var(--text-dim);
+		margin-right: 4px;
+	}
+	.prompt-tags-list {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+	}
+	.prompt-tag {
+		display: inline-block;
+		font-size: 0.82rem;
+		font-weight: 500;
+		color: var(--accent-cyan);
+		background: rgba(6, 182, 212, 0.08);
+		border: 1px solid rgba(6, 182, 212, 0.2);
+		padding: 5px 12px;
+		border-radius: 9999px;
+	}
+	html.light .prompt-tag { background: rgba(6, 182, 212, 0.06); }
+
+	/* ===== Попап заявки ===== */
+	.prompt-modal {
+		position: fixed;
+		inset: 0;
+		z-index: 1100;
+		display: none;
+		align-items: center;
+		justify-content: center;
+		padding: 20px;
+	}
+	.prompt-modal.active { display: flex; }
+	.prompt-modal-overlay {
+		position: absolute;
+		inset: 0;
+		background: rgba(5, 7, 10, 0.72);
+		backdrop-filter: blur(6px);
+		-webkit-backdrop-filter: blur(6px);
+	}
+	.prompt-modal-card {
+		position: relative;
+		z-index: 1;
+		width: 100%;
+		max-width: 440px;
+		background: rgba(15, 17, 23, 0.98);
+		border: 1px solid var(--glass-border);
+		border-radius: 20px;
+		padding: 36px 32px 32px;
+		box-shadow: 0 30px 70px rgba(0,0,0,0.5);
+		animation: promptModalIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+	}
+	html.light .prompt-modal-card {
+		background: rgba(255, 255, 255, 0.99);
+		box-shadow: 0 30px 70px rgba(0,0,0,0.18);
+	}
+	@keyframes promptModalIn {
+		from { opacity: 0; transform: translateY(16px) scale(0.98); }
+		to { opacity: 1; transform: translateY(0) scale(1); }
+	}
+	.prompt-modal-close {
+		position: absolute;
+		top: 14px;
+		right: 16px;
+		width: 34px;
+		height: 34px;
+		border-radius: 50%;
+		border: 1px solid var(--glass-border);
+		background: transparent;
+		color: var(--text-muted);
+		font-size: 1.4rem;
+		line-height: 1;
+		cursor: pointer;
+		transition: all var(--transition-fast);
+	}
+	.prompt-modal-close:hover {
+		color: #fff;
+		border-color: var(--accent-purple);
+	}
+	html.light .prompt-modal-close:hover { color: #111; }
+	.prompt-modal-badge {
+		display: inline-block;
+		background: rgba(147, 51, 234, 0.12);
+		color: var(--accent-purple);
+		font-size: 0.72rem;
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 1px;
+		padding: 4px 12px;
+		border-radius: 999px;
+		margin-bottom: 14px;
+	}
+	.prompt-modal-card h3 {
+		font-size: 1.5rem;
+		margin-bottom: 8px;
+		color: #fff;
+	}
+	html.light .prompt-modal-card h3 { color: #111; }
+	.prompt-modal-sub {
+		font-size: 0.92rem;
+		color: var(--text-muted);
+		line-height: 1.5;
+		margin-bottom: 22px;
+	}
+	.prompt-modal-form {
+		display: flex;
+		flex-direction: column;
+		gap: 14px;
+	}
+	.prompt-modal-form input[type="text"] {
+		width: 100%;
+		padding: 14px 18px;
+		background: rgba(255, 255, 255, 0.03);
+		border: 1px solid var(--glass-border);
+		border-radius: 12px;
+		color: #fff;
+		font-size: 1rem;
+		font-family: inherit;
+		transition: all 0.3s ease;
+	}
+	html.light .prompt-modal-form input[type="text"] {
+		background: rgba(0, 0, 0, 0.03);
+		color: #111;
+		border-color: rgba(0, 0, 0, 0.1);
+	}
+	.prompt-modal-form input[type="text"]:focus {
+		outline: none;
+		border-color: var(--accent-cyan);
+		box-shadow: 0 0 15px rgba(6, 182, 212, 0.2);
+	}
+	.prompt-modal-policy {
+		display: flex;
+		align-items: flex-start;
+		gap: 10px;
+		font-size: 0.82rem;
+		color: var(--text-muted);
+		line-height: 1.4;
+		cursor: pointer;
+	}
+	.prompt-modal-policy input[type="checkbox"] {
+		margin-top: 2px;
+		width: 16px;
+		height: 16px;
+		accent-color: var(--accent-purple);
+		flex-shrink: 0;
+		cursor: pointer;
+	}
+	.prompt-modal-policy a { color: var(--accent-cyan); }
+	.prompt-modal-policy a:hover { text-decoration: underline; }
+	.prompt-modal-submit {
+		width: 100%;
+		justify-content: center;
+		padding: 14px;
+		font-size: 1rem;
+		margin-top: 4px;
+	}
+	.prompt-modal-success {
+		text-align: center;
+		padding: 10px 0;
+	}
+	.prompt-modal-success .success-check {
+		width: 56px;
+		height: 56px;
+		margin: 0 auto 16px;
+		border-radius: 50%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-size: 1.8rem;
+		color: #fff;
+		background: var(--grad-primary);
+		box-shadow: 0 0 24px var(--accent-purple-glow);
+	}
+	.prompt-modal-success h4 {
+		font-size: 1.3rem;
+		margin-bottom: 8px;
+		color: #fff;
+	}
+	html.light .prompt-modal-success h4 { color: #111; }
+	.prompt-modal-success p {
+		color: var(--text-muted);
+		font-size: 0.95rem;
+	}
+
+	/* ===== Адаптив ===== */
+	@media (max-width: 992px) {
+		.prompt-layout {
+			flex-direction: column;
+			gap: 32px;
+		}
+		.prompt-sidebar {
+			display: none; /* блоки уезжают в нижнюю плавающую панель */
+		}
+		.mobile-offer-bar {
+			display: flex;
+		}
+		.prompt-page {
+			padding-bottom: 140px; /* место под плавающую панель */
+		}
+	}
+
+	@media (max-width: 768px) {
+		.prompt-main { padding: 24px 20px; }
+		.prompt-title { font-size: 2.1rem; }
+		.prompt-lead { font-size: 1.1rem; }
+		.prompt-content { font-size: 1.02rem; }
+	}
+</style>

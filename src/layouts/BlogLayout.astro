@@ -5,6 +5,7 @@ import AiSphere from '../components/AiSphere.astro';
 import TableOfContents from '../components/TableOfContents.astro';
 import BlogFAQ from '../components/BlogFAQ.astro';
 import ArticleSidebarBanner from '../components/ArticleSidebarBanner.astro';
+import ArticleMobileCTA from '../components/ArticleMobileCTA.astro';
 import RelatedArticles from '../components/RelatedArticles.astro';
 
 interface Frontmatter {
@@ -48,7 +49,7 @@ const { frontmatter, headings = [] } = Astro.props as { frontmatter: Frontmatter
 						<slot />
 					</div>
 					
-					<BlogFAQ />
+					{frontmatter.category !== 'Карьера' && <BlogFAQ />}
 				</div>
 
 				<!-- Боковая колонка (Рекламный баннер) -->
@@ -62,45 +63,10 @@ const { frontmatter, headings = [] } = Astro.props as { frontmatter: Frontmatter
 		</div>
 	</article>
 
+	<!-- Мобильный призыв к действию: «горящая» AI-вкладка слева + выезжающая шторка -->
+	<ArticleMobileCTA />
+
 	<script>
-		// Скрипт для переноса рекламного баннера внутрь статьи на мобильных устройствах
-		document.addEventListener('DOMContentLoaded', () => {
-			const isMobile = window.innerWidth <= 992;
-			if (!isMobile) return;
-
-			const banner = document.getElementById('articleSidebarBanner');
-			const content = document.getElementById('articleContent');
-			
-			if (banner && content) {
-				// Ищем 3-й абзац (или 2-й, если 3-го нет)
-				const paragraphs = content.querySelectorAll('p, h2, h3');
-				let targetNode = null;
-				
-				// Пытаемся найти подходящее место (после 2-3 текстовых блоков)
-				let pCount = 0;
-				for (let i = 0; i < paragraphs.length; i++) {
-					if (paragraphs[i].tagName === 'P') pCount++;
-					if (pCount === 3) {
-						targetNode = paragraphs[i];
-						break;
-					}
-				}
-				
-				if (!targetNode && paragraphs.length > 0) {
-					targetNode = paragraphs[Math.floor(paragraphs.length / 2)];
-				}
-
-				if (targetNode && targetNode.nextSibling) {
-					// Оборачиваем баннер в мобильный контейнер для отступов
-					const mobileWrapper = document.createElement('div');
-					mobileWrapper.className = 'mobile-banner-wrapper';
-					mobileWrapper.appendChild(banner);
-					
-					targetNode.parentNode.insertBefore(mobileWrapper, targetNode.nextSibling);
-				}
-			}
-		});
-
 		// Железобетонный скролл для таблиц
 		document.addEventListener('DOMContentLoaded', () => {
 			const tables = document.querySelectorAll('.article-content table');
@@ -219,10 +185,10 @@ const { frontmatter, headings = [] } = Astro.props as { frontmatter: Frontmatter
 	}
 
 	.article-title {
-		font-size: 3.5rem;
-		line-height: 1.15;
-		margin-bottom: 50px;
-		letter-spacing: -1.5px;
+		font-size: 2.6rem;
+		line-height: 1.2;
+		margin-bottom: 40px;
+		letter-spacing: -1px;
 		background: linear-gradient(to right, #fff, var(--text-muted));
 		-webkit-background-clip: text;
 		-webkit-text-fill-color: transparent;
@@ -353,6 +319,19 @@ const { frontmatter, headings = [] } = Astro.props as { frontmatter: Frontmatter
 		z-index: 2;
 		font-size: 1.25rem;
 		line-height: 1.7;
+	}
+
+	/* Ссылки в тексте статьи (СТАНДАРТ: cyan + подчёркивание, hover → purple) */
+	.article-content a {
+		color: var(--accent-cyan);
+		text-decoration: underline;
+		text-decoration-thickness: 1px;
+		text-underline-offset: 3px;
+		font-weight: 500;
+		transition: color 0.2s ease;
+	}
+	.article-content a:hover {
+		color: var(--accent-purple);
 	}
 
 	/* Выделение жирным */
@@ -538,7 +517,8 @@ const { frontmatter, headings = [] } = Astro.props as { frontmatter: Frontmatter
 		}
 		
 		.article-title {
-			font-size: 2.2rem;
+			font-size: 1.85rem;
+			margin-bottom: 28px;
 		}
 		
 		.table-responsive {

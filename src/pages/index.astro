@@ -2,11 +2,41 @@
 import Layout from '../layouts/Layout.astro';
 import AiSphere from '../components/AiSphere.astro';
 import ServicesSection from '../components/ServicesSection.astro';
+import Markdoc from '@markdoc/markdoc';
+import data from '../content/pages/glavnaya/index.json';
+import seo1raw from '../content/pages/glavnaya/index/seoBlock1.mdoc?raw';
+import seo2raw from '../content/pages/glavnaya/index/seoBlock2.mdoc?raw';
+import seo3raw from '../content/pages/glavnaya/index/seoBlock3.mdoc?raw';
+
+// Rich-текст Keystatic (fields.document) хранится в отдельных .mdoc-файлах.
+// Читаем raw (Vite подставляет содержимое на этапе билда) и рендерим через markdoc.
+// НЕ используем createReader — он тянет node:path и падает под Cloudflare workerd (грабля №1 хендоффа).
+const renderMdoc = (raw) => Markdoc.renderers.html(Markdoc.transform(Markdoc.parse(raw)));
+const seo1 = renderMdoc(seo1raw);
+const seo2 = renderMdoc(seo2raw);
+const seo3 = renderMdoc(seo3raw);
+
+// Meta-теги пока хардкод (как в пилоте «Обучение»); вынос в CMS — отдельный шаг.
+const title = "Внедрение AI в бизнес — интеграция и разработка решений | Context Group";
+const description = "Услуги интеграции и разработки искусственного интеллекта для бизнеса. Автоматизация бизнес-процессов «под ключ» в РФ.";
+
+const faqItems = data.faq.items;
+
+const faqSchema = {
+	'@context': 'https://schema.org',
+	'@type': 'FAQPage',
+	mainEntity: faqItems.map((item) => ({
+		'@type': 'Question',
+		name: item.q,
+		acceptedAnswer: { '@type': 'Answer', text: item.a },
+	})),
+};
 ---
 
-<Layout title="Context Group — Внедрение AI в бизнес и AI-автоматизация маркетинга в РФ">
+<Layout title={title} description={description}>
+	<script type="application/ld+json" is:inline set:html={JSON.stringify(faqSchema)} />
 	<!-- Декоративный элемент - AI-сфера, следящая за курсором -->
-	<AiSphere alwaysVisible={false} scale={1} />
+	<AiSphere alwaysVisible={false} scale={1} fullPage={true} />
 
 	<!-- Секция Hero с анимированным фоном -->
 	<section class="hero">
@@ -14,28 +44,32 @@ import ServicesSection from '../components/ServicesSection.astro';
 		<div class="container hero-container">
 			<div class="hero-content">
 				<h1>
-					Внедрение <span class="gradient-text">Искусственного Интеллекта</span> <br />
-					в бизнес и маркетинг
+					{data.hero.titleLead} <span class="gradient-text">{data.hero.titleAccent}</span> <br />
+					{data.hero.titleTail}
 				</h1>
 				<p class="hero-lead">
-					Создаем автономные AI-решения, автоматизируем рутинные операции, настраиваем умных ботов и интегрируем нейросети в ваши бизнес-процессы. Сокращаем ФОТ, исключаем человеческий фактор и ускоряем работу 24/7.
+					{data.hero.lead}
 				</p>
 
-				<!-- Хештеги AI-услуг -->
+				<p class="hero-experience"><span class="gradient-text">{data.hero.exp1}</span>{data.hero.expText1}<span class="gradient-text">{data.hero.exp2}</span>{data.hero.expText2}</p>
+
+				<!-- Хештеги направлений. TODO: клик откроет окно со списком страниц, привязанных к тегу (data-tag) -->
 				<div class="hero-tags">
-					<span class="hero-tag"># AI-автоматизация процессов</span>
-					<span class="hero-tag"># AI-парсинг данных конкурентов/клиентов</span>
-					<span class="hero-tag"># AI-разработка стратегии</span>
-					<span class="hero-tag"># AI-SWOT анализы</span>
+					{data.hero.tags.map((t) => (
+						t.href
+							? <a class="hero-tag hero-tag-link" href={t.href} data-tag={t.dataTag}>{t.text}</a>
+							: <span class="hero-tag" role="button" tabindex="0" data-tag={t.dataTag}>{t.text}</span>
+					))}
 				</div>
 
 				<!-- Открытая форма захвата -->
-				<form action="/thanks" method="GET" class="hero-form">
+				<form action="/send" method="POST" class="hero-form">
+					<input type="hidden" name="_next" value="/thanks" />
 					<div class="hero-form-row">
-						<input type="text" name="name" required placeholder="Ваше имя" />
-						<input type="text" name="contact" required placeholder="Телефон или Telegram" />
+						<input type="text" name="name" required placeholder={data.hero.formName} />
+						<input type="text" name="contact" required placeholder={data.hero.formContact} />
 						<button type="submit" class="btn btn-primary hero-form-submit">
-							<span>Узнать возможности для моего бизнеса</span>
+							<span>{data.hero.formButton}</span>
 						</button>
 					</div>
 					<div class="privacy-agreement hero-privacy">
@@ -53,27 +87,49 @@ import ServicesSection from '../components/ServicesSection.astro';
 		</div>
 	</section>
 
-	<!-- Секция Услуг (4 штуки, некликабельные) -->
-	<ServicesSection />
+	<!-- Секция Услуг (тексты из CMS) -->
+	<ServicesSection titleLead={data.services.titleLead} titleAccent={data.services.titleAccent} items={data.services.items} />
+
+	<!-- Обучение маркетингу в паре с AI (компактный баннер сразу после услуг) -->
+	<section class="home-edu">
+		<div class="container">
+			<div class="glass-card home-edu-card">
+				<div class="home-edu-text">
+					<span class="home-edu-tag">{data.edu.tag}</span>
+					<h2>{data.edu.titleLead} <span class="gradient-text">{data.edu.titleAccent}</span></h2>
+					<p>{data.edu.text}</p>
+				</div>
+				<div class="home-edu-action">
+					<a href={data.edu.btnHref} class="btn btn-primary"><span>{data.edu.btnText}</span></a>
+					<a href={data.edu.linkHref} class="home-edu-link">{data.edu.linkText}</a>
+				</div>
+			</div>
+		</div>
+	</section>
 
 	<!-- Секция Кейсов (1 штука с детализацией) -->
 	<section class="cases-section">
 		<div class="container">
 			<div class="section-header">
-				<h2>Наши <span class="gradient-text">кейсы</span></h2>
-				<p>Примеры успешной автоматизации и внедрения AI под реальные бизнес-задачи</p>
+				<h2>{data.cases.titleLead} <span class="gradient-text">{data.cases.titleAccent}</span></h2>
+				<p>{data.cases.sub}</p>
 			</div>
 
 			<div class="cases-grid">
-				<!-- Кейс 1 -->
-				<div class="glass-card case-card">
-					<div class="case-meta">Архитектура AI</div>
-					<h3>Внедрение фильтров, создание страниц, наполнение и оптимизация</h3>
-					<p>Полностью переделали этот сайт с помощью искусственного интеллекта без привлечения дизайнера и программиста. AI спроектировал логику, настроил семантику и стили за рекордные сроки.</p>
-					<div class="case-result-badge">Результат: экономия 35 000 ₽ на разработчиках, 20 000 ₽ на дизайнере</div>
-					<a href="/blog/kak-ai-sozdal-etot-sayt" class="case-link case-link-1">Подробнее &rarr;</a>
-				</div>
-
+				{data.cases.items.map((c) => (
+					<div class="glass-card case-card">
+						<div class="case-meta">{c.meta}<span class="case-date">{c.date}</span></div>
+						<h3><a href={c.href} class="case-title-link">{c.title}</a></h3>
+						<p>{c.desc}</p>
+						<div class="case-result-badge">
+							<span class="vs-label">Результат:</span>
+							<span class="vs-win">{c.vsWin}</span>
+							<span class="vs-sep">VS</span>
+							<span class="vs-lose">{c.vsLose}</span>
+						</div>
+						<a href={c.href} class="case-link case-link-1">{c.linkText}</a>
+					</div>
+				))}
 			</div>
 		</div>
 	</section>
@@ -82,53 +138,85 @@ import ServicesSection from '../components/ServicesSection.astro';
 	<section class="industries-section">
 		<div class="container">
 			<div class="section-header">
-				<h2>AI-инструменты по <span class="gradient-text">отраслям</span></h2>
-				<p>Специализированные стеки нейросетей и сценарии интеграции под конкретные направления</p>
+				<h2>{data.industries.titleLead} <span class="gradient-text">{data.industries.titleAccent}</span></h2>
+				<p>{data.industries.sub}</p>
 			</div>
 
 			<div class="industries-grid-clean">
-				<!-- Блок 1 -->
-				<div class="industry-clean-item glass-card">
-					<div class="industry-clean-header">
-						<div class="service-icon purple">
-							<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-								<path d="M3 21h18"></path><path d="M9 8h1"></path><path d="M9 12h1"></path><path d="M9 16h1"></path><path d="M14 8h1"></path><path d="M14 12h1"></path><path d="M14 16h1"></path><path d="M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16"></path>
-							</svg>
+				{data.industries.items.map((ind) => (
+					<div class="industry-clean-item glass-card">
+						<div class="industry-clean-header">
+							<div class="service-icon purple">
+								<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+									<path d="M3 21h18"></path><path d="M9 8h1"></path><path d="M9 12h1"></path><path d="M9 16h1"></path><path d="M14 8h1"></path><path d="M14 12h1"></path><path d="M14 16h1"></path><path d="M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16"></path>
+								</svg>
+							</div>
+							<h3><a href={ind.href} class="industry-title-link">{ind.title}</a></h3>
 						</div>
-						<h3>AI для агентств недвижимости</h3>
+						<p>{ind.desc}</p>
+						<a href={ind.href} class="industry-clean-link industry-link-1">{ind.linkText}</a>
 					</div>
-					<p>Полная картотека AI-инструментов, сценариев внедрения и готовых промптов для риелторов, брокеров и застройщиков. Автоматизация карточек объектов и боты-подборщики.</p>
-					<a href="/ai-real-estate" class="industry-clean-link industry-link-1">Смотреть AI-инструменты &rarr;</a>
-				</div>
+				))}
 			</div>
 		</div>
 	<!-- Большой экспертный SEO-текст -->
 	<section class="seo-text-section">
 		<div class="container">
 			<div class="seo-text-content">
-				<h2>Как внедрение AI меняет правила игры в бизнесе и маркетинге</h2>
-				<p>
-					Современный рынок в Москве, Санкт-Петербурге и по всей России диктует жесткие условия: побеждают те компании, которые умеют оптимизировать свои расходы без потери качества продукта и сервиса. Именно здесь ключевым фактором роста становится <strong>внедрение искусственного интеллекта в бизнес-процессы</strong>. Использование генеративных нейросетей, интеграция LLM-моделей в CRM-системы и автоматизация рутинных задач больше не являются прерогативой гигантских IT-корпораций. Сегодня это доступный инструмент для малого и среднего бизнеса.
-				</p>
-				
-				<h3>Почему классический подход к маркетингу и продажам устарел?</h3>
-				<p>
-					Содержание раздутых штатов операторов поддержки, копирайтеров начального уровня и ассистентов, выполняющих механическую работу по заполнению CRM-систем, становится неоправданно дорогим. Человеческий фактор ведет к потере лидов: менеджеры не успевают ответить клиенту в течение первых 5 минут, забывают зафиксировать договоренности, совершают орфографические ошибки в диалогах или банально выгорают от монотонности. 
-				</p>
-				<p>
-					Интеграция искусственного интеллекта позволяет переложить до 80% рутинных операций на плечи AI-агентов. Они не устают, работают в режиме 24/7/365, выдают стабильно высокий уровень сервиса и моментально реагируют на запросы пользователей из любой точки мира.
-				</p>
-				
-				<h3>Основные точки роста при интеграции искусственного интеллекта</h3>
-				<ul>
-					<li><strong>Моментальный отклик и круглосуточный саппорт:</strong> Умные AI-боты на базе LLM обучаются на регламентах вашей компании и отвечают в чатах Telegram, WhatsApp или на сайте за 2 секунды. Они способны квалифицировать клиента, ответить на сложные технические вопросы и передать прогретого лида менеджеру для совершения сделки.</li>
-					<li><strong>Контент-маркетинг на автопилоте:</strong> Создание семантического ядра и кластеризация силами AI позволяют генерировать десятки экспертных SEO-статей и постов для социальных сетей в неделю. Это снижает расходы на копирайтинг в разы и обеспечивает постоянный приток органического трафика.</li>
-					<li><strong>Умная автоматизация в CRM:</strong> AI анализирует аудиозаписи телефонных разговоров ваших менеджеров, автоматически формирует краткое саммари сделки, выписывает задачи и фиксирует ключевые договоренности в amoCRM или Битрикс24.</li>
-				</ul>
-				
-				<p>
-					Агентство <strong>Context Group</strong> предлагает профессиональные услуги по аудиту, подбору и интеграции AI-технологий под специфику вашего бизнеса. Мы не просто настраиваем ботов — мы выстраиваем автоматизированную воронку продаж, которая сокращает ваши расходы и стабильно генерирует прибыль.
-				</p>
+				<Fragment set:html={seo1} />
+
+					<div class="team-table-wrap">
+						<table class="team-table">
+							<thead>
+								<tr><th>{data.seoTables.teamH1}</th><th>{data.seoTables.teamH2}</th><th>{data.seoTables.teamH3}</th></tr>
+							</thead>
+							<tbody>
+								{data.seoTables.team.map((r) => (
+									<tr class={r.lead ? 'team-lead' : undefined}>
+										<td>{r.who}</td>
+										<td>{r.role}</td>
+										<td>{r.resp}</td>
+									</tr>
+								))}
+							</tbody>
+						</table>
+					</div>
+
+					<Fragment set:html={seo2} />
+
+					<div class="team-table-wrap svc-table-wrap">
+						<table class="team-table svc-table">
+							<thead>
+								<tr><th>{data.seoTables.svcH1}</th><th>{data.seoTables.svcH2}</th><th>{data.seoTables.svcH3}</th></tr>
+							</thead>
+							<tbody>
+								{data.seoTables.svc.map((s) => (
+									<tr>
+										<td>{s.service}<span class="svc-note">{s.note}</span></td>
+										<td class="svc-old">{s.oldTime}<br /><span class="svc-price-old">{s.oldPrice}</span></td>
+										<td class="svc-new">{s.newTime}<br /><span class="svc-price-new">{s.newPrice}</span></td>
+									</tr>
+								))}
+							</tbody>
+						</table>
+					</div>
+
+					<Fragment set:html={seo3} />
+			</div>
+		</div>
+	</section>
+
+	<!-- FAQ -->
+	<section class="home-faq">
+		<div class="container">
+			<div class="faq-block">
+				<h2>{data.faq.heading}</h2>
+				{faqItems.map((item) => (
+					<details class="faq-item">
+						<summary>{item.q}</summary>
+						<p>{item.a}</p>
+					</details>
+				))}
 			</div>
 		</div>
 	</section>
@@ -138,31 +226,32 @@ import ServicesSection from '../components/ServicesSection.astro';
 		<div class="container">
 			<div class="contact-wrapper glass-card">
 				<div class="contact-header">
-					<h2>Начнем <span class="gradient-text">ваш проект</span>?</h2>
-					<p>Оставьте контакты. Мы изучим ваш сайт и процессы, подготовим AI-аудит и предложим конкретные точки автоматизации.</p>
+					<h2>{data.contact.titleLead} <span class="gradient-text">{data.contact.titleAccent}</span>?</h2>
+					<p>{data.contact.sub}</p>
 				</div>
-				<form action="/thanks" method="GET" class="contact-form">
+				<form action="/send" method="POST" class="contact-form">
+					<input type="hidden" name="_next" value="/thanks" />
 					<div class="form-row">
 						<div class="form-group">
-							<label for="name">Ваше имя</label>
-							<input type="text" id="name" name="name" required placeholder="Александр" />
+							<label for="name">{data.contact.nameLabel}</label>
+							<input type="text" id="name" name="name" required placeholder={data.contact.namePlaceholder} />
 						</div>
 						<div class="form-group">
-							<label for="contact-field">Телефон или Telegram</label>
-							<input type="text" id="contact-field" name="contact" required placeholder="+7 (999) 200-48-07 или @mrlapin" />
+							<label for="contact-field">{data.contact.contactLabel}</label>
+							<input type="text" id="contact-field" name="contact" required placeholder={data.contact.contactPlaceholder} />
 						</div>
 					</div>
 					<div class="form-group">
-						<label for="message">Опишите ваш бизнес и задачи</label>
-						<textarea id="message" name="message" rows="4" placeholder="Нужен бот для поддержки интернет-магазина, автопостинг контента в Telegram и оптимизация сайта..."></textarea>
+						<label for="message">{data.contact.msgLabel}</label>
+						<textarea id="message" name="message" rows="4" placeholder={data.contact.msgPlaceholder}></textarea>
 					</div>
-					<div class="privacy-agreement">
+					<button type="submit" class="btn btn-primary form-submit"><span>{data.contact.button}</span></button>
+					<div class="privacy-agreement privacy-under-btn">
 						<label class="checkbox-label">
 							<input type="checkbox" name="agree" value="yes" required checked />
 							<span class="privacy-text">Я согласен с <a href="/privacy" target="_blank">политикой конфиденциальности</a></span>
 						</label>
 					</div>
-					<button type="submit" class="btn btn-primary form-submit"><span>Отправить заявку</span></button>
 				</form>
 			</div>
 		</div>
@@ -188,6 +277,7 @@ import ServicesSection from '../components/ServicesSection.astro';
 		left: 50%;
 		transform: translateX(-50%);
 		width: 1000px;
+		max-width: 100%;
 		height: 500px;
 		background: radial-gradient(circle, var(--accent-purple-glow) 0%, rgba(13,15,20,0) 100%);
 		filter: blur(80px);
@@ -218,8 +308,16 @@ import ServicesSection from '../components/ServicesSection.astro';
 	.hero-lead {
 		font-size: 1.15rem;
 		color: var(--text-muted);
-		margin-bottom: 30px;
+		margin-bottom: 20px;
 		line-height: 1.6;
+	}
+
+	.hero-experience {
+		font-size: 1.1rem;
+		font-weight: 700;
+		color: var(--text-main);
+		margin-bottom: 30px;
+		letter-spacing: -0.2px;
 	}
 
 	/* Хештеги AI-услуг */
@@ -239,7 +337,20 @@ import ServicesSection from '../components/ServicesSection.astro';
 		font-size: 0.8rem;
 		font-weight: 600;
 		color: var(--text-muted);
+		cursor: pointer;
+		user-select: none;
 		transition: all var(--transition-fast);
+		text-decoration: none;
+		display: inline-block;
+	}
+
+	/* Теги-ссылки (есть реальный раздел) — лёгкий cyan-намёк на кликабельность */
+	.hero-tag-link {
+		color: var(--accent-cyan);
+		border-color: rgba(6, 182, 212, 0.25);
+	}
+	.hero-tag-link:hover {
+		border-color: var(--accent-cyan);
 	}
 
 	html.light .hero-tag {
@@ -328,7 +439,6 @@ import ServicesSection from '../components/ServicesSection.astro';
 		font-size: 0.8rem;
 		color: var(--text-muted);
 		line-height: 1.3;
-		white-space: nowrap;
 	}
 
 	.privacy-text a {
@@ -361,78 +471,6 @@ import ServicesSection from '../components/ServicesSection.astro';
 		pointer-events: none;
 	}
 
-	.ai-sphere-container {
-		position: fixed;
-		top: 0;
-		left: 0;
-		width: 300px;
-		height: 300px;
-		pointer-events: none;
-		z-index: 1;
-		opacity: 0;
-		transition: opacity 0.5s ease;
-	}
-
-	.ai-sphere-core {
-		position: absolute;
-		top: 50%;
-		left: 50%;
-		transform: translate(-50%, -50%);
-		width: 120px;
-		height: 120px;
-		border-radius: 50%;
-		background: var(--grad-primary);
-		box-shadow: 0 0 60px var(--accent-purple-glow);
-		filter: blur(10px);
-		animation: pulse 4s infinite alternate;
-		transition: background 0.6s ease, box-shadow 0.6s ease, width 0.6s ease, height 0.6s ease, filter 0.6s ease;
-	}
-
-	.ai-sphere-container.at-form .ai-sphere-core {
-		background: linear-gradient(135deg, #a855f7 0%, #6366f1 100%) !important;
-		box-shadow: 0 0 80px rgba(168, 85, 247, 0.45), 0 0 40px rgba(99, 102, 241, 0.25) !important;
-		width: 140px;
-		height: 140px;
-		filter: blur(15px);
-	}
-
-	.ai-sphere-orbit-1 {
-		position: absolute;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
-		border: 1px dashed rgba(197, 90, 60, 0.2);
-		border-radius: 50%;
-		animation: spin 20s linear infinite;
-	}
-
-	.ai-sphere-orbit-2 {
-		position: absolute;
-		top: 25px;
-		left: 25px;
-		width: 250px;
-		height: 250px;
-		border: 1px solid rgba(147, 51, 234, 0.15);
-		border-radius: 50%;
-		animation: spin-reverse 15s linear infinite;
-	}
-
-	@keyframes pulse {
-		0% { transform: translate(-50%, -50%) scale(0.9); opacity: 0.8; }
-		100% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; }
-	}
-
-	@keyframes spin {
-		0% { transform: rotate(0deg); }
-		100% { transform: rotate(360deg); }
-	}
-
-	@keyframes spin-reverse {
-		0% { transform: rotate(360deg); }
-		100% { transform: rotate(0deg); }
-	}
-
 	/* Общие стили заголовков секций */
 	.section-header {
 		text-align: center;
@@ -442,6 +480,19 @@ import ServicesSection from '../components/ServicesSection.astro';
 	.section-header h2 {
 		font-size: 2.5rem;
 		margin-bottom: 16px;
+		position: relative;
+		display: inline-block;
+	}
+
+	.section-header h2::after {
+		content: '';
+		display: block;
+		width: 64px;
+		height: 3px;
+		margin: 16px auto 0;
+		border-radius: 3px;
+		background: var(--grad-primary);
+		box-shadow: 0 0 12px var(--accent-purple-glow);
 	}
 
 	.section-header p {
@@ -477,10 +528,31 @@ import ServicesSection from '../components/ServicesSection.astro';
 		font-weight: 600;
 		text-transform: uppercase;
 		letter-spacing: 1px;
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		flex-wrap: wrap;
+	}
+
+	.case-date {
+		color: var(--text-dim);
+		font-weight: 500;
+		letter-spacing: 0.5px;
+		padding-left: 12px;
+		border-left: 1px solid var(--glass-border);
 	}
 
 	.case-card h3 {
 		font-size: 1.5rem;
+	}
+
+	.case-title-link {
+		color: inherit;
+		text-decoration: none;
+		transition: color var(--transition-fast);
+	}
+	.case-title-link:hover {
+		color: var(--accent-cyan);
 	}
 
 	.case-card p {
@@ -493,14 +565,44 @@ import ServicesSection from '../components/ServicesSection.astro';
 	.case-result-badge {
 		background: rgba(6, 182, 212, 0.08);
 		border: 1px solid rgba(6, 182, 212, 0.15);
-		color: var(--accent-cyan);
 		padding: 10px 16px;
-		border-radius: 8px;
+		border-radius: 10px;
 		font-weight: 600;
-		font-size: 0.9rem;
-		display: inline-block;
+		font-size: 0.92rem;
+		display: inline-flex;
+		align-items: center;
+		flex-wrap: wrap;
+		gap: 8px;
 		margin-top: 10px;
 		align-self: flex-start;
+	}
+
+	.vs-label { color: var(--text-muted); }
+
+	.vs-win {
+		font-weight: 800;
+		background: linear-gradient(120deg, var(--accent-cyan), var(--accent-purple));
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
+	}
+
+	.vs-sep {
+		font-family: 'Outfit', sans-serif;
+		font-weight: 800;
+		font-size: 0.72rem;
+		letter-spacing: 1px;
+		color: #fff;
+		background: var(--grad-primary);
+		padding: 3px 10px;
+		border-radius: 999px;
+		box-shadow: 0 0 14px var(--accent-purple-glow);
+	}
+
+	.vs-lose {
+		color: var(--text-dim);
+		text-decoration: line-through;
+		text-decoration-color: rgba(244, 63, 94, 0.55);
 	}
 
 	.case-link {
@@ -536,7 +638,7 @@ import ServicesSection from '../components/ServicesSection.astro';
 	.industries-grid-clean {
 		display: grid;
 		grid-template-columns: 1fr;
-		gap: 40px;
+		gap: 24px;
 		margin-top: 20px;
 		max-width: 600px;
 		margin-inline: auto;
@@ -561,6 +663,41 @@ import ServicesSection from '../components/ServicesSection.astro';
 		font-size: 1.4rem;
 		font-weight: 700;
 		margin: 0;
+	}
+
+	.industry-title-link {
+		color: inherit;
+		text-decoration: none;
+		transition: color var(--transition-fast);
+	}
+	.industry-title-link:hover {
+		color: var(--accent-cyan);
+	}
+
+	/* Иконка в карточках AI-инструментов — цветной бокс + ховер как на услугах */
+	.industry-clean-header .service-icon {
+		width: 44px;
+		height: 44px;
+		border-radius: 12px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex-shrink: 0;
+		transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+	}
+	.industry-clean-header .service-icon.purple {
+		background: rgba(147, 51, 234, 0.1);
+		border: 1px solid rgba(147, 51, 234, 0.2);
+		color: var(--accent-purple);
+	}
+	.industry-clean-header .service-icon.cyan {
+		background: rgba(6, 182, 212, 0.1);
+		border: 1px solid rgba(6, 182, 212, 0.2);
+		color: var(--accent-cyan);
+	}
+	.industry-clean-item:hover .service-icon {
+		transform: scale(1.12) rotate(-4deg);
+		box-shadow: 0 0 22px rgba(6, 182, 212, 0.35);
 	}
 
 	.industry-clean-item p {
@@ -595,6 +732,98 @@ import ServicesSection from '../components/ServicesSection.astro';
 		transform: translateX(6px);
 	}
 
+	/* Блок обучения на главной — компактный баннер */
+	.home-edu { padding: 24px 0; }
+
+	.home-edu-card {
+		max-width: 1000px;
+		margin: 0 auto;
+		padding: 28px 32px;
+		display: grid;
+		grid-template-columns: 1fr auto;
+		gap: 36px;
+		align-items: center;
+	}
+
+	.home-edu-tag {
+		display: inline-block;
+		font-family: 'Outfit', sans-serif;
+		font-size: 0.68rem;
+		font-weight: 700;
+		letter-spacing: 0.5px;
+		text-transform: uppercase;
+		color: #fff;
+		background: var(--grad-primary);
+		padding: 3px 11px;
+		border-radius: 999px;
+		box-shadow: 0 0 12px var(--accent-purple-glow);
+		margin-bottom: 12px;
+	}
+
+	.home-edu-text h2 {
+		font-size: 1.6rem;
+		line-height: 1.2;
+		margin-bottom: 10px;
+	}
+
+	.home-edu-text p {
+		color: var(--text-muted);
+		font-size: 0.95rem;
+		line-height: 1.55;
+		margin: 0;
+		max-width: 640px;
+	}
+
+	.home-edu-action {
+		display: flex;
+		flex-direction: column;
+		align-items: stretch;
+		gap: 10px;
+		white-space: nowrap;
+	}
+
+	.home-edu-action .btn { justify-content: center; }
+
+	.home-edu-link {
+		font-weight: 700;
+		font-size: 0.9rem;
+		text-align: center;
+		background: linear-gradient(120deg, var(--accent-cyan) 0%, var(--accent-purple) 50%, var(--accent-cyan) 100%);
+		background-size: 200% auto;
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
+		animation: textShine 4s linear infinite;
+		transition: transform var(--transition-fast);
+	}
+	.home-edu-card:hover .home-edu-link { transform: translateX(4px); }
+
+	/* FAQ на главной */
+	.home-faq { padding: 8px 0 20px; }
+	.home-faq .faq-block { max-width: 820px; margin: 0 auto; }
+	.home-faq .faq-block h2 { font-size: 2rem; margin-bottom: 24px; line-height: 1.3; }
+	.home-faq .faq-item {
+		border: 1px solid var(--glass-border);
+		border-radius: 12px;
+		padding: 18px 22px;
+		margin-bottom: 12px;
+		background: rgba(255, 255, 255, 0.015);
+	}
+	html.light .home-faq .faq-item { background: rgba(0, 0, 0, 0.015); }
+	.home-faq .faq-item summary {
+		cursor: pointer;
+		font-weight: 600;
+		font-size: 1.05rem;
+		color: var(--text-main);
+		list-style: none;
+		display: flex;
+		justify-content: space-between;
+		gap: 12px;
+	}
+	.home-faq .faq-item summary::after { content: '+'; color: var(--accent-cyan); font-size: 1.4rem; line-height: 1; }
+	.home-faq .faq-item[open] summary::after { content: '−'; }
+	.home-faq .faq-item p { margin-top: 12px; color: var(--text-muted); line-height: 1.65; font-size: 0.98rem; }
+
 	/* SEO текст */
 	.seo-text-section {
 		padding: 80px 0;
@@ -606,24 +835,65 @@ import ServicesSection from '../components/ServicesSection.astro';
 		z-index: 2;
 	}
 
-	.seo-text-content h2 {
+	/* SEO-текст рендерится из rich (.mdoc) через set:html — Astro не проставляет
+	   scope-атрибут на вставленные узлы, поэтому селекторы h2/h3/p/a/ul/li/strong — через :global() */
+	.seo-text-content :global(h2) {
 		font-size: 2rem;
 		margin-bottom: 24px;
+		position: relative;
+		padding-left: 20px;
 	}
 
-	.seo-text-content h3 {
+	.seo-text-content :global(h2::before) {
+		content: '';
+		position: absolute;
+		left: 0;
+		top: 4px;
+		bottom: 4px;
+		width: 4px;
+		border-radius: 4px;
+		background: var(--grad-primary);
+		box-shadow: 0 0 12px var(--accent-purple-glow);
+	}
+
+	.seo-text-content :global(h3) {
 		font-size: 1.4rem;
 		margin: 36px 0 16px 0;
+		position: relative;
+		padding-left: 18px;
 	}
 
-	.seo-text-content p {
+	.seo-text-content :global(h3::before) {
+		content: '';
+		position: absolute;
+		left: 0;
+		top: 0.42em;
+		width: 9px;
+		height: 9px;
+		border-radius: 2px;
+		background: var(--accent-cyan);
+		box-shadow: 0 0 10px var(--accent-cyan-glow);
+	}
+
+	.seo-text-content :global(p) {
 		color: var(--text-muted);
 		font-size: 1rem;
 		line-height: 1.7;
 		margin-bottom: 20px;
 	}
 
-	.seo-text-content ul {
+	.seo-text-content :global(a) {
+		color: var(--accent-cyan);
+		text-decoration: underline;
+		text-underline-offset: 2px;
+		font-weight: 600;
+	}
+
+	.seo-text-content :global(a:hover) {
+		color: var(--accent-purple);
+	}
+
+	.seo-text-content :global(ul) {
 		list-style: none;
 		margin-bottom: 24px;
 		display: flex;
@@ -631,7 +901,7 @@ import ServicesSection from '../components/ServicesSection.astro';
 		gap: 16px;
 	}
 
-	.seo-text-content li {
+	.seo-text-content :global(li) {
 		padding-left: 24px;
 		position: relative;
 		color: var(--text-muted);
@@ -639,7 +909,7 @@ import ServicesSection from '../components/ServicesSection.astro';
 		line-height: 1.6;
 	}
 
-	.seo-text-content li::before {
+	.seo-text-content :global(li::before) {
 		content: '⚡';
 		position: absolute;
 		left: 0;
@@ -647,13 +917,124 @@ import ServicesSection from '../components/ServicesSection.astro';
 		color: var(--accent-cyan);
 	}
 
-	.seo-text-content strong {
+	.seo-text-content :global(strong) {
 		color: #ffffff;
 		font-weight: 600;
 	}
 
-	html.light .seo-text-content strong {
+	html.light .seo-text-content :global(strong) {
 		color: hsl(224, 25%, 12%);
+	}
+
+	/* Таблица команды (архитектор + 6 роботов) */
+	.team-table-wrap {
+		margin: 28px 0 36px;
+		overflow-x: auto;
+		border: 1px solid var(--glass-border);
+		border-radius: 14px;
+		background: rgba(255, 255, 255, 0.015);
+	}
+
+	html.light .team-table-wrap {
+		background: rgba(0, 0, 0, 0.015);
+	}
+
+	.team-table {
+		width: 100%;
+		border-collapse: collapse;
+		font-size: 0.95rem;
+		min-width: 520px;
+	}
+
+	.team-table th {
+		text-align: left;
+		padding: 14px 18px;
+		font-family: 'Outfit', sans-serif;
+		font-size: 0.8rem;
+		text-transform: uppercase;
+		letter-spacing: 1px;
+		color: var(--accent-cyan);
+		border-bottom: 1px solid var(--glass-border);
+	}
+
+	.team-table td {
+		padding: 13px 18px;
+		color: var(--text-muted);
+		border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+		line-height: 1.5;
+		vertical-align: top;
+	}
+
+	html.light .team-table td {
+		border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+	}
+
+	.team-table tbody tr:last-child td {
+		border-bottom: none;
+	}
+
+	.team-table td:first-child {
+		font-weight: 600;
+		color: var(--text-main);
+		white-space: nowrap;
+	}
+
+	html.light .team-table td:first-child {
+		color: hsl(224, 25%, 12%);
+	}
+
+	.team-table tr.team-lead td {
+		background: rgba(147, 51, 234, 0.07);
+	}
+
+	.team-table tr.team-lead td:first-child {
+		background: linear-gradient(120deg, var(--accent-cyan), var(--accent-purple));
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
+	}
+
+	/* Таблица сравнения услуг (агентство vs архитектор + AI) */
+	.svc-table td:first-child {
+		white-space: normal;
+	}
+
+	.svc-table .svc-note {
+		display: block;
+		margin-top: 4px;
+		font-family: inherit;
+		font-size: 0.78rem;
+		font-weight: 400;
+		color: var(--text-dim);
+		line-height: 1.35;
+	}
+
+	.svc-table .svc-old {
+		color: var(--text-dim);
+		white-space: nowrap;
+	}
+
+	.svc-table .svc-price-old {
+		display: inline-block;
+		margin-top: 3px;
+		font-weight: 700;
+		color: var(--text-dim);
+		text-decoration: line-through;
+		text-decoration-color: rgba(244, 63, 94, 0.55);
+	}
+
+	.svc-table .svc-new {
+		white-space: nowrap;
+	}
+
+	.svc-table .svc-price-new {
+		display: inline-block;
+		margin-top: 3px;
+		font-weight: 800;
+		background: linear-gradient(120deg, var(--accent-cyan), var(--accent-purple));
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
 	}
 
 	/* Контакты */
@@ -734,6 +1115,17 @@ import ServicesSection from '../components/ServicesSection.astro';
 		align-self: center;
 		margin-top: 12px;
 		min-width: 200px;
+	}
+
+	/* Политика — строго под кнопкой отправки, в одну строку */
+	.privacy-under-btn {
+		margin-top: -8px;
+		display: flex;
+		justify-content: center;
+	}
+
+	.privacy-under-btn .checkbox-label {
+		flex-wrap: nowrap;
 	}
 
 	/* Адаптивность */
@@ -863,125 +1255,19 @@ import ServicesSection from '../components/ServicesSection.astro';
 		}
 	}
 
+	@media (max-width: 900px) {
+		.home-edu-card {
+			grid-template-columns: 1fr;
+			gap: 20px;
+			padding: 26px 22px;
+		}
+		.home-edu-text h2 { font-size: 1.5rem; }
+		.home-edu-action { align-items: stretch; }
+		.home-edu { padding: 20px 0; }
+	}
+
 	@keyframes textShine {
 		0% { background-position: 0% center; }
 		100% { background-position: 200% center; }
 	}
 </style>
-
-<!-- Скрипт следования AI-сферы за курсором в блоках Hero, SEO и формы -->
-<script>
-	const sphere = document.getElementById('interactive-sphere') as HTMLElement;
-	const hero = document.querySelector('.hero') as HTMLElement;
-	const seoSection = document.querySelector('.seo-text-section') as HTMLElement;
-	const contactSection = document.querySelector('.contact-section') as HTMLElement;
-	const heroForm = document.querySelector('.hero-form') as HTMLElement;
-	const contactWrapper = document.querySelector('.contact-wrapper') as HTMLElement;
-	
-	if (sphere && hero && seoSection && contactSection) {
-		let mouseX = window.innerWidth / 2;
-		let mouseY = window.innerHeight / 2;
-		let sphereX = mouseX - 150;
-		let sphereY = mouseY - 150;
-		let targetX = sphereX;
-		let targetY = sphereY;
-		let isInside = false;
-		let initialized = false;
-		
-		const speed = 0.06; // Коэффициент сглаживания (lerp)
-		
-		window.addEventListener('mousemove', (e) => {
-			const clientX = e.clientX;
-			const clientY = e.clientY;
-			
-			const heroRect = hero.getBoundingClientRect();
-			const seoRect = seoSection.getBoundingClientRect();
-			const contactRect = contactSection.getBoundingClientRect();
-			
-			const inHero = (
-				clientX >= heroRect.left && clientX <= heroRect.right &&
-				clientY >= heroRect.top && clientY <= heroRect.bottom
-			);
-			const inSeo = (
-				clientX >= seoRect.left && clientX <= seoRect.right &&
-				clientY >= seoRect.top && clientY <= seoRect.bottom
-			);
-			const inContact = (
-				clientX >= contactRect.left && clientX <= contactRect.right &&
-				clientY >= contactRect.top && clientY <= contactRect.bottom
-			);
-			
-			isInside = inHero || inSeo || inContact;
-			
-			targetX = clientX - 150;
-			targetY = clientY - 150;
-			
-			if (!initialized && isInside) {
-				sphereX = targetX;
-				sphereY = targetY;
-				initialized = true;
-			}
-			
-			if (isInside) {
-				sphere.style.opacity = '1';
-			} else {
-				sphere.style.opacity = '0';
-			}
-			
-			// Проверяем нахождение над формами
-			let overForm = false;
-			if (heroForm) {
-				const rect = heroForm.getBoundingClientRect();
-				if (clientX >= rect.left && clientX <= rect.right && clientY >= rect.top && clientY <= rect.bottom) {
-					overForm = true;
-				}
-			}
-			if (contactWrapper) {
-				const rect = contactWrapper.getBoundingClientRect();
-				if (clientX >= rect.left && clientX <= rect.right && clientY >= rect.top && clientY <= rect.bottom) {
-					overForm = true;
-				}
-			}
-			
-			if (overForm) {
-				sphere.classList.add('at-form');
-			} else {
-				sphere.classList.remove('at-form');
-			}
-		});
-		
-		document.addEventListener('mouseleave', () => {
-			sphere.style.opacity = '0';
-			isInside = false;
-		});
-		
-		document.addEventListener('mouseenter', () => {
-			// Проверяется ли внутри активных зон при заходе мыши,
-			// но это обновится при первом движении мыши (mousemove).
-		});
-		
-		function animate() {
-			sphereX += (targetX - sphereX) * speed;
-			sphereY += (targetY - sphereY) * speed;
-			
-			const distX = targetX - sphereX;
-			const distY = targetY - sphereY;
-			const distance = Math.sqrt(distX * distX + distY * distY);
-			
-			const velocity = Math.min(distance * 0.05, 10);
-			const blurVal = isInside ? velocity * 0.3 : 0;
-			const scaleVal = isInside ? 1 + velocity * 0.01 : 1;
-			
-			sphere.style.transform = `translate3d(${sphereX}px, ${sphereY}px, 0) scale(${scaleVal})`;
-			
-			const core = sphere.querySelector('.ai-sphere-core') as HTMLElement;
-			if (core) {
-				core.style.filter = `blur(${10 + blurVal}px)`;
-			}
-			
-			requestAnimationFrame(animate);
-		}
-		
-		animate();
-	}
-</script>

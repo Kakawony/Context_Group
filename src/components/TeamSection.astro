@@ -1,14 +1,22 @@
 ---
 // TeamSection.astro
+interface Props {
+	heading?: string;
+	subheading?: string;
+}
+const {
+	heading = 'Над проектом будут работать:',
+	subheading = 'Я и моя команда AI-ассистентов готовы проанализировать ваши процессы и подобрать оптимальное решение. Отвечаю лично.',
+} = Astro.props as Props;
 ---
 <div class="team-wrapper glass-card">
 	<div class="team-header">
-		<h3>Над проектом будут работать:</h3>
-		<p>Я и моя команда AI-ассистентов готовы проанализировать ваши процессы и подобрать оптимальное решение. Отвечаю лично.</p>
+		<h3>{heading}</h3>
+		<p>{subheading}</p>
 		
 		<div class="leader-card">
 			<div class="leader-avatar-placeholder">
-				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+				<img src="/images/vitaly-lapin.jpg" alt="Виталий Лапин — основатель и архитектор Context Group" width="80" height="80" />
 			</div>
 			
 			<div class="leader-details">
@@ -129,12 +137,15 @@
 		justify-content: center;
 		color: white;
 		flex-shrink: 0;
+		overflow: hidden;
 	}
 
-	.leader-avatar-placeholder svg {
-		width: 40px;
-		height: 40px;
-		opacity: 0.8;
+	.leader-avatar-placeholder img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		border-radius: 50%;
+		display: block;
 	}
 
 	.leader-details {

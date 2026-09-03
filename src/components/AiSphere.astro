@@ -4,17 +4,19 @@ interface Props {
 	scale?: number;
 	hideOnSelector?: string;
 	disableMobile?: boolean;
+	fullPage?: boolean;
 }
 
-const { alwaysVisible = false, scale = 1, hideOnSelector = "", disableMobile = false } = Astro.props;
+const { alwaysVisible = false, scale = 1, hideOnSelector = "", disableMobile = false, fullPage = false } = Astro.props;
 ---
 
-<div 
-	class="ai-sphere-container" 
-	id="interactive-sphere" 
-	data-always-visible={alwaysVisible ? "true" : "false"} 
-	data-hide-selector={hideOnSelector} 
+<div
+	class="ai-sphere-container"
+	id="interactive-sphere"
+	data-always-visible={alwaysVisible ? "true" : "false"}
+	data-hide-selector={hideOnSelector}
 	data-disable-mobile={disableMobile ? "true" : "false"}
+	data-full-page={fullPage ? "true" : "false"}
 	style={`--sphere-scale: ${scale};`}
 >
 	<div class="ai-sphere-core"></div>
@@ -30,6 +32,7 @@ const { alwaysVisible = false, scale = 1, hideOnSelector = "", disableMobile = f
 		const alwaysVisible = sphere.getAttribute('data-always-visible') === 'true';
 		const hideSelector = sphere.getAttribute('data-hide-selector');
 		const disableMobile = sphere.getAttribute('data-disable-mobile') === 'true';
+		const fullPage = sphere.getAttribute('data-full-page') === 'true';
 		
 		function isMobileDevice() {
 			return window.innerWidth <= 992 || window.matchMedia("(hover: none)").matches || window.matchMedia("(pointer: coarse)").matches;
@@ -49,10 +52,11 @@ const { alwaysVisible = false, scale = 1, hideOnSelector = "", disableMobile = f
 			return false;
 		}
 
+		// Меняем цвет шарика, когда он заезжает за форму ИЛИ за любой блок-слой (.glass-card)
 		function checkAtForm(x, y) {
-			const forms = document.querySelectorAll('form, .hero-form, .contact-form, .lead-form, .form-container, .contact-wrapper');
-			for (let i = 0; i < forms.length; i++) {
-				const r = forms[i].getBoundingClientRect();
+			const blocks = document.querySelectorAll('form, .hero-form, .contact-form, .lead-form, .form-container, .contact-wrapper, .glass-card');
+			for (let i = 0; i < blocks.length; i++) {
+				const r = blocks[i].getBoundingClientRect();
 				if (x >= r.left && x <= r.right && y >= r.top && y <= r.bottom) return true;
 			}
 			return false;
@@ -77,6 +81,8 @@ const { alwaysVisible = false, scale = 1, hideOnSelector = "", disableMobile = f
 			
 			if (checkHeaderFooter(clientY)) {
 				isInside = false;
+			} else if (fullPage) {
+				isInside = true;
 			} else {
 				if (hideSelector) {
 					const hideEl = document.querySelector(hideSelector);
@@ -132,6 +138,8 @@ const { alwaysVisible = false, scale = 1, hideOnSelector = "", disableMobile = f
 			
 			if (checkHeaderFooter(testY)) {
 				isVisible = false;
+			} else if (fullPage) {
+				isVisible = true;
 			} else if (hideSelector) {
 				const hideEl = document.querySelector(hideSelector);
 				if (hideEl) {

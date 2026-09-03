@@ -22,3 +22,13 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# local AI agent context (never push)
+CLAUDE.md
+
+# Серверный релей с токеном Telegram — не коммитим
+public/send.php
+
+# Cloudflare local state и локальные секреты воркера
+.wrangler/
+.dev.vars

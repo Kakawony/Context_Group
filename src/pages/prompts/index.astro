@@ -1,0 +1,381 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import AiSphere from '../../components/AiSphere.astro';
+
+// Карточки промптов тянем из всех .md в этой папке
+const rawPrompts = Object.values(import.meta.glob('./*.md', { eager: true })) as any[];
+const prompts = rawPrompts
+	.map((p) => ({ url: p.url, fm: p.frontmatter }))
+	.sort((a, b) => (a.fm.title || '').localeCompare(b.fm.title || ''));
+
+// Свежие статьи блога для нижнего блока
+const rawPosts = Object.values(import.meta.glob('../blog/*.md', { eager: true })) as any[];
+const parseDate = (dStr: string) => {
+	if (!dStr) return 0;
+	const parts = dStr.split('.');
+	if (parts.length === 3) {
+		const [d, m, y] = parts.map(Number);
+		return new Date(y, m - 1, d).getTime();
+	}
+	return 0;
+};
+const latestPosts = rawPosts
+	.sort((a, b) => parseDate(b.frontmatter.date) - parseDate(a.frontmatter.date))
+	.slice(0, 4);
+---
+
+<Layout title="Каталог AI-промптов | Context Group" description="Готовые промпты для бизнеса: SEO, контент, продажи и автоматизация. Купить промпт или заказать внедрение «под ключ».">
+	<AiSphere alwaysVisible={true} scale={0.5} hideOnSelector=".prompts-seo-section" />
+
+	<section class="prompts-hero">
+		<div class="hero-glow"></div>
+		<div class="container">
+			<Breadcrumbs items={[{ label: 'Промпты' }]} />
+			<div class="badge">⚡ Каталог промптов</div>
+			<h1>Готовые <span class="gradient-text">AI-промпты</span> для бизнеса</h1>
+			<p class="hero-desc">
+				Проверенные промпты под конкретные задачи: SEO, контент, продажи, автоматизация. Купите готовый промпт или закажите внедрение «под ключ» — настроим под ваш процесс.
+			</p>
+		</div>
+	</section>
+
+	<!-- Витрина промптов -->
+	<section class="prompts-catalog">
+		<div class="container">
+			{prompts.length > 0 ? (
+				<div class="prompts-grid">
+					{prompts.map((p) => (
+						<a href={p.url} class="glass-card prompt-card">
+							<div class="prompt-card-top">
+								<span class="card-category">{p.fm.category || 'Промпт'}</span>
+								{p.fm.code && <span class="card-code">{p.fm.code}</span>}
+							</div>
+							<h3>{p.fm.title}</h3>
+							<p class="card-desc">{p.fm.description}</p>
+							{p.fm.tags && p.fm.tags.length > 0 && (
+								<div class="card-tags">
+									{p.fm.tags.slice(0, 3).map((t: string) => <span class="card-tag">{t}</span>)}
+								</div>
+							)}
+							<div class="prompt-card-footer">
+								<span class="card-price">{p.fm.price ? `от ${p.fm.price}` : 'по запросу'}</span>
+								<span class="card-link">Открыть &rarr;</span>
+							</div>
+						</a>
+					))}
+				</div>
+			) : (
+				<div class="prompts-empty glass-card">
+					<h3>Каталог скоро наполнится</h3>
+					<p>Мы готовим первые промпты к публикации. Загляните позже или напишите нам — соберём промпт под вашу задачу.</p>
+				</div>
+			)}
+		</div>
+	</section>
+
+	<!-- Экспертный SEO-текст -->
+	<section class="prompts-seo-section">
+		<div class="container">
+			<div class="seo-text-block-clean">
+				<h2>Промпты, которые экономят часы работы и приносят деньги</h2>
+				<div class="seo-text-content">
+					<p>
+						Хороший промпт — это не «волшебная фраза», а упакованный опыт. За каждым промптом в нашем каталоге стоит реальная задача бизнеса: собрать структуру сайта, написать продающее описание, квалифицировать заявку, разобрать отзывы или подготовить контент-план. Вы не тратите недели на подбор формулировок методом проб и ошибок — берёте готовое решение, которое уже выдаёт результат.
+					</p>
+					<p>
+						Каждый промпт можно купить в двух форматах. Первый — просто промпт: копируете, подставляете свои данные и работаете. Второй — промпт «под ключ»: мы адаптируем его под вашу нишу, встраиваем в рабочий процесс, связываем с CRM или таблицами и обучаем команду. Так нейросеть перестаёт быть игрушкой и становится частью воронки, которая работает на выручку.
+					</p>
+					<p>
+						Не нашли нужный промпт в каталоге? Напишите нам задачу — соберём промпт под ваш бизнес и при необходимости внедрим его в процессы. Это и есть наша работа: превращать возможности AI в конкретную экономию времени и денег.
+					</p>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- Информация из AI-Hub (блог) -->
+	{latestPosts.length > 0 && (
+		<section class="prompts-blog">
+			<div class="container">
+				<div class="glass-card blog-section-card">
+					<div class="blog-section-header">
+						<h2>Полезное из <span class="gradient-text">AI-Hub</span></h2>
+						<p>Статьи и кейсы о том, как применять промпты и нейросети в бизнесе</p>
+					</div>
+					<div class="blog-grid">
+						{latestPosts.map((post) => (
+							<a href={post.url} class="blog-card-inline">
+								<div class="blog-card-meta">
+									<span class="category-tag">{post.frontmatter.category}</span>
+									<span class="meta-separator">&bull;</span>
+									<span>{post.frontmatter.date}</span>
+								</div>
+								<h3>{post.frontmatter.title}</h3>
+								<p>{post.frontmatter.description}</p>
+								<span class="read-more">Читать &rarr;</span>
+							</a>
+						))}
+					</div>
+				</div>
+			</div>
+		</section>
+	)}
+</Layout>
+
+<style>
+	.prompts-hero {
+		position: relative;
+		padding: 60px 0 30px 0;
+		overflow: hidden;
+		text-align: left;
+	}
+	.hero-glow {
+		position: absolute;
+		top: -150px;
+		left: -10%;
+		width: 800px;
+		height: 400px;
+		background: radial-gradient(circle, var(--accent-purple-glow) 0%, rgba(13,15,20,0) 100%);
+		filter: blur(80px);
+		pointer-events: none;
+		z-index: 1;
+	}
+	.prompts-hero h1 {
+		font-size: 2.8rem;
+		line-height: 1.15;
+		margin-bottom: 24px;
+		letter-spacing: -1px;
+		position: relative;
+		z-index: 2;
+	}
+	.hero-desc {
+		color: var(--text-muted);
+		font-size: 1.15rem;
+		max-width: 720px;
+		margin: 0;
+		line-height: 1.6;
+		position: relative;
+		z-index: 2;
+	}
+	.badge {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		background: rgba(147, 51, 234, 0.1);
+		border: 1px solid rgba(147, 51, 234, 0.2);
+		padding: 6px 16px;
+		border-radius: 9999px;
+		font-size: 0.85rem;
+		font-family: 'Outfit', sans-serif;
+		font-weight: 500;
+		color: var(--accent-purple);
+		margin-bottom: 24px;
+		position: relative;
+		z-index: 2;
+	}
+
+	/* Витрина */
+	.prompts-catalog {
+		padding: 20px 0 40px 0;
+	}
+	.prompts-grid {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 20px;
+	}
+	.prompt-card {
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
+		padding: 24px;
+		border-radius: 16px;
+		transition: border-color var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
+	}
+	.prompt-card:hover {
+		transform: translateY(-3px);
+		border-color: rgba(147, 51, 234, 0.35);
+		box-shadow: 0 20px 40px rgba(147, 51, 234, 0.12);
+	}
+	.prompt-card-top {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		flex-wrap: wrap;
+		gap: 8px;
+	}
+	.card-category {
+		background: rgba(147, 51, 234, 0.1);
+		border: 1px solid rgba(147, 51, 234, 0.2);
+		color: var(--accent-purple);
+		padding: 3px 12px;
+		border-radius: 9999px;
+		font-weight: 600;
+		font-size: 0.72rem;
+		text-transform: uppercase;
+		letter-spacing: 0.5px;
+	}
+	.card-code {
+		font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+		font-size: 0.72rem;
+		color: var(--text-dim);
+		overflow-wrap: anywhere;
+	}
+	.prompt-card h3 {
+		font-size: 1.2rem;
+		line-height: 1.3;
+		margin: 0;
+	}
+	.card-desc {
+		color: var(--text-muted);
+		font-size: 0.9rem;
+		line-height: 1.5;
+		flex-grow: 1;
+	}
+	.card-tags {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 6px;
+	}
+	.card-tag {
+		font-size: 0.72rem;
+		font-weight: 500;
+		color: var(--accent-cyan);
+		background: rgba(6, 182, 212, 0.08);
+		border: 1px solid rgba(6, 182, 212, 0.18);
+		padding: 3px 10px;
+		border-radius: 9999px;
+	}
+	html.light .card-tag { background: rgba(6, 182, 212, 0.06); }
+	.prompt-card-footer {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-top: 4px;
+		padding-top: 14px;
+		border-top: 1px solid var(--glass-border);
+	}
+	.card-price {
+		font-family: 'Outfit', sans-serif;
+		font-weight: 800;
+		font-size: 1.1rem;
+		color: var(--text-main);
+	}
+	.card-link {
+		color: var(--accent-cyan);
+		font-weight: 600;
+		font-size: 0.9rem;
+	}
+
+	/* Пустое состояние */
+	.prompts-empty {
+		padding: 48px;
+		border-radius: 20px;
+		text-align: center;
+	}
+	.prompts-empty h3 {
+		font-size: 1.5rem;
+		margin-bottom: 12px;
+	}
+	.prompts-empty p {
+		color: var(--text-muted);
+		max-width: 480px;
+		margin: 0 auto;
+		line-height: 1.6;
+	}
+
+	/* SEO-блок */
+	.prompts-seo-section { padding: 40px 0; }
+	.seo-text-block-clean h2 {
+		font-size: 2rem;
+		margin-bottom: 24px;
+		line-height: 1.3;
+	}
+	.seo-text-content {
+		display: flex;
+		flex-direction: column;
+		gap: 20px;
+	}
+	.seo-text-content p {
+		color: var(--text-muted);
+		font-size: 1rem;
+		line-height: 1.7;
+	}
+
+	/* Блог */
+	.prompts-blog { padding: 40px 0 80px 0; }
+	.blog-section-card { padding: 40px; }
+	.blog-section-header { text-align: left; margin-bottom: 30px; }
+	.blog-section-header h2 { font-size: 2rem; margin-bottom: 8px; }
+	.blog-section-header p { color: var(--text-muted); font-size: 1rem; }
+	.blog-grid {
+		display: grid;
+		grid-template-columns: repeat(4, 1fr);
+		gap: 16px;
+	}
+	.blog-card-inline {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+		padding: 20px;
+		background: rgba(255, 255, 255, 0.015);
+		border: 1px solid rgba(255, 255, 255, 0.04);
+		border-radius: 12px;
+		transition: border-color var(--transition-fast), background-color var(--transition-fast), transform var(--transition-fast);
+	}
+	html.light .blog-card-inline {
+		background: rgba(0, 0, 0, 0.015);
+		border: 1px solid rgba(0, 0, 0, 0.03);
+	}
+	.blog-card-inline:hover {
+		border-color: rgba(255, 255, 255, 0.1);
+		background: rgba(255, 255, 255, 0.03);
+		transform: translateY(-2px);
+	}
+	html.light .blog-card-inline:hover {
+		border-color: rgba(0, 0, 0, 0.06);
+		background: rgba(0, 0, 0, 0.025);
+	}
+	.blog-card-meta {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		font-size: 0.75rem;
+		color: var(--text-dim);
+	}
+	.category-tag {
+		background: rgba(6, 182, 212, 0.1);
+		border: 1px solid rgba(6, 182, 212, 0.2);
+		color: var(--accent-cyan);
+		padding: 2px 8px;
+		border-radius: 9999px;
+		font-weight: 500;
+	}
+	.meta-separator { color: var(--text-dim); }
+	.blog-card-inline h3 { font-size: 1.05rem; line-height: 1.35; }
+	.blog-card-inline p {
+		color: var(--text-muted);
+		font-size: 0.85rem;
+		line-height: 1.5;
+		flex-grow: 1;
+	}
+	.read-more {
+		color: var(--accent-cyan);
+		font-weight: 600;
+		font-size: 0.85rem;
+		margin-top: auto;
+	}
+
+	/* Адаптив */
+	@media (max-width: 992px) {
+		.prompts-grid { grid-template-columns: repeat(2, 1fr); }
+		.blog-grid { grid-template-columns: repeat(2, 1fr); }
+		.blog-section-card { padding: 30px 20px; }
+	}
+	@media (max-width: 768px) {
+		.prompts-hero h1 { font-size: 2.2rem; }
+		.prompts-grid { grid-template-columns: 1fr; }
+		.blog-grid { grid-template-columns: 1fr; }
+		.blog-section-header h2 { font-size: 1.8rem; }
+	}
+</style>

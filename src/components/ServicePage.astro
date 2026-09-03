@@ -1,0 +1,1153 @@
+---
+import Layout from '../layouts/Layout.astro';
+import AiSphere from './AiSphere.astro';
+import Breadcrumbs from './Breadcrumbs.astro';
+import BlogGrid from './BlogGrid.astro';
+import TeamSection from './TeamSection.astro';
+
+interface CaseItem { meta: string; date?: string; title: string; text: string; badge: string; link: string; linkText?: string; }
+interface Step { num: string; title: string; text: string; }
+interface PricingTier { title: string; sub: string; currency: string; amount: string; features: string[]; btn: string; popular?: boolean; }
+interface SeoBlock { h3: string; html: string; }
+interface FaqItem { q: string; a: string; }
+
+interface Props {
+	title: string;
+	description: string;
+	breadcrumb: string;
+	slug: string;
+	heroTitle: string;
+	heroDesc: string;
+	heroFeatures: string[];
+	formTitle?: string;
+	formSub?: string;
+	formBtn?: string;
+	casesTitle?: string;
+	casesSub?: string;
+	cases?: CaseItem[];
+	introTitle?: string;
+	introText?: string;
+	processTitle?: string;
+	processSub?: string;
+	processSteps?: Step[];
+	processSeo?: string;
+	pricingTitle?: string;
+	pricing?: PricingTier[];
+	seoTitle: string;
+	seoIntro?: string;
+	seoBlocks: SeoBlock[];
+	seoRichHtml?: string;
+	faqTitle?: string;
+	faqItems: FaqItem[];
+	relatedTitle?: string;
+}
+
+const {
+	title,
+	description,
+	breadcrumb,
+	slug,
+	heroTitle,
+	heroDesc,
+	heroFeatures,
+	formTitle = 'Пообщаться на эту тему',
+	formSub = 'Оставьте заявку — я вам напишу или наберу и расскажу всё как есть и что можно сделать.',
+	formBtn = 'Отправить',
+	casesTitle = 'Наши <span class="gradient-text">кейсы</span>',
+	casesSub = 'Примеры внедрения AI в разные виды бизнеса по разным задачам',
+	cases = [
+		{
+			meta: 'Реконструкция сайта · MODX',
+			date: '12.06.2026',
+			title: 'Реконструкция и техподдержка сайта на MODX',
+			text: 'За 4 дня и 15 часов работы вместе с 6 роботами полностью пересобрали сайт: вывели в зелёную зону по скорости, оптимизировали под поисковое продвижение, написали SEO-тексты на все 60 статических страниц и собрали 52 PDF-каталога с ассортиментом под каждый тип винтовых компрессоров. Это заменило 150 часов работы маркетингового агентства из 4 человек и сэкономило 2 месяца ожидания.',
+			badge: '<span class="vs-label">Результат:</span> <span class="vs-win">45 000 ₽ · 4 дня</span> <span class="vs-sep">VS</span> <span class="vs-lose">150 000 ₽ · 60 дней</span>',
+			link: '/blog/keys-rekonstrukciya-sajta-ai-complextech',
+			linkText: 'Читать кейс',
+		},
+	],
+	introTitle = '',
+	introText = '',
+	processTitle = 'Как проходит <span class="gradient-text">работа</span>',
+	processSub = '',
+	processSteps = [],
+	processSeo = '',
+	pricingTitle = 'Варианты <span class="gradient-text">сотрудничества</span>',
+	pricing = [
+		{
+			title: 'Промпты + Инструкции',
+			sub: 'Для самостоятельного внедрения',
+			currency: '₽',
+			amount: '49 000',
+			features: ['Готовые системные промпты для роли', 'Инструкция по сборке в Make/n8n', 'Рекомендации по формату базы знаний', '1 час консультации'],
+			btn: 'Оставить заявку',
+		},
+		{
+			title: 'Внедрение «под ключ»',
+			sub: 'Сделаем всё за вас и интегрируем в процессы',
+			currency: 'от ₽',
+			amount: '150 000',
+			features: ['Аудит процессов и сбор базы знаний', 'Разработка и тестирование решений', 'Интеграция с CRM и мессенджерами', '1 месяц технической поддержки'],
+			btn: 'Оставить заявку',
+			popular: true,
+		},
+	],
+	seoTitle,
+	seoIntro = '',
+	seoBlocks,
+	seoRichHtml,
+	faqTitle = 'Частые вопросы',
+	faqItems,
+	relatedTitle = 'Дополнительные материалы в <span class="gradient-text">информационном Hub</span>',
+} = Astro.props as Props;
+
+const faqSchema = {
+	'@context': 'https://schema.org',
+	'@type': 'FAQPage',
+	mainEntity: faqItems.map((item) => ({
+		'@type': 'Question',
+		name: item.q,
+		acceptedAnswer: { '@type': 'Answer', text: item.a },
+	})),
+};
+---
+
+<Layout title={title} description={description}>
+	<script type="application/ld+json" is:inline set:html={JSON.stringify(faqSchema)} />
+	<!-- Шарик прячем на секции команды, так как там есть свои лица/интерфейсы -->
+	<AiSphere alwaysVisible={true} scale={0.5} hideOnSelector=".team-section" />
+
+	<div class="page-container">
+		<Breadcrumbs items={[
+			{ label: 'Услуги', href: '/#services' },
+			{ label: breadcrumb, href: slug }
+		]} />
+
+		<!-- Hero Section с формой -->
+		<section class="service-hero">
+			<div class="container hero-grid">
+				<div class="hero-content">
+					<h1 set:html={heroTitle}></h1>
+					<p class="hero-description">{heroDesc}</p>
+					<ul class="hero-features">
+						{heroFeatures.map((f) => <li>✓ {f}</li>)}
+					</ul>
+				</div>
+				<div class="hero-form-wrapper">
+					<div class="glass-card lead-form">
+						<h3>{formTitle}</h3>
+						<p>{formSub}</p>
+						<form class="contact-form" action="/send" method="POST">
+							<input type="hidden" name="_next" value="/thanks" />
+							<input type="hidden" name="service" value={breadcrumb} />
+							<div class="form-group">
+								<input type="text" name="name" placeholder="Ваше Имя" required />
+							</div>
+							<div class="form-group">
+								<input type="text" name="phone_or_tg" placeholder="Телефон или Telegram" required />
+							</div>
+							<button type="submit" class="btn btn-primary form-submit"><span>{formBtn}</span></button>
+							<label class="privacy-check">
+								<input type="checkbox" name="agree" value="yes" required checked />
+								<span>Согласен с <a href="/privacy" target="_blank">политикой конфиденциальности</a></span>
+							</label>
+						</form>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- Секция с Кейсами -->
+		<section class="cases-section">
+			<div class="container">
+				<div class="section-header">
+					<h2 set:html={casesTitle}></h2>
+					<p>{casesSub}</p>
+				</div>
+				<div class="cases-grid">
+					{cases.map((c, i) => (
+						<div class="glass-card case-card">
+							<div class="case-meta">{c.meta}{c.date && <span class="case-date">{c.date}</span>}</div>
+							<h3><a href={c.link} class="case-title-link">{c.title}</a></h3>
+							<p>{c.text}</p>
+							<div class="case-result-badge" set:html={c.badge}></div>
+							<a href={c.link} class={`case-link case-link-${i + 1}`}>{c.linkText ?? 'Смотреть кейсы'} &rarr;</a>
+						</div>
+					))}
+				</div>
+			</div>
+		</section>
+
+		<!-- Как проходит работа — коммерческий блок шагов -->
+		{processSteps.length > 0 && (
+			<section class="audit-process-section">
+				<div class="container">
+					<div class="section-header">
+						<h2 set:html={processTitle}></h2>
+						{processSub && <p>{processSub}</p>}
+					</div>
+					<div class="audit-steps">
+						{processSteps.map((s) => (
+							<div class="audit-step glass-card">
+								<div class="audit-step-num">{s.num}</div>
+								<h3>{s.title}</h3>
+								<p>{s.text}</p>
+							</div>
+						))}
+					</div>
+					{processSeo && <p class="audit-process-seo">{processSeo}</p>}
+				</div>
+			</section>
+		)}
+
+		<!-- SEO-вступление (для страниц без блока шагов) -->
+		{introText && (
+			<section class="seo-intro-section">
+				<div class="container">
+					<div class="seo-text-wrapper">
+						{introTitle && <h2>{introTitle}</h2>}
+						<p set:html={introText}></p>
+					</div>
+				</div>
+			</section>
+		)}
+
+		<!-- Pricing Section -->
+		<section class="pricing-section">
+			<div class="container">
+				<div class="section-header">
+					<h2 set:html={pricingTitle}></h2>
+				</div>
+				<div class="pricing-grid">
+					{pricing.map((t) => (
+						<div class={`glass-card pricing-card${t.popular ? ' popular' : ''}`}>
+							<div class="pricing-header">
+								<h3>{t.title}</h3>
+								<p>{t.sub}</p>
+							</div>
+							<div class="pricing-price">
+								<span class="currency">{t.currency}</span>
+								<span class="amount">{t.amount}</span>
+							</div>
+							<ul class="pricing-features">
+								{t.features.map((f) => (
+									<li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg> <span set:html={f}></span></li>
+								))}
+							</ul>
+							<form class="pricing-form" action="/send" method="POST">
+								<input type="hidden" name="_next" value="/thanks" />
+								<input type="hidden" name="service" value={`${breadcrumb} — ${t.title}`} />
+								<input type="text" name="name" placeholder="Ваше Имя" required />
+								<input type="text" name="phone_or_tg" placeholder="Телефон или Telegram" required />
+								{t.popular ? (
+									<button type="submit" class="btn btn-primary pricing-btn"><span>{t.btn}</span></button>
+								) : (
+									<button type="submit" class="btn btn-outline pricing-btn">{t.btn}</button>
+								)}
+								<p class="privacy-note">Нажимая кнопку, соглашаюсь с <a href="/privacy" target="_blank">политикой конфиденциальности</a></p>
+							</form>
+						</div>
+					))}
+				</div>
+			</div>
+		</section>
+
+
+
+		<!-- SEO Текст 2 -->
+		<section class="seo-detailed-section">
+			<div class="container">
+				<div class="seo-text-wrapper">
+					<h2>{seoTitle}</h2>
+					{seoRichHtml ? (
+						<Fragment set:html={seoRichHtml} />
+					) : (
+						<>
+							{seoIntro && <p set:html={seoIntro}></p>}
+							{seoBlocks.map((b) => (
+								<>
+									<h3>{b.h3}</h3>
+									<p set:html={b.html}></p>
+								</>
+							))}
+						</>
+					)}
+				</div>
+			</div>
+		</section>
+
+		<!-- FAQ -->
+		<section class="service-faq">
+			<div class="container">
+				<div class="faq-block">
+					<h2>{faqTitle}</h2>
+					{faqItems.map((item) => (
+						<details class="faq-item">
+							<summary>{item.q}</summary>
+							<p>{item.a}</p>
+						</details>
+					))}
+				</div>
+			</div>
+		</section>
+
+		<!-- Team Section (Под тарифами) -->
+		<section id="contact-manager" class="team-section">
+			<div class="container">
+				<TeamSection />
+			</div>
+		</section>
+
+		<!-- Перелинковка с блогом -->
+		<section class="related-posts-section">
+			<div class="container">
+				<div class="section-header">
+					<h2 set:html={relatedTitle}></h2>
+				</div>
+				<BlogGrid limit={4} />
+			</div>
+		</section>
+
+	</div>
+</Layout>
+
+<style>
+	.page-container {
+		padding-top: 100px;
+	}
+
+	/* Hero Section */
+	.service-hero {
+		padding: 40px 0 80px 0;
+	}
+
+	.hero-grid {
+		display: grid;
+		grid-template-columns: 1fr 400px;
+		gap: 60px;
+		align-items: center;
+	}
+
+	.badge {
+		display: inline-block;
+		padding: 6px 12px;
+		background: rgba(147, 51, 234, 0.1);
+		border: 1px solid rgba(147, 51, 234, 0.3);
+		color: var(--accent-purple);
+		border-radius: 20px;
+		font-size: 0.85rem;
+		font-weight: 600;
+		margin-bottom: 20px;
+	}
+
+	.hero-content h1 {
+		font-size: 3rem;
+		margin-bottom: 24px;
+		line-height: 1.2;
+	}
+
+	.hero-description {
+		font-size: 1.15rem;
+		color: var(--text-muted);
+		line-height: 1.6;
+		margin-bottom: 30px;
+	}
+
+	.hero-features {
+		list-style: none;
+		padding: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
+	}
+
+	.hero-features li {
+		font-size: 1.05rem;
+		font-weight: 500;
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		color: #e2e8f0;
+	}
+	
+	html.light .hero-features li {
+		color: hsl(224, 25%, 12%);
+	}
+
+	/* Hero Form */
+	.lead-form {
+		padding: 30px;
+		border-radius: 16px;
+	}
+
+	.lead-form h3 {
+		font-size: 1.4rem;
+		margin-bottom: 8px;
+		text-align: center;
+	}
+
+	.lead-form p {
+		font-size: 0.9rem;
+		color: var(--text-muted);
+		margin-bottom: 24px;
+		text-align: center;
+		line-height: 1.4;
+	}
+
+	.contact-form {
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+	}
+
+	.form-group input {
+		width: 100%;
+		background: rgba(255, 255, 255, 0.03);
+		border: 1px solid rgba(255, 255, 255, 0.08);
+		border-radius: 8px;
+		padding: 12px 16px;
+		color: #ffffff;
+		font-family: inherit;
+		outline: none;
+		transition: border-color var(--transition-fast);
+	}
+
+	html.light .form-group input {
+		background: rgba(0, 0, 0, 0.02);
+		border: 1px solid rgba(0, 0, 0, 0.06);
+		color: hsl(224, 25%, 12%);
+	}
+
+	.form-group input:focus {
+		border-color: var(--accent-cyan);
+	}
+
+	.form-submit {
+		width: 100%;
+		justify-content: center;
+		margin-top: 8px;
+	}
+
+	.privacy-note {
+		font-size: 0.75rem !important;
+		margin: 4px 0 0 !important;
+		opacity: 0.7;
+		text-align: center;
+		white-space: nowrap;
+		line-height: 1.3;
+	}
+
+	.privacy-note a {
+		color: var(--accent-cyan);
+		text-decoration: underline;
+		text-underline-offset: 2px;
+	}
+
+	.privacy-note a:hover {
+		opacity: 0.85;
+	}
+
+	/* Политика с галочкой — в одну строку под кнопкой */
+	.privacy-check {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 8px;
+		margin-top: 6px;
+		font-size: 0.75rem;
+		color: var(--text-muted);
+		line-height: 1.3;
+		white-space: nowrap;
+		cursor: pointer;
+	}
+	.privacy-check input {
+		width: 15px;
+		height: 15px;
+		accent-color: var(--accent-cyan);
+		flex-shrink: 0;
+		cursor: pointer;
+	}
+	.privacy-check a {
+		color: var(--accent-cyan);
+		text-decoration: underline;
+		text-underline-offset: 2px;
+	}
+
+	/* Кейсы */
+	.cases-section {
+		padding: 80px 0;
+	}
+
+	.section-header {
+		text-align: center;
+		margin-bottom: 48px;
+	}
+
+	.section-header h2 {
+		font-size: 2.5rem;
+		margin-bottom: 16px;
+		position: relative;
+		display: inline-block;
+	}
+
+	.section-header h2::after {
+		content: '';
+		display: block;
+		width: 64px;
+		height: 3px;
+		margin: 16px auto 0;
+		border-radius: 3px;
+		background: var(--grad-primary);
+		box-shadow: 0 0 12px var(--accent-purple-glow);
+	}
+
+	.section-header p {
+		color: var(--text-muted);
+		font-size: 1.1rem;
+		max-width: 700px;
+		margin: 0 auto;
+	}
+
+	.cases-grid {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 30px;
+		max-width: 800px;
+		margin: 0 auto;
+	}
+
+	.case-card {
+		padding: 40px;
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+	}
+
+	.case-meta {
+		font-size: 0.85rem;
+		color: var(--accent-cyan);
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 1px;
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		flex-wrap: wrap;
+	}
+
+	.case-date {
+		color: var(--text-dim);
+		font-weight: 500;
+		letter-spacing: 0.5px;
+		padding-left: 12px;
+		border-left: 1px solid var(--glass-border);
+	}
+
+	.case-card h3 {
+		font-size: 1.5rem;
+	}
+
+	.case-title-link {
+		color: inherit;
+		text-decoration: none;
+		transition: color var(--transition-fast);
+	}
+	.case-title-link:hover {
+		color: var(--accent-cyan);
+	}
+
+	.case-card p {
+		color: var(--text-muted);
+		font-size: 0.95rem;
+		line-height: 1.6;
+		flex-grow: 1;
+	}
+
+	.case-result-badge {
+		background: rgba(6, 182, 212, 0.08);
+		border: 1px solid rgba(6, 182, 212, 0.15);
+		padding: 10px 16px;
+		border-radius: 10px;
+		font-weight: 600;
+		font-size: 0.92rem;
+		display: inline-flex;
+		align-items: center;
+		flex-wrap: wrap;
+		gap: 8px;
+		margin-top: 10px;
+		align-self: flex-start;
+	}
+
+	.case-result-badge :global(.vs-label) { color: var(--text-muted); }
+
+	.case-result-badge :global(.vs-win) {
+		font-weight: 800;
+		background: linear-gradient(120deg, var(--accent-cyan), var(--accent-purple));
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
+	}
+
+	.case-result-badge :global(.vs-sep) {
+		font-family: 'Outfit', sans-serif;
+		font-weight: 800;
+		font-size: 0.72rem;
+		letter-spacing: 1px;
+		color: #fff;
+		background: var(--grad-primary);
+		padding: 3px 10px;
+		border-radius: 999px;
+		box-shadow: 0 0 14px var(--accent-purple-glow);
+	}
+
+	.case-result-badge :global(.vs-lose) {
+		color: var(--text-dim);
+		text-decoration: line-through;
+		text-decoration-color: rgba(244, 63, 94, 0.55);
+	}
+
+	.case-link {
+		font-weight: 700;
+		font-size: 0.95rem;
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+		margin-top: 16px;
+		align-self: flex-start;
+		background: linear-gradient(120deg, var(--accent-cyan) 0%, var(--accent-purple) 50%, var(--accent-cyan) 100%);
+		background-size: 200% auto;
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
+		animation: textShine 4s linear infinite;
+		transition: transform var(--transition-fast);
+	}
+
+	.case-link.case-link-2 {
+		animation-delay: 1.5s;
+	}
+
+	.case-card:hover .case-link {
+		transform: translateX(6px);
+	}
+
+	/* SEO Intro */
+	.seo-intro-section {
+		padding: 40px 0;
+	}
+
+	.seo-text-wrapper {
+		max-width: 800px;
+		margin: 0 auto;
+	}
+
+	.seo-text-wrapper h2 {
+		font-size: 1.8rem;
+		margin-bottom: 16px;
+	}
+
+	.seo-text-wrapper p {
+		color: var(--text-muted);
+		line-height: 1.6;
+		font-size: 1.05rem;
+	}
+
+	/* Как проходит аудит — коммерческий блок шагов */
+	.audit-process-section {
+		padding: 50px 0;
+	}
+
+	.audit-steps {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 20px;
+		max-width: 1000px;
+		margin: 0 auto 28px;
+	}
+
+	.audit-step {
+		padding: 28px 26px;
+		border-radius: 16px;
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+		transition: transform var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
+	}
+
+	.audit-step:hover {
+		transform: translateY(-4px);
+		border-color: rgba(147, 51, 234, 0.4);
+		box-shadow: 0 12px 32px rgba(147, 51, 234, 0.12);
+	}
+
+	.audit-step-num {
+		font-family: 'Outfit', sans-serif;
+		font-size: 1.7rem;
+		font-weight: 800;
+		line-height: 1;
+		width: fit-content;
+		background: var(--grad-primary);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
+	}
+
+	.audit-step h3 {
+		font-size: 1.2rem;
+		margin: 0;
+	}
+
+	.audit-step p {
+		color: var(--text-muted);
+		font-size: 0.95rem;
+		line-height: 1.55;
+		margin: 0;
+	}
+
+	.audit-process-seo {
+		max-width: 800px;
+		margin: 0 auto;
+		color: var(--text-dim);
+		font-size: 0.95rem;
+		line-height: 1.7;
+		text-align: center;
+	}
+
+	/* Pricing */
+	.pricing-section {
+		padding: 60px 0;
+	}
+
+	.pricing-grid {
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		gap: 30px;
+		max-width: 900px;
+		margin: 0 auto;
+	}
+
+	.pricing-card {
+		padding: 40px;
+		display: flex;
+		flex-direction: column;
+		position: relative;
+		overflow: hidden;
+	}
+
+	.pricing-card.popular {
+		background: rgba(147, 51, 234, 0.05);
+		border-color: rgba(147, 51, 234, 0.5);
+		box-shadow: 0 8px 32px rgba(147, 51, 234, 0.15);
+	}
+
+	html.light .pricing-card.popular {
+		background: rgba(147, 51, 234, 0.05);
+		border-color: rgba(147, 51, 234, 0.3);
+	}
+
+	.pricing-header {
+		margin-bottom: 24px;
+	}
+
+	.pricing-header h3 {
+		font-size: 1.5rem;
+		margin-bottom: 8px;
+	}
+
+	.pricing-header p {
+		color: var(--text-muted);
+		font-size: 0.9rem;
+	}
+
+	.pricing-price {
+		display: flex;
+		align-items: baseline;
+		gap: 8px;
+		margin-bottom: 30px;
+	}
+
+	.currency {
+		font-size: 1.2rem;
+		color: var(--text-muted);
+	}
+
+	.amount {
+		font-size: 2.5rem;
+		font-weight: 800;
+	}
+
+	.pricing-features {
+		list-style: none;
+		padding: 0;
+		margin-bottom: 40px;
+		flex-grow: 1;
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+	}
+
+	.pricing-features li {
+		display: flex;
+		align-items: flex-start;
+		gap: 12px;
+		color: var(--text-muted);
+		line-height: 1.4;
+	}
+
+	.pricing-features .feat-hl {
+		color: var(--accent-cyan);
+		font-weight: 700;
+	}
+
+	.pricing-features svg {
+		width: 18px;
+		height: 18px;
+		color: var(--accent-cyan);
+		flex-shrink: 0;
+		margin-top: 2px;
+	}
+
+	.pricing-form {
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
+		margin-top: 20px;
+	}
+
+	.pricing-form input {
+		width: 100%;
+		background: rgba(255, 255, 255, 0.03);
+		border: 1px solid rgba(255, 255, 255, 0.08);
+		border-radius: 8px;
+		padding: 12px 16px;
+		color: #ffffff;
+		font-family: inherit;
+		outline: none;
+		transition: border-color var(--transition-fast);
+	}
+
+	html.light .pricing-form input {
+		background: rgba(0, 0, 0, 0.02);
+		border: 1px solid rgba(0, 0, 0, 0.06);
+		color: hsl(224, 25%, 12%);
+	}
+
+	.pricing-form input:focus {
+		border-color: var(--accent-cyan);
+	}
+
+	.pricing-btn {
+		width: 100%;
+		justify-content: center;
+		margin-top: 8px;
+		transition: all 0.3s ease !important;
+	}
+
+	.pricing-form button.btn-outline {
+		background: #f1f5f9;
+		color: #0f172a;
+		border: none;
+	}
+	
+	html.light .pricing-form button.btn-outline {
+		background: #f1f5f9;
+		color: #0f172a;
+	}
+
+	html.dark .pricing-form button.btn-outline {
+		background: rgba(255,255,255,0.1);
+		color: #fff;
+	}
+
+	.pricing-btn:hover {
+		transform: translateY(-2px) !important;
+		box-shadow: 0 4px 15px rgba(147, 51, 234, 0.4) !important;
+	}
+	
+	.pricing-form button.btn-outline:hover,
+	html.light .pricing-form button.btn-outline:hover,
+	html.dark .pricing-form button.btn-outline:hover {
+		background: var(--accent-purple) !important;
+		color: #ffffff !important;
+	}
+
+	/* Team Section */
+	.team-section {
+		padding: 40px 0 80px 0;
+	}
+
+
+
+	/* SEO Detailed */
+	.seo-detailed-section {
+		padding: 40px 0;
+	}
+
+	.seo-detailed-section .seo-text-wrapper {
+		max-width: 800px;
+		margin: 0 auto;
+	}
+
+	.seo-detailed-section h2 {
+		font-size: 2rem;
+		margin-bottom: 24px;
+		position: relative;
+		padding-left: 22px;
+	}
+	.seo-detailed-section h2::before {
+		content: '';
+		position: absolute;
+		left: 0;
+		top: 5px;
+		bottom: 5px;
+		width: 4px;
+		border-radius: 4px;
+		background: var(--grad-primary);
+		box-shadow: 0 0 12px var(--accent-purple-glow);
+	}
+
+	.seo-detailed-section :global(h3) {
+		font-size: 1.4rem;
+		margin-top: 32px;
+		margin-bottom: 16px;
+		color: #e2e8f0;
+		position: relative;
+		padding-left: 18px;
+	}
+	.seo-detailed-section :global(h3::before) {
+		content: '';
+		position: absolute;
+		left: 0;
+		top: 0.5em;
+		width: 9px;
+		height: 9px;
+		border-radius: 2px;
+		background: var(--accent-cyan);
+		box-shadow: 0 0 10px var(--accent-cyan-glow);
+	}
+	
+	html.light .seo-detailed-section :global(h3) {
+		color: hsl(224, 25%, 12%);
+	}
+
+	.seo-detailed-section :global(p) {
+		color: var(--text-muted);
+		line-height: 1.7;
+		margin-bottom: 16px;
+		font-size: 1.05rem;
+	}
+
+	.seo-detailed-section :global(a) {
+		color: var(--accent-cyan);
+		text-decoration: underline;
+		text-underline-offset: 2px;
+		font-weight: 600;
+	}
+
+	.seo-detailed-section :global(a:hover) {
+		color: var(--accent-purple);
+	}
+	.seo-detailed-section :global(strong) {
+		color: #ffffff;
+		font-weight: 600;
+	}
+	html.light .seo-detailed-section :global(strong) {
+		color: hsl(224, 25%, 12%);
+	}
+	.seo-detailed-section :global(ul) {
+		list-style: none;
+		margin-bottom: 24px;
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+	}
+	.seo-detailed-section :global(li) {
+		padding-left: 24px;
+		position: relative;
+		color: var(--text-muted);
+		font-size: 1rem;
+		line-height: 1.6;
+	}
+	.seo-detailed-section :global(li::before) {
+		content: '⚡';
+		position: absolute;
+		left: 0;
+		top: 2px;
+		color: var(--accent-cyan);
+	}
+
+	/* FAQ */
+	.service-faq {
+		padding: 40px 0;
+	}
+
+	.faq-block {
+		max-width: 800px;
+		margin: 0 auto;
+	}
+
+	.faq-block h2 {
+		font-size: 2rem;
+		margin-bottom: 24px;
+		line-height: 1.3;
+	}
+
+	.faq-item {
+		border: 1px solid var(--glass-border);
+		border-radius: 12px;
+		padding: 18px 22px;
+		margin-bottom: 12px;
+		background: rgba(255, 255, 255, 0.015);
+	}
+
+	html.light .faq-item {
+		background: rgba(0, 0, 0, 0.015);
+	}
+
+	.faq-item summary {
+		cursor: pointer;
+		font-weight: 600;
+		font-size: 1.05rem;
+		color: var(--text-main);
+		list-style: none;
+		display: flex;
+		justify-content: space-between;
+		gap: 12px;
+	}
+
+	.faq-item summary::after {
+		content: '+';
+		color: var(--accent-cyan);
+		font-size: 1.4rem;
+		line-height: 1;
+	}
+
+	.faq-item[open] summary::after {
+		content: '−';
+	}
+
+	.faq-item p {
+		margin-top: 12px;
+		color: var(--text-muted);
+		line-height: 1.65;
+		font-size: 0.98rem;
+	}
+
+	/* Related Posts */
+	.related-posts-section {
+		padding: 60px 0 100px 0;
+	}
+
+	.blog-grid {
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		gap: 24px;
+	}
+
+	.blog-section-card {
+		padding: 30px;
+		display: flex;
+		flex-direction: column;
+	}
+
+	.blog-meta {
+		margin-bottom: 16px;
+	}
+
+	.blog-tag {
+		background: rgba(147, 51, 234, 0.1);
+		color: var(--accent-purple);
+		padding: 4px 12px;
+		border-radius: 20px;
+		font-size: 0.8rem;
+		font-weight: 600;
+	}
+
+	.blog-section-card h3 {
+		font-size: 1.3rem;
+		margin-bottom: 12px;
+		line-height: 1.4;
+	}
+
+	.blog-section-card p {
+		color: var(--text-muted);
+		line-height: 1.5;
+		margin-bottom: 24px;
+	}
+
+	/* Адаптивность */
+	@media (max-width: 992px) {
+		.hero-grid {
+			grid-template-columns: 1fr;
+			gap: 40px;
+		}
+		
+		.hero-content {
+			text-align: left;
+		}
+		
+		.hero-features {
+			align-items: flex-start;
+		}
+		
+		.pricing-grid {
+			grid-template-columns: 1fr;
+			max-width: 500px;
+			margin: 0 auto;
+		}
+		
+		.team-wrapper {
+			flex-direction: column;
+			text-align: left;
+			align-items: flex-start;
+		}
+		
+		.contact-details {
+			align-items: flex-start;
+		}
+		
+		.avatar-group {
+			justify-content: flex-start;
+		}
+	}
+
+	@media (max-width: 768px) {
+		.hero-content h1 {
+			font-size: 2.2rem;
+		}
+
+		.cases-section {
+			padding: 30px 0;
+		}
+
+		.section-header {
+			margin-bottom: 20px;
+		}
+		.section-header h2 {
+			font-size: 1.7rem;
+		}
+
+		.cases-grid,
+		.blog-grid,
+		.audit-steps {
+			grid-template-columns: 1fr;
+		}
+
+		.cases-grid {
+			gap: 16px;
+		}
+
+		.case-card {
+			padding: 20px 16px !important;
+		}
+
+		.case-results {
+			grid-template-columns: 1fr;
+			gap: 12px;
+		}
+
+		.pricing-card {
+			padding: 30px 20px;
+		}
+	}
+</style>

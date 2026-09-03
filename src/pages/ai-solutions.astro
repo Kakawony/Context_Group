@@ -2,16 +2,38 @@
 import Layout from '../layouts/Layout.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
 import AiSphere from '../components/AiSphere.astro';
+import TeamSection from '../components/TeamSection.astro';
 
+import data from '../content/pages/ai-solutions/index.json';
+import { ICONS } from '../data/icons';
+import Markdoc from '@markdoc/markdoc';
+import seoRichRaw from '../content/pages/ai-solutions/index/seoRich.mdoc?raw';
+
+// Последние статьи блога (сортировка по дате ДД.ММ.ГГГГ, берём 4 свежих)
+const rawPosts = Object.values(import.meta.glob('./blog/*.md', { eager: true })) as any[];
+const parseDate = (dStr: string) => {
+	if (!dStr) return 0;
+	const parts = dStr.split('.');
+	if (parts.length === 3) {
+		const [d, m, y] = parts.map(Number);
+		return new Date(y, m - 1, d).getTime();
+	}
+	return 0;
+};
+const latestPosts = rawPosts
+	.sort((a, b) => parseDate(b.frontmatter.date) - parseDate(a.frontmatter.date))
+	.slice(0, 4);
+
+const seoRichHtml = Markdoc.renderers.html(Markdoc.transform(Markdoc.parse(seoRichRaw)));
 ---
-<Layout title="AI-решения для бизнеса | Context Group" description="Все специализированные AI-решения по отраслям.">
-	<AiSphere alwaysVisible={true} scale={0.5} />
+<Layout title={data.title} description={data.description}>
+	<AiSphere alwaysVisible={true} scale={0.5} hideOnSelector=".industry-seo-section" />
 	<section class="industry-hero" style="padding: 120px 0 60px;">
 		<div class="container">
 			<Breadcrumbs items={[{ label: 'Все AI-решения' }]} />
-			<h1 style="font-size: 2.8rem; margin-bottom: 24px;">Все <span class="gradient-text">AI-решения</span></h1>
+			<h1 style="font-size: 2.8rem; margin-bottom: 24px;">{data.heroTitleLead}<span class="gradient-text">{data.heroTitleAccent}</span></h1>
 			<p class="hero-desc" style="color: var(--text-muted); font-size: 1.15rem; max-width: 700px; line-height: 1.6;">
-				Специализированные стеки нейросетей и сценарии интеграции под конкретные направления
+				{data.heroDesc}
 			</p>
 		</div>
 	</section>
@@ -19,19 +41,65 @@ import AiSphere from '../components/AiSphere.astro';
 	<section class="industries-section" style="padding: 0 0 80px 0;">
 		<div class="container">
 			<div class="industries-grid-clean" style="display: grid; grid-template-columns: 1fr; gap: 40px; max-width: 600px;">
-				<div class="industry-clean-item glass-card" style="display: flex; flex-direction: column; justify-content: space-between; padding: 32px; border-radius: 16px;">
-					<div class="industry-clean-header" style="display: flex; align-items: center; gap: 16px; margin-bottom: 20px;">
-						<div class="service-icon purple">
-							<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-								<path d="M3 21h18"></path><path d="M9 8h1"></path><path d="M9 12h1"></path><path d="M9 16h1"></path><path d="M14 8h1"></path><path d="M14 12h1"></path><path d="M14 16h1"></path><path d="M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16"></path>
-							</svg>
+				{data.industries.map((ind, i) => (
+					<div class="industry-clean-item glass-card" style="display: flex; flex-direction: column; justify-content: space-between; padding: 32px; border-radius: 16px;">
+						<div class="industry-clean-header" style="display: flex; align-items: center; gap: 16px; margin-bottom: 20px;">
+							<div class={`service-icon ${ind.iconClass}`} set:html={ICONS[ind.icon]}></div>
+							<h3 style="font-size: 1.4rem; font-weight: 700; margin: 0;">{ind.title}</h3>
 						</div>
-						<h3 style="font-size: 1.4rem; font-weight: 700; margin: 0;">AI для агентств недвижимости</h3>
+						<p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.65; margin: 0 0 20px 0; flex-grow: 1;">{ind.desc}</p>
+						<a href={ind.link} class={`industry-clean-link industry-link-${i + 1}`}>{ind.linkText} &rarr;</a>
 					</div>
-					<p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.65; margin: 0 0 20px 0; flex-grow: 1;">Полная картотека AI-инструментов, сценариев внедрения и готовых промптов для риелторов, брокеров и застройщиков. Автоматизация карточек объектов и боты-подборщики.</p>
-					<a href="/ai-real-estate" class="industry-clean-link industry-link-1">Смотреть AI-инструменты &rarr;</a>
+				))}
+			</div>
+		</div>
+	</section>
+
+	<!-- Экспертный SEO-текст -->
+	<section class="industry-seo-section">
+		<div class="container">
+			<div class="seo-text-block-clean">
+				<h2>{data.seoTitle}</h2>
+				<div class="seo-text-content">
+					<Fragment set:html={seoRichHtml} />
 				</div>
 			</div>
+		</div>
+	</section>
+
+	<!-- Последние материалы из блога -->
+	{latestPosts.length > 0 && (
+		<section class="industry-blog">
+			<div class="container">
+				<div class="glass-card blog-section-card">
+					<div class="blog-section-header">
+						<h2>Свежие материалы из <span class="gradient-text">AI-Hub</span></h2>
+						<p>Последние статьи, кейсы и инструкции по внедрению нейросетей</p>
+					</div>
+
+					<div class="blog-grid">
+						{latestPosts.map((post) => (
+							<a href={post.url} class="blog-card-inline">
+								<div class="blog-card-meta">
+									<span class="category-tag">{post.frontmatter.category}</span>
+									<span class="meta-separator">&bull;</span>
+									<span>{post.frontmatter.date}</span>
+								</div>
+								<h3>{post.frontmatter.title}</h3>
+								<p>{post.frontmatter.description}</p>
+								<span class="read-more">Читать &rarr;</span>
+							</a>
+						))}
+					</div>
+				</div>
+			</div>
+		</section>
+	)}
+
+	<!-- Над проектом будут работать -->
+	<section class="team-section">
+		<div class="container">
+			<TeamSection />
 		</div>
 	</section>
 </Layout>
@@ -70,5 +138,187 @@ import AiSphere from '../components/AiSphere.astro';
 		border: 1px solid rgba(168, 85, 247, 0.3);
 		box-shadow: 0 0 20px rgba(168, 85, 247, 0.15);
 		color: #c084fc;
+	}
+
+	/* SEO-блок */
+	.industry-seo-section {
+		padding: 40px 0;
+	}
+
+	.seo-text-block-clean h2 {
+		font-size: 2rem;
+		margin-bottom: 24px;
+		line-height: 1.3;
+		position: relative;
+		padding-left: 22px;
+	}
+	.seo-text-block-clean h2::before {
+		content: '';
+		position: absolute;
+		left: 0;
+		top: 5px;
+		bottom: 5px;
+		width: 4px;
+		border-radius: 4px;
+		background: var(--grad-primary);
+		box-shadow: 0 0 12px var(--accent-purple-glow);
+	}
+
+	.seo-text-content {
+		display: flex;
+		flex-direction: column;
+		gap: 20px;
+	}
+
+	.seo-text-content :global(p) {
+		color: var(--text-muted);
+		font-size: 1rem;
+		line-height: 1.7;
+	}
+	.seo-text-content :global(a) {
+		color: var(--accent-cyan);
+		text-decoration: underline;
+		text-underline-offset: 2px;
+		font-weight: 600;
+	}
+	.seo-text-content :global(a:hover) { color: var(--accent-purple); }
+	.seo-text-content :global(strong) { color: #ffffff; font-weight: 600; }
+	.seo-text-content :global(h3) {
+		font-size: 1.3rem;
+		margin: 28px 0 12px 0;
+		color: var(--text-main);
+		position: relative;
+		padding-left: 18px;
+	}
+	.seo-text-content :global(h3::before) {
+		content: '';
+		position: absolute;
+		left: 0;
+		top: 0.42em;
+		width: 9px;
+		height: 9px;
+		border-radius: 2px;
+		background: var(--accent-cyan);
+		box-shadow: 0 0 10px var(--accent-cyan-glow);
+	}
+
+	/* Блог */
+	.industry-blog {
+		padding: 40px 0 60px 0;
+	}
+
+	.blog-section-card {
+		padding: 40px;
+	}
+
+	.blog-section-header {
+		text-align: left;
+		margin-bottom: 30px;
+	}
+
+	.blog-section-header h2 {
+		font-size: 2rem;
+		margin-bottom: 8px;
+	}
+
+	.blog-section-header p {
+		color: var(--text-muted);
+		font-size: 1rem;
+	}
+
+	.blog-grid {
+		display: grid;
+		grid-template-columns: repeat(4, 1fr);
+		gap: 16px;
+	}
+
+	.blog-card-inline {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+		padding: 20px;
+		background: rgba(255, 255, 255, 0.015);
+		border: 1px solid rgba(255, 255, 255, 0.04);
+		border-radius: 12px;
+		transition: border-color var(--transition-fast), background-color var(--transition-fast), transform var(--transition-fast);
+	}
+
+	html.light .blog-card-inline {
+		background: rgba(0, 0, 0, 0.015);
+		border: 1px solid rgba(0, 0, 0, 0.03);
+	}
+
+	.blog-card-inline:hover {
+		border-color: rgba(255, 255, 255, 0.1);
+		background: rgba(255, 255, 255, 0.03);
+		transform: translateY(-2px);
+	}
+
+	html.light .blog-card-inline:hover {
+		border-color: rgba(0, 0, 0, 0.06);
+		background: rgba(0, 0, 0, 0.025);
+	}
+
+	.blog-card-meta {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		font-size: 0.75rem;
+		color: var(--text-dim);
+	}
+
+	.category-tag {
+		background: rgba(6, 182, 212, 0.1);
+		border: 1px solid rgba(6, 182, 212, 0.2);
+		color: var(--accent-cyan);
+		padding: 2px 8px;
+		border-radius: 9999px;
+		font-weight: 500;
+	}
+
+	.meta-separator {
+		color: var(--text-dim);
+	}
+
+	.blog-card-inline h3 {
+		font-size: 1.05rem;
+		line-height: 1.35;
+	}
+
+	.blog-card-inline p {
+		color: var(--text-muted);
+		font-size: 0.85rem;
+		line-height: 1.5;
+		flex-grow: 1;
+	}
+
+	.read-more {
+		color: var(--accent-cyan);
+		font-weight: 600;
+		font-size: 0.85rem;
+		margin-top: auto;
+	}
+
+	/* Над проектом будут работать */
+	.team-section {
+		padding: 40px 0 80px 0;
+	}
+
+	@media (max-width: 992px) {
+		.blog-grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
+		.blog-section-card {
+			padding: 30px 20px;
+		}
+	}
+
+	@media (max-width: 768px) {
+		.blog-section-header h2 {
+			font-size: 1.8rem;
+		}
+		.blog-grid {
+			grid-template-columns: 1fr;
+		}
 	}
 </style>

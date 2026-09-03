@@ -1,0 +1,308 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+
+const title = 'Урок 1. Анализ конкурентов и формирование стратегии | Обучение маркетингу с AI';
+const description = 'Первый бесплатный урок курса «Обучение маркетингу в паре с AI»: как за час собрать конкурентов, вытащить их сильные стороны нейросетью и собрать из этого рабочую стратегию.';
+---
+
+<Layout title={title} description={description}>
+	<div class="page-container">
+		<Breadcrumbs items={[
+			{ label: 'Обучение', href: '/obuchenie-marketingu-s-ai' },
+			{ label: 'Урок 1', href: '/obuchenie-marketingu-s-ai/urok-1-analiz-konkurentov' }
+		]} />
+
+		<section class="lesson-section">
+			<div class="container lesson-container">
+				<div class="lesson-head">
+					<span class="lesson-badge">Урок 1 · Бесплатно</span>
+					<h1>Анализ конкурентов <span class="gradient-text">+ формирование стратегии</span></h1>
+					<p class="lesson-lead">
+						С этого начинается любой маркетинг. Разбираю, как за один вечер собрать всех конкурентов в нише, вытащить нейросетью их офферы, цены и слабые места, а потом собрать из этого не «отчёт в стол», а понятную стратегию: где вы выигрываете, где отстаёте и за счёт чего заходить на рынок. Всё на живом примере — повторите на своём проекте прямо по ходу видео.
+					</p>
+				</div>
+
+				<!-- Окно с видео (плейсхолдер — сюда встанет embed) -->
+				<div class="video-frame" role="img" aria-label="Видео урока скоро появится">
+					<div class="video-placeholder">
+						<button class="video-play" type="button" aria-label="Видео скоро">
+							<svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+						</button>
+						<span class="video-note">Видео урока скоро будет здесь</span>
+					</div>
+				</div>
+
+				<!-- Форма захвата: получить всю программу -->
+				<div class="glass-card lesson-offer">
+					<div class="lesson-offer-glow"></div>
+					<div class="lesson-offer-info">
+						<h2>Индивидуальное <span class="gradient-text">полное обучение</span></h2>
+						<p>Понравился формат? Дальше — ещё 8 уроков: структура сайта, SEO-конвейеры, performance-реклама и автоматизация рутины связкой «маркетолог + AI». Разбираем всё лично под ваш проект и вашу нишу — с обратной связью, а не в записи для всех.</p>
+						<div class="lesson-offer-price">
+							<span class="lesson-offer-price-val">40 000 ₽</span>
+							<span class="lesson-offer-price-note">за полный курс · можно разбить на 2–4 части</span>
+						</div>
+					</div>
+					<form class="lesson-form" action="/send" method="POST">
+						<input type="hidden" name="_next" value="/thanks" />
+						<input type="hidden" name="service" value="Обучение маркетингу с AI — заявка на индивидуальное полное обучение (40 000 ₽)" />
+						<div class="lesson-form-group">
+							<input type="text" name="name" placeholder="Ваше имя" required />
+						</div>
+						<div class="lesson-form-group">
+							<input type="text" name="phone_or_tg" placeholder="Телефон или Telegram" required />
+						</div>
+						<button type="submit" class="btn btn-primary lesson-form-submit"><span>Оставить заявку на обучение</span></button>
+						<label class="lesson-privacy">
+							<input type="checkbox" name="agree" value="yes" required checked />
+							<span>Согласен с <a href="/privacy" target="_blank">политикой конфиденциальности</a></span>
+						</label>
+					</form>
+				</div>
+
+				<div class="lesson-under">
+					<a href="/obuchenie-marketingu-s-ai" class="btn btn-secondary lesson-back"><span>← Вся программа обучения</span></a>
+				</div>
+			</div>
+		</section>
+	</div>
+</Layout>
+
+<style>
+	.page-container { padding-top: 100px; }
+
+	.lesson-section { padding: 30px 0 90px; }
+
+	.lesson-container {
+		max-width: 900px;
+	}
+
+	.lesson-head {
+		text-align: center;
+		margin-bottom: 40px;
+	}
+
+	.lesson-badge {
+		display: inline-block;
+		font-family: 'Outfit', sans-serif;
+		font-size: 0.78rem;
+		font-weight: 700;
+		letter-spacing: 0.5px;
+		text-transform: uppercase;
+		color: #fff;
+		background: var(--grad-primary);
+		padding: 5px 14px;
+		border-radius: 999px;
+		box-shadow: 0 0 14px var(--accent-purple-glow);
+		margin-bottom: 20px;
+	}
+
+	.lesson-head h1 {
+		font-size: 2.6rem;
+		line-height: 1.15;
+		margin-bottom: 20px;
+	}
+
+	.lesson-lead {
+		color: var(--text-muted);
+		font-size: 1.1rem;
+		line-height: 1.7;
+		max-width: 760px;
+		margin: 0 auto;
+	}
+
+	/* Окно с видео 16:9 */
+	.video-frame {
+		position: relative;
+		width: 100%;
+		aspect-ratio: 16 / 9;
+		border-radius: 18px;
+		overflow: hidden;
+		border: 1px solid var(--glass-border);
+		background:
+			radial-gradient(circle at 50% 40%, rgba(147, 51, 234, 0.18), transparent 60%),
+			hsl(224, 25%, 8%);
+	}
+
+	html.light .video-frame {
+		background:
+			radial-gradient(circle at 50% 40%, rgba(147, 51, 234, 0.1), transparent 60%),
+			hsl(224, 25%, 94%);
+	}
+
+	.video-placeholder {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		gap: 18px;
+	}
+
+	.video-play {
+		width: 84px;
+		height: 84px;
+		border-radius: 50%;
+		border: none;
+		cursor: default;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: #fff;
+		padding-left: 5px;
+		background: var(--grad-primary);
+		box-shadow: 0 0 30px var(--accent-purple-glow);
+		animation: playPulse 2.6s infinite ease-in-out;
+	}
+
+	@keyframes playPulse {
+		0%, 100% { transform: scale(1); box-shadow: 0 0 24px var(--accent-purple-glow); }
+		50% { transform: scale(1.06); box-shadow: 0 0 40px var(--accent-purple-glow); }
+	}
+
+	.video-note {
+		font-family: 'Outfit', sans-serif;
+		font-size: 0.95rem;
+		font-weight: 600;
+		color: var(--text-muted);
+		letter-spacing: 0.3px;
+	}
+
+	/* Форма захвата: получить всю программу */
+	.lesson-offer {
+		margin-top: 40px;
+		padding: 44px;
+		display: grid;
+		grid-template-columns: 1fr 360px;
+		gap: 44px;
+		align-items: center;
+		position: relative;
+		overflow: hidden;
+	}
+
+	.lesson-offer-glow {
+		position: absolute;
+		top: -120px;
+		left: -60px;
+		width: 480px;
+		height: 300px;
+		background: radial-gradient(circle, var(--accent-purple-glow) 0%, transparent 70%);
+		filter: blur(50px);
+		pointer-events: none;
+	}
+
+	.lesson-offer-info { position: relative; }
+
+	.lesson-offer h2 {
+		font-size: 1.9rem;
+		margin-bottom: 14px;
+		line-height: 1.2;
+	}
+	.lesson-offer-info p {
+		color: var(--text-muted);
+		font-size: 1rem;
+		line-height: 1.65;
+		margin: 0 0 22px;
+	}
+
+	.lesson-offer-price {
+		display: flex;
+		align-items: baseline;
+		flex-wrap: wrap;
+		gap: 4px 12px;
+	}
+	.lesson-offer-price-val {
+		font-family: 'Outfit', sans-serif;
+		font-size: 2rem;
+		font-weight: 800;
+		background: var(--grad-primary);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
+	}
+	.lesson-offer-price-note {
+		font-size: 0.9rem;
+		color: var(--text-dim);
+	}
+
+	.lesson-form {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		gap: 14px;
+	}
+	.lesson-form-group input {
+		width: 100%;
+		background: rgba(255, 255, 255, 0.03);
+		border: 1px solid var(--glass-border);
+		border-radius: 8px;
+		padding: 12px 16px;
+		color: #ffffff;
+		font-family: inherit;
+		font-size: 0.92rem;
+		outline: none;
+		transition: border-color var(--transition-fast);
+	}
+	html.light .lesson-form-group input {
+		background: rgba(0, 0, 0, 0.02);
+		border: 1px solid rgba(0, 0, 0, 0.06);
+		color: hsl(224, 25%, 12%);
+	}
+	.lesson-form-group input:focus { border-color: var(--accent-cyan); }
+
+	.lesson-form-submit {
+		width: 100%;
+		justify-content: center;
+		margin-top: 4px;
+	}
+
+	.lesson-privacy {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 8px;
+		font-size: 0.74rem;
+		color: var(--text-muted);
+		line-height: 1.3;
+		cursor: pointer;
+	}
+	.lesson-privacy input {
+		width: 15px;
+		height: 15px;
+		accent-color: var(--accent-cyan);
+		flex-shrink: 0;
+		cursor: pointer;
+	}
+	.lesson-privacy a {
+		color: var(--accent-cyan);
+		text-decoration: underline;
+		text-underline-offset: 2px;
+	}
+
+	.lesson-under {
+		text-align: center;
+		margin-top: 36px;
+	}
+
+	.lesson-back {
+		display: inline-flex;
+	}
+
+	@media (max-width: 900px) {
+		.lesson-offer {
+			grid-template-columns: 1fr;
+			gap: 28px;
+			padding: 32px 22px;
+		}
+	}
+
+	@media (max-width: 768px) {
+		.lesson-head h1 { font-size: 1.8rem; }
+		.lesson-lead { font-size: 0.98rem; }
+		.lesson-section { padding: 20px 0 50px; }
+		.video-play { width: 64px; height: 64px; }
+		.lesson-offer h2 { font-size: 1.6rem; }
+	}
+</style>

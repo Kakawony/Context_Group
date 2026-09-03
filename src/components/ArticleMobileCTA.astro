@@ -1,0 +1,237 @@
+---
+/* Мобильный призыв к действию для статей блога.
+   Слева на экране — «горящая» AI-вкладка; по тапу выезжает шторка ~1/3 экрана
+   с тем же оффером, что и десктопный сайдбар-баннер. Стандарт для всех статей,
+   тексты/ссылку можно переопределить через props под конкретную статью. */
+interface Props {
+	title?: string;
+	text?: string;
+	btnText?: string;
+	btnHref?: string;
+}
+
+const {
+	title = "Внедрение AI в ваш бизнес",
+	text = "Разберём ваши процессы и покажем, где AI-агенты снимут рутину и сэкономят бюджет. Без воды и обязательств.",
+	btnText = "Бесплатный аудит",
+	btnHref = "/audit-vnedreniya-ai",
+} = Astro.props;
+---
+
+<div class="mcta" id="mobileCta">
+	<!-- Боковая «горящая» вкладка -->
+	<button class="mcta-tab" id="mctaTab" aria-label="Открыть бесплатный AI-аудит" aria-expanded="false">
+		<span class="mcta-orb"></span>
+		<span class="mcta-tab-label">AI</span>
+	</button>
+
+	<!-- Затемнение -->
+	<div class="mcta-backdrop" id="mctaBackdrop"></div>
+
+	<!-- Шторка снизу (~1/3 экрана) -->
+	<div class="mcta-sheet" id="mctaSheet" role="dialog" aria-modal="true" aria-label={title}>
+		<button class="mcta-close" id="mctaClose" aria-label="Закрыть">&times;</button>
+		<div class="mcta-grip"></div>
+		<div class="mcta-badge">Консультация</div>
+		<h3 class="mcta-title">{title}</h3>
+		<p class="mcta-text">{text}</p>
+		<a href={btnHref} class="btn btn-primary mcta-btn"><span>{btnText}</span></a>
+	</div>
+</div>
+
+<style>
+	/* По умолчанию выключено; включаем только на мобильных/планшетах */
+	.mcta { display: none; }
+
+	@media (max-width: 992px) {
+		.mcta { display: block; }
+	}
+
+	/* Боковая вкладка */
+	.mcta-tab {
+		position: fixed;
+		left: 0;
+		top: 50%;
+		transform: translateY(-50%);
+		z-index: 1001;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 6px;
+		padding: 12px 9px;
+		cursor: pointer;
+		color: #fff;
+		background: rgba(13, 15, 20, 0.65);
+		border: 1px solid var(--glass-border);
+		border-left: none;
+		border-radius: 0 16px 16px 0;
+		backdrop-filter: blur(10px);
+		-webkit-backdrop-filter: blur(10px);
+		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+		transition: opacity 0.3s ease, transform 0.3s ease;
+	}
+
+	html.light .mcta-tab {
+		background: rgba(255, 255, 255, 0.8);
+		color: hsl(224, 25%, 12%);
+	}
+
+	.mcta-orb {
+		width: 22px;
+		height: 22px;
+		border-radius: 50%;
+		background: radial-gradient(circle at 35% 30%, #ffd6e6 0%, #f9064f 42%, #9355f6 100%);
+		box-shadow: 0 0 14px rgba(249, 6, 79, 0.6);
+		animation: mctaPulse 2.4s infinite ease-in-out;
+	}
+
+	.mcta-tab-label {
+		font-family: 'Outfit', sans-serif;
+		font-weight: 700;
+		font-size: 0.72rem;
+		letter-spacing: 1px;
+	}
+
+	@keyframes mctaPulse {
+		0%, 100% { transform: scale(0.92); box-shadow: 0 0 10px rgba(249, 6, 79, 0.45); }
+		50% { transform: scale(1.08); box-shadow: 0 0 18px rgba(249, 6, 79, 0.75); }
+	}
+
+	/* Затемнение */
+	.mcta-backdrop {
+		position: fixed;
+		inset: 0;
+		z-index: 1001;
+		background: rgba(0, 0, 0, 0.5);
+		opacity: 0;
+		pointer-events: none;
+		transition: opacity 0.3s ease;
+	}
+
+	/* Шторка */
+	.mcta-sheet {
+		position: fixed;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		z-index: 1002;
+		height: 36vh;
+		min-height: 250px;
+		max-height: 70vh;
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		padding: 22px 22px max(22px, env(safe-area-inset-bottom, 22px));
+		background: rgba(15, 17, 23, 0.97);
+		border-top: 1px solid var(--glass-border);
+		border-radius: 22px 22px 0 0;
+		box-shadow: 0 -16px 40px rgba(0, 0, 0, 0.45);
+		backdrop-filter: blur(16px);
+		-webkit-backdrop-filter: blur(16px);
+		transform: translateY(105%);
+		transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+		overflow-y: auto;
+	}
+
+	html.light .mcta-sheet {
+		background: rgba(255, 255, 255, 0.98);
+	}
+
+	.mcta-grip {
+		width: 44px;
+		height: 5px;
+		border-radius: 999px;
+		background: var(--glass-border);
+		align-self: center;
+		margin-bottom: 16px;
+		flex-shrink: 0;
+	}
+
+	.mcta-close {
+		position: absolute;
+		top: 12px;
+		right: 16px;
+		width: 32px;
+		height: 32px;
+		border: none;
+		background: transparent;
+		color: var(--text-muted);
+		font-size: 1.6rem;
+		line-height: 1;
+		cursor: pointer;
+	}
+
+	.mcta-badge {
+		display: inline-block;
+		background: rgba(6, 182, 212, 0.12);
+		color: var(--accent-cyan);
+		font-size: 0.72rem;
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 1px;
+		padding: 4px 10px;
+		border-radius: 999px;
+		margin-bottom: 12px;
+	}
+
+	.mcta-title {
+		font-size: 1.4rem;
+		line-height: 1.25;
+		margin-bottom: 10px;
+		color: #fff;
+	}
+	html.light .mcta-title { color: hsl(224, 25%, 12%); }
+
+	.mcta-text {
+		font-size: 0.95rem;
+		line-height: 1.55;
+		color: var(--text-muted);
+		margin-bottom: 18px;
+	}
+
+	.mcta-btn {
+		width: 100%;
+		justify-content: center;
+		text-align: center;
+		padding: 14px;
+		font-size: 1rem;
+		margin-top: auto;
+		flex-shrink: 0;
+	}
+
+	/* Открытое состояние */
+	.mcta.open .mcta-backdrop {
+		opacity: 1;
+		pointer-events: auto;
+	}
+	.mcta.open .mcta-sheet {
+		transform: translateY(0);
+	}
+	.mcta.open .mcta-tab {
+		opacity: 0;
+		pointer-events: none;
+		transform: translateY(-50%) translateX(-120%);
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.mcta-orb { animation: none; }
+	}
+</style>
+
+<script>
+	document.addEventListener('DOMContentLoaded', () => {
+		const root = document.getElementById('mobileCta');
+		const tab = document.getElementById('mctaTab');
+		const backdrop = document.getElementById('mctaBackdrop');
+		const close = document.getElementById('mctaClose');
+		if (!root || !tab) return;
+
+		const open = () => { root.classList.add('open'); tab.setAttribute('aria-expanded', 'true'); };
+		const hide = () => { root.classList.remove('open'); tab.setAttribute('aria-expanded', 'false'); };
+
+		tab.addEventListener('click', open);
+		backdrop && backdrop.addEventListener('click', hide);
+		close && close.addEventListener('click', hide);
+		document.addEventListener('keydown', (e) => { if (e.key === 'Escape') hide(); });
+	});
+</script>

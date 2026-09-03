@@ -1,21 +1,39 @@
 ---
+// Тексты услуг приходят из CMS (singleton «Главная» → блок «Услуги»).
+// SVG-иконки и цвета — часть дизайна, живут в компоненте и сопоставляются по индексу карточки.
+const { titleLead = 'Услуги по', titleAccent = 'AI-интеграции', items = [] } = Astro.props;
+
+const icons = [
+	'<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>',
+	'<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>',
+	'<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>',
+	'<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>',
+	'<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>',
+	'<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>',
+];
+const colors = ['purple', 'cyan', 'purple', 'cyan', 'purple', 'cyan'];
 ---
 <section id="services" class="services-section">
 	<div class="container">
 		<div class="section-header">
-			<h2>Услуги по <span class="gradient-text">AI-интеграции</span></h2>
-			<p>Автоматизируем процессы, настраиваем маркетинг и внедряем нейросети под ключ</p>
+			<h2>{titleLead} <span class="gradient-text">{titleAccent}</span></h2>
 		</div>
-		
+
 		<div class="services-grid">
-			<!-- Единственная услуга -->
-			<div class="glass-card service-card" style="cursor: pointer;" onclick="window.location.href='/service'">
-				<div class="service-icon purple">
-					<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="23" y1="11" x2="17" y2="11"></line></svg>
+			{items.map((item, i) => (
+				<div class="glass-card service-card" style="cursor: pointer;" onclick={`window.location.href='${item.href}'`}>
+					{item.badge ? (
+						<div class="service-card-top">
+							<div class={`service-icon ${colors[i % colors.length]}`} set:html={icons[i % icons.length]} />
+							<span class="service-start-badge">{item.badge}</span>
+						</div>
+					) : (
+						<div class={`service-icon ${colors[i % colors.length]}`} set:html={icons[i % icons.length]} />
+					)}
+					<h3><a href={item.href}>{item.title}</a></h3>
+					<p>{item.desc}</p>
 				</div>
-				<h3><a href="/service">AI в отдел продаж (CRM)</a></h3>
-				<p>Интеграция AI-ассистентов в amoCRM и Битрикс24. Автоматическое заполнение карточек сделок по итогам звонков, генерация саммари переговоров и контроль качества работы менеджеров.</p>
-			</div>
+			))}
 		</div>
 	</div>
 </section>
@@ -23,7 +41,7 @@
 <style>
 	/* Услуги */
 	.services-section {
-		padding: 100px 0 60px 0;
+		padding: 30px 0 50px 0;
 		background: linear-gradient(180deg, rgba(13,15,20,0) 0%, rgba(20,24,33,0.3) 50%, rgba(13,15,20,0) 100%);
 	}
 
@@ -34,7 +52,7 @@
 	.section-header {
 		text-align: center;
 		max-width: 600px;
-		margin: 0 auto 60px auto;
+		margin: 0 auto 28px auto;
 	}
 
 	.section-header h2 {
@@ -49,8 +67,8 @@
 
 	.services-grid {
 		display: grid;
-		grid-template-columns: 1fr;
-		max-width: 600px;
+		grid-template-columns: repeat(3, 1fr);
+		max-width: 1080px;
 		margin: 0 auto;
 		gap: 20px;
 	}
@@ -64,8 +82,41 @@
 	}
 
 	.service-card:hover {
-		transform: none;
-		box-shadow: var(--glass-shadow);
+		transform: translateY(-6px);
+		box-shadow: 0 16px 40px rgba(6, 182, 212, 0.18);
+		border-color: rgba(6, 182, 212, 0.45);
+	}
+
+	.service-card .service-icon {
+		transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+	}
+
+	.service-card:hover .service-icon {
+		transform: scale(1.12) rotate(-4deg);
+		box-shadow: 0 0 22px rgba(6, 182, 212, 0.35);
+	}
+
+	.service-card-top {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 12px;
+	}
+
+	.service-start-badge {
+		font-size: 0.7rem;
+		font-weight: 600;
+		letter-spacing: 0.2px;
+		color: var(--text-muted);
+		border: 1px solid var(--glass-border);
+		background: rgba(255, 255, 255, 0.02);
+		padding: 3px 10px;
+		border-radius: 9999px;
+		white-space: nowrap;
+	}
+
+	html.light .service-start-badge {
+		background: rgba(0, 0, 0, 0.02);
 	}
 
 	.service-icon {
@@ -110,9 +161,10 @@
 		line-height: 1.5;
 	}
 
-	@media (max-width: 1200px) {
+	@media (max-width: 1024px) {
 		.services-grid {
 			grid-template-columns: repeat(2, 1fr);
+			max-width: 720px;
 		}
 	}
 

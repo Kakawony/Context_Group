@@ -2,26 +2,45 @@
 import Layout from '../layouts/Layout.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
 import AiSphere from '../components/AiSphere.astro';
-import ServicesSection from '../components/ServicesSection.astro';
+import TeamSection from '../components/TeamSection.astro';
 
-// Получаем статьи блога с тегом "недвижимость"
+import data from '../content/pages/ai-real-estate/index.json';
+import { ICONS } from '../data/icons';
+import Markdoc from '@markdoc/markdoc';
+import seoRichRaw from '../content/pages/ai-real-estate/index/seoRich.mdoc?raw';
+
+// Получаем статьи блога с тегом из JSON
 const rawPosts = Object.values(import.meta.glob('./blog/*.md', { eager: true })) as any[];
-const realEstatePosts = rawPosts.filter(post => 
-	post.frontmatter.tags && post.frontmatter.tags.includes('недвижимость')
+const realEstatePosts = rawPosts.filter(post =>
+	post.frontmatter.tags && post.frontmatter.tags.includes(data.blogTag)
 );
+
+// FAQ — единый источник для разметки и микроразметки FAQPage (Schema.org)
+const faqSchema = {
+	'@context': 'https://schema.org',
+	'@type': 'FAQPage',
+	mainEntity: data.faqItems.map((item) => ({
+		'@type': 'Question',
+		name: item.q,
+		acceptedAnswer: { '@type': 'Answer', text: item.a },
+	})),
+};
+
+const seoRichHtml = Markdoc.renderers.html(Markdoc.transform(Markdoc.parse(seoRichRaw)));
 ---
 
-<Layout title="AI инструменты для недвижимости | Context Group" description="Картотека AI-решений, промптов и ботов для риелторов, застройщиков и агентств недвижимости в России.">
+<Layout title={data.title} description={data.description}>
+	<script type="application/ld+json" is:inline set:html={JSON.stringify(faqSchema)} />
 	<AiSphere alwaysVisible={true} scale={0.5} hideOnSelector=".industry-seo-section" />
 	
 	<section class="industry-hero">
 		<div class="hero-glow"></div>
 		<div class="container">
-			<Breadcrumbs items={[{ label: 'Недвижимость' }]} />
-			<div class="badge">🏢 Спецрешение для недвижимости</div>
-			<h1>AI инструменты <br />для <span class="gradient-text">Агентств недвижимости</span></h1>
+			<Breadcrumbs items={[{ label: data.breadcrumb }]} />
+			<div class="badge">{data.heroBadge}</div>
+			<h1>{data.heroTitleLead}<span class="gradient-text">{data.heroTitleAccent}</span></h1>
 			<p class="hero-desc">
-				Готовые сценарии внедрения нейросетей, обученные AI-агенты и промпты, которые увеличивают конверсию риелторов, ускоряют обработку лидов и автоматизируют маркетинг. Получите конкурентное преимущество уже сегодня.
+				{data.heroDesc}
 			</p>
 		</div>
 	</section>
@@ -30,42 +49,24 @@ const realEstatePosts = rawPosts.filter(post =>
 	<section class="tools-catalog">
 		<div class="container">
 			<div class="tools-grid">
-				<!-- Инструмент 1 -->
-				<div class="glass-card tool-card">
-					<div class="tool-header">
-						<div class="service-icon purple" style="transform: scale(0.8); margin-right: -4px;">
-							<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-								<rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-								<line x1="3" y1="9" x2="21" y2="9"></line>
-								<line x1="9" y1="21" x2="9" y2="9"></line>
-							</svg>
+				{data.tools.map((tool) => (
+					<div class="glass-card tool-card">
+						<div class="tool-header">
+							<div class={`service-icon ${tool.iconClass}`} style="transform: scale(0.8); margin-right: -4px;" set:html={ICONS[tool.icon]}></div>
+							<h3><a href={tool.link} class="tool-title-link">{tool.title}</a></h3>
 						</div>
-						<h3>Структура сайта + стратегия</h3>
-					</div>
-					<div class="tool-code-wrapper">
-						<span class="tool-status-code">seo_arhitector_property</span>
-					</div>
-					<p class="tool-desc">Для чего: если вы хотите сайт, то этот промт даст вам правильную структуру.</p>
-					<a href="/blog/seo-arhitector-property" class="prompt-more-link">Подробнее &rarr;</a>
-				</div>
-
-				<!-- Инструмент 2 -->
-				<div class="glass-card tool-card">
-					<div class="tool-header">
-						<div class="service-icon cyan" style="transform: scale(0.8); margin-right: -4px;">
-							<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-								<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-								<path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-							</svg>
+						<div class="tool-code-wrapper">
+							<span class="tool-status-code">{tool.code}</span>
 						</div>
-						<h3>Генератор экспертных статей</h3>
+						<p class="tool-desc">{tool.desc}</p>
+						<div class="tool-price">
+							{tool.prices.map((p) => (
+								<span class="tool-price-row"><span class="tp-label">{p.label}</span><span class="tp-val" set:html={p.value}></span></span>
+							))}
+						</div>
+						<a href={tool.link} class="prompt-more-link">{tool.linkText} &rarr;</a>
 					</div>
-					<div class="tool-code-wrapper">
-						<span class="tool-status-code">zalerio_article_standard</span>
-					</div>
-					<p class="tool-desc">Для чего: если вы хотите живые тексты, написанные AI, но как будто человеком (обход детекторов).</p>
-					<a href="/blog/zalerio-article-standard" class="prompt-more-link">Подробнее &rarr;</a>
-				</div>
+				))}
 			</div>
 		</div>
 	</section>
@@ -74,33 +75,37 @@ const realEstatePosts = rawPosts.filter(post =>
 	<section class="industry-seo-section">
 		<div class="container">
 			<div class="seo-text-block-clean">
-				<h2>Как внедрение AI автоматизирует маркетинг и продажи в недвижимости</h2>
+				<h2>{data.seoTitle}</h2>
 				<div class="seo-text-content">
-					<p>
-						Внедрение искусственного интеллекта в сферу недвижимости (iGaming, жилые комплексы, коммерческие объекты) совершило революцию в маркетинге и продажах. Традиционные методы привлечения лидов, ручное описание сотен объектов, долгая квалификация звонков — все эти процессы забирают гигантские ресурсы и увеличивают ФОТ компаний.
-					</p>
-					<p>
-						С помощью специализированных AI-агентов агентства недвижимости и застройщики могут автоматизировать до 90% рутинных процессов. На первом этапе воронки умные LLM-боты в Telegram, WhatsApp или прямо на сайте компании квалифицируют холодный трафик. AI-квалификатор за секунды выявляет потребности потенциального покупателя: определяет бюджет, предпочтительный район, количество комнат, потребность в ипотеке и рассрочке. Бот моментально формирует индивидуальную подборку объектов из внутренней базы данных (через интеграцию с Google Таблицами или CRM-системой) и отправляет клиенту красивую презентацию. Если клиент готов к сделке — AI передает «горячего» лида живому брокеру, автоматически заполняя карточку сделки в amoCRM или Битрикс24 со всей историей переписки.
-					</p>
-					<p>
-						Второй важнейший вектор автоматизации — контент-маркетинг и поисковая оптимизация. Агентства недвижимости вынуждены постоянно генерировать тысячи уникальных описаний объектов для классифайдов (Авито, ЦИАН, Яндекс.Недвижимость). Использование AI-копирайтеров позволяет сократить время генерации одного описания с 20 минут до 5 секунд. Нейросеть не просто пишет текст, а структурирует его под боли целевой аудитории: выделяет инвестиционную привлекательность для инвесторов или близость детских садов и парков для семей с детьми.
-					</p>
-					<p>
-						Кроме того, продвинутые промпты, такие как <code>seo_arhitector_property</code> and <code>zalerio_article_standard</code>, позволяют автоматизировать сложный SEO-анализ и генерацию лонгридов под целевые запросы в Яндексе и Google. Это выводит сайты агентств в топ поисковой выдачи без привлечения дорогостоящих SEO-агентств. Внедрение сквозной аналитики и ИИ-анализа звонков (речевой аналитики) позволяет контролировать работу риелторов по чек-листам: выявлять пропущенные звонки, незакрытые возражения и нарушения скриптов продаж. В результате застройщики и агентства получают кратное снижение стоимости привлечения лида (CPL), увеличение конверсии из заявки в показ и колоссальную экономию бюджета на содержание штата копирайтеров и операторов первой линии.
-					</p>
+					<Fragment set:html={seoRichHtml} />
 				</div>
 			</div>
 		</div>
 	</section>
 
-	<!-- Дополнительные материалы для агентств недвижимости -->
+	<!-- FAQ -->
+	<section class="industry-faq">
+		<div class="container">
+			<div class="faq-block">
+				<h2>{data.faqTitle}</h2>
+				{data.faqItems.map((item) => (
+					<details class="faq-item">
+						<summary>{item.q}</summary>
+						<p>{item.a}</p>
+					</details>
+				))}
+			</div>
+		</div>
+	</section>
+
+	<!-- Дополнительные материалы -->
 	{realEstatePosts.length > 0 && (
 		<section class="industry-blog">
 			<div class="container">
 				<div class="glass-card blog-section-card">
 					<div class="blog-section-header">
-						<h2>Дополнительные материалы для <span class="gradient-text">Агентств недвижимости</span></h2>
-						<p>Статьи, инструкции и кейсы применения AI в вашей сфере</p>
+						<h2>{data.blogTitleLead}<span class="gradient-text">{data.blogTitleAccent}</span></h2>
+						<p>{data.blogSub}</p>
 					</div>
 					
 					<div class="blog-grid">
@@ -122,7 +127,12 @@ const realEstatePosts = rawPosts.filter(post =>
 		</section>
 	)}
 
-	<ServicesSection />
+	<!-- Над проектом будут работать -->
+	<section class="team-section">
+		<div class="container">
+			<TeamSection />
+		</div>
+	</section>
 </Layout>
 
 <style>
@@ -187,8 +197,8 @@ const realEstatePosts = rawPosts.filter(post =>
 	}
 
 	.tools-grid {
-		display: grid;
-		grid-template-columns: repeat(4, 1fr);
+		display: flex;
+		flex-wrap: wrap;
 		gap: 16px;
 	}
 
@@ -198,6 +208,16 @@ const realEstatePosts = rawPosts.filter(post =>
 		flex-direction: column;
 		gap: 12px;
 		border-radius: 12px;
+		width: 280px;
+	}
+
+	.tool-title-link {
+		color: var(--text-main);
+		text-decoration: none;
+		transition: color 0.2s ease;
+	}
+	.tool-title-link:hover {
+		color: var(--accent-cyan);
 	}
 
 	.tool-header {
@@ -264,6 +284,33 @@ const realEstatePosts = rawPosts.filter(post =>
 		margin: 4px 0 8px 0;
 	}
 
+	.tool-price {
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+		margin: 0 0 10px 0;
+		padding-top: 10px;
+		border-top: 1px solid var(--glass-border);
+	}
+
+	.tool-price-row {
+		display: flex;
+		justify-content: space-between;
+		align-items: baseline;
+		gap: 10px;
+		font-size: 0.82rem;
+	}
+
+	.tp-label {
+		color: var(--text-dim);
+	}
+
+	.tp-val {
+		color: var(--accent-cyan);
+		font-weight: 700;
+		white-space: nowrap;
+	}
+
 	.prompt-more-link {
 		font-weight: 700;
 		font-size: 0.85rem;
@@ -289,10 +336,90 @@ const realEstatePosts = rawPosts.filter(post =>
 		padding: 40px 0;
 	}
 
+	.seo-text-block-clean :global(h3) {
+		font-size: 1.3rem;
+		margin: 28px 0 12px 0;
+		color: var(--text-main);
+		position: relative;
+		padding-left: 18px;
+	}
+	.seo-text-block-clean :global(h3::before) {
+		content: '';
+		position: absolute;
+		left: 0;
+		top: 0.42em;
+		width: 9px;
+		height: 9px;
+		border-radius: 2px;
+		background: var(--accent-cyan);
+		box-shadow: 0 0 10px var(--accent-cyan-glow);
+	}
+
 	.seo-text-block-clean h2 {
 		font-size: 2rem;
 		margin-bottom: 24px;
 		line-height: 1.3;
+		position: relative;
+		padding-left: 22px;
+	}
+	.seo-text-block-clean h2::before {
+		content: '';
+		position: absolute;
+		left: 0;
+		top: 5px;
+		bottom: 5px;
+		width: 4px;
+		border-radius: 4px;
+		background: var(--grad-primary);
+		box-shadow: 0 0 12px var(--accent-purple-glow);
+	}
+
+	/* SEO-таблица команды (как на главной) */
+	.team-table-wrap {
+		margin: 28px 0 8px;
+		overflow-x: auto;
+		border: 1px solid var(--glass-border);
+		border-radius: 14px;
+		background: rgba(255, 255, 255, 0.015);
+	}
+	html.light .team-table-wrap { background: rgba(0, 0, 0, 0.015); }
+
+	.team-table {
+		width: 100%;
+		border-collapse: collapse;
+		font-size: 0.95rem;
+		min-width: 520px;
+	}
+	.team-table th {
+		text-align: left;
+		padding: 14px 18px;
+		font-family: 'Outfit', sans-serif;
+		font-size: 0.8rem;
+		text-transform: uppercase;
+		letter-spacing: 1px;
+		color: var(--accent-cyan);
+		border-bottom: 1px solid var(--glass-border);
+	}
+	.team-table td {
+		padding: 13px 18px;
+		color: var(--text-muted);
+		border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+		line-height: 1.5;
+		vertical-align: top;
+	}
+	html.light .team-table td { border-bottom: 1px solid rgba(0, 0, 0, 0.05); }
+	.team-table tbody tr:last-child td { border-bottom: none; }
+	.team-table td:first-child {
+		font-weight: 600;
+		color: var(--text-main);
+		white-space: nowrap;
+	}
+	.team-table tr.team-lead td { background: rgba(147, 51, 234, 0.07); }
+	.team-table tr.team-lead td:first-child {
+		background: linear-gradient(120deg, var(--accent-cyan), var(--accent-purple));
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
 	}
 
 	.seo-text-content {
@@ -301,11 +428,19 @@ const realEstatePosts = rawPosts.filter(post =>
 		gap: 20px;
 	}
 
-	.seo-text-content p {
+	.seo-text-content :global(p) {
 		color: var(--text-muted);
 		font-size: 1rem;
 		line-height: 1.7;
 	}
+	.seo-text-content :global(a) {
+		color: var(--accent-cyan);
+		text-decoration: underline;
+		text-underline-offset: 2px;
+		font-weight: 600;
+	}
+	.seo-text-content :global(a:hover) { color: var(--accent-purple); }
+	.seo-text-content :global(strong) { color: #ffffff; font-weight: 600; }
 
 	.seo-text-content code {
 		background: rgba(255, 255, 255, 0.05);
@@ -318,6 +453,31 @@ const realEstatePosts = rawPosts.filter(post =>
 	html.light .seo-text-content code {
 		background: rgba(0, 0, 0, 0.04);
 	}
+
+	/* FAQ */
+	.industry-faq { padding: 20px 0 40px 0; }
+	.faq-block h2 { font-size: 2rem; margin-bottom: 24px; line-height: 1.3; }
+	.faq-item {
+		border: 1px solid var(--glass-border);
+		border-radius: 12px;
+		padding: 18px 22px;
+		margin-bottom: 12px;
+		background: rgba(255,255,255,0.015);
+	}
+	html.light .faq-item { background: rgba(0,0,0,0.015); }
+	.faq-item summary {
+		cursor: pointer;
+		font-weight: 600;
+		font-size: 1.05rem;
+		color: var(--text-main);
+		list-style: none;
+		display: flex;
+		justify-content: space-between;
+		gap: 12px;
+	}
+	.faq-item summary::after { content: '+'; color: var(--accent-cyan); font-size: 1.4rem; line-height: 1; }
+	.faq-item[open] summary::after { content: '−'; }
+	.faq-item p { margin-top: 12px; color: var(--text-muted); line-height: 1.65; font-size: 0.98rem; }
 
 	/* Блог */
 	.industry-blog {
@@ -416,6 +576,11 @@ const realEstatePosts = rawPosts.filter(post =>
 		margin-top: auto;
 	}
 
+	/* Над проектом будут работать */
+	.team-section {
+		padding: 40px 0 80px 0;
+	}
+
 	@keyframes textShine {
 		0% {
 			background-position: 0% center;
@@ -445,8 +610,8 @@ const realEstatePosts = rawPosts.filter(post =>
 		.blog-section-header h2 {
 			font-size: 1.8rem;
 		}
-		.tools-grid {
-			grid-template-columns: 1fr;
+		.tool-card {
+			width: 100%;
 		}
 		.blog-grid {
 			grid-template-columns: 1fr;

@@ -1,0 +1,115 @@
+{
+	"title": "Контакты и информация о разработчике | Context Group",
+	"description": "Основатель Context Group Виталий Лапин. 13 лет опыта в маркетинге. Разработка и внедрение AI-решений для автоматизации бизнеса в России.",
+	"breadcrumb": "Контакты",
+	"profile": {
+		"avatar": "/images/vitaly-lapin.jpg",
+		"name": "Виталий Лапин",
+		"role": "Основатель & AI-интегратор",
+		"aboutTitle": "Обо мне и разработках",
+		"aboutHtml": "<p>В интернет-маркетинге я уже более 13 лет. Застал эпоху классической настройки контекстной рекламы, создание сайтов на MODX, WordPress и с тяжёлыми админками и ручные рассылки.</p>\n<p>Сегодня я понимаю, что старые методы всё ещё эффективны, но дороги. Моя специализация сейчас — <strong>внедрение искусственного интеллекта</strong> и автоматизация процессов «под ключ». Я помогаю бизнесу отказаться от дорогой рутины, заменяя ее умными AI-агентами на базе современных LLM.</p>",
+		"locationTitle": "Где я нахожусь",
+		"locationText": "🌴 Живу в Таиланде 3 года, работаю по России и миру удалённо.",
+		"socialsTitle": "Контакты и мессенджеры",
+		"socials": [
+			{
+				"link": "https://t.me/mrlapin",
+				"iconClass": "tg",
+				"label": "Telegram",
+				"title": "Написать в Telegram",
+				"icon": "tg"
+			},
+			{
+				"link": "https://wa.me/79992004807",
+				"iconClass": "wa",
+				"label": "WhatsApp",
+				"title": "Написать в WhatsApp",
+				"icon": "wa"
+			}
+		]
+	},
+	"career": {
+		"title": "Моя карьера",
+		"desc": "Поэтапный опыт развития в технологиях, интеграции систем и AI:",
+		"items": [
+			{
+				"link": "/blog/kak-ya-prishel-v-performance-marketing",
+				"number": "01",
+				"year": "2013 - 2015 годы",
+				"title": "Старт в маркетинге и веб-разработке",
+				"desc": "Настройка первых рекламных кампаний в Яндекс.Директ и Google AdWords, разработка посадочных страниц и сайтов."
+			},
+			{
+				"link": "/blog/kak-ya-stal-rukovoditelem-otdela-marketinga",
+				"number": "02",
+				"year": "2015 - 2018 годы",
+				"title": "Работа с агентствами и должность РОМ в сервисном центре",
+				"desc": "Работа на аутсорсе с маркетинговыми агентствами России, параллельно работая на должности РОМа в сети сервисных центров гаджетов в 6 городах."
+			},
+			{
+				"link": "/blog/samopisnaya-crm-i-poltora-goda-sudov",
+				"number": "03",
+				"year": "2018 - 2020 годы",
+				"title": "Разработка самописной CRM и интеграция с сайтом. Суды",
+				"desc": "Первая крупная разработка, доведённая до 80%, которая закончилась судом длительностью в 1,5 года — мой опыт."
+			},
+			{
+				"link": "/blog/mezhdunarodnyj-marketing-obrazovanie-i-denezhnye-perevody",
+				"number": "04",
+				"year": "2020 - 2025 годы",
+				"title": "Работа с FinTech и EdTech в международной компании",
+				"desc": "Ведущий маркетолог performance-направления по разным странам. Разработка проекта по денежным переводам на 100 стран и 50 валют."
+			},
+			{
+				"link": "/blog/perehod-v-ai-razrabotku",
+				"number": "05",
+				"year": "2025 год и далее",
+				"title": "Погружение в AI и внедрение в маркетинг и бизнес",
+				"desc": "Погружение в два своих проекта, разработанных через AI: недвижимость и Context Group."
+			}
+		]
+	},
+	"agents": {
+		"titleLead": "Мой отдел ",
+		"titleAccent": "AI-роботов",
+		"desc": "Автономные агенты, которые выполняют 90% рутины под моим контролем:",
+		"items": [
+			{
+				"imagePath": "/images/agents/vector.png",
+				"colorClass": "tg",
+				"name": "Вектор (Vector)",
+				"desc": "сбор информации, парсинг конкурентов и баз."
+			},
+			{
+				"imagePath": "/images/agents/nexus.png",
+				"colorClass": "vk",
+				"name": "Нексус (Nexus)",
+				"desc": "анализ информации, SWOT и выводы."
+			},
+			{
+				"imagePath": "/images/agents/codex.png",
+				"colorClass": "wa",
+				"name": "Кодекс (Codex)",
+				"desc": "разработка кода, скриптов и API интеграций."
+			},
+			{
+				"imagePath": "/images/agents/pixel.png",
+				"colorClass": "insta",
+				"name": "Пиксель (Pixel)",
+				"desc": "UI/UX дизайн и создание визуального стиля."
+			},
+			{
+				"imagePath": "/images/agents/audit.png",
+				"colorClass": "amber",
+				"name": "Аудит (Audit)",
+				"desc": "автотесты, контроль багов и проверка кода."
+			},
+			{
+				"imagePath": "/images/agents/spectre.png",
+				"colorClass": "emerald",
+				"name": "Спектр (Spectre)",
+				"desc": "координация, исправление ошибок и отчет."
+			}
+		]
+	}
+}

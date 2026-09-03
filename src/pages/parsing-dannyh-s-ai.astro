@@ -1,0 +1,14 @@
+---
+import ServicePage from '../components/ServicePage.astro';
+
+import data from '../content/pages/parsing-dannyh/index.json';
+import Markdoc from '@markdoc/markdoc';
+import seoRichRaw from '../content/pages/parsing-dannyh/index/seoRich.mdoc?raw';
+
+
+const heroTitle = `${data.heroTitleLead}<span class="gradient-text">${data.heroTitleAccent}</span>`;
+const processTitle = `${data.processTitleLead}<span class="gradient-text">${data.processTitleAccent}</span>`;
+const seoRichHtml = Markdoc.renderers.html(Markdoc.transform(Markdoc.parse(seoRichRaw)));
+---
+
+<ServicePage {...data} seoRichHtml={seoRichHtml} heroTitle={heroTitle} processTitle={processTitle} />

@@ -1,0 +1,14 @@
+---
+import AuditPage from '../components/AuditPage.astro';
+
+import data from '../content/pages/audit-vnedreniya-ai/index.json';
+import Markdoc from '@markdoc/markdoc';
+import seoRichRaw from '../content/pages/audit-vnedreniya-ai/index/seoRich.mdoc?raw';
+
+
+const heroTitle = `${data.heroTitleLead}<span class="gradient-text">${data.heroTitleAccent}</span>`;
+const processTitle = `${data.processTitleLead}<span class="gradient-text">${data.processTitleAccent}</span>`;
+const seoRichHtml = Markdoc.renderers.html(Markdoc.transform(Markdoc.parse(seoRichRaw)));
+---
+
+<AuditPage {...data} seoRichHtml={seoRichHtml} heroTitle={heroTitle} processTitle={processTitle} />

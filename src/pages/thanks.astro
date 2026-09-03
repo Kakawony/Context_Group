@@ -3,7 +3,7 @@ import Layout from '../layouts/Layout.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
 ---
 
-<Layout title="Спасибо за заявку! | Context Group" description="Ваша заявка успешно принята. Мы свяжемся с вами в ближайшее время.">
+<Layout title="Спасибо за заявку! | Context Group" description="Ваша заявка успешно принята. Мы свяжемся с вами в ближайшее время." noindex={true}>
 	<section class="thanks-section">
 		<div class="thanks-glow"></div>
 		<div class="thanks-layout-container">
@@ -17,6 +17,7 @@ import Breadcrumbs from '../components/Breadcrumbs.astro';
 				<p>Мы получили ваше сообщение. Наш AI-ассистент уже анализирует указанную информацию, а специалист свяжется с вами в течение 15–30 минут для детального обсуждения.</p>
 				<div class="thanks-actions">
 					<a href="/" class="btn btn-primary"><span>На главную</span></a>
+					<a href="/blog/cases" class="btn btn-secondary">Смотреть кейсы</a>
 					<a href="/blog" class="btn btn-secondary">Читать блог</a>
 				</div>
 			</div>
