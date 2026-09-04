@@ -8,7 +8,7 @@ import cloudflare from '@astrojs/cloudflare';
 // ЕДИНСТВЕННОЕ место, где прописан домен сайта. Всё остальное (canonical, og:url,
 // sitemap, robots.txt, редирект форм, privacy) берёт его из Astro.site / import.meta.env.SITE.
 // Смена домена = правка одной строки.
-const SITE_URL = 'https://lapinvital.com';
+const SITE_URL = 'https://ai-lapin.com';
 
 // Cloudflare-адаптер нужен только для прод-сборки (astro build / astro preview).
 // В dev админка Keystatic должна работать в Node (workerd не даёт node:fs/path),

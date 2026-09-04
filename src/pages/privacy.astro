@@ -1,7 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
-import { CONTACT_EMAIL } from '../data/site';
+import { CONTACT_TELEGRAM_URL, CONTACT_TELEGRAM_HANDLE } from '../data/site';
 
 // Домен — из astro.config.mjs (site), чтобы не дублировать его в тексте
 const host = (Astro.site ?? Astro.url).host;
@@ -33,7 +33,7 @@ const host = (Astro.site ?? Astro.url).host;
 					<p>3.2. Персональные данные, разрешённые к обработке в рамках настоящей Политики конфиденциальности, предоставляются Пользователем путём заполнения форм на сайте {host} и включают в себя: ФИО, контактный телефон, адрес электронной почты (e-mail) и другие переданные данные.</p>
 					
 					<h3>4. РЕКВИЗИТЫ</h3>
-					<p><strong>Context Group</strong><br>Адрес: Таиланд, Районг (Thailand, Rayong)<br>Email: <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a></p>
+					<p><strong>Context Group</strong><br>Адрес: Таиланд, Районг (Thailand, Rayong)<br>Связь: <a href={CONTACT_TELEGRAM_URL} target="_blank" rel="noopener">Telegram {CONTACT_TELEGRAM_HANDLE}</a></p>
 				</div>
 			</div>
 		</div>

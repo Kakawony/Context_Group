@@ -1,5 +1,20 @@
 # CHANGELOG — Context Group
 
+## 2026-09-04 — Домен выбран: `ai-lapin.com`; почта убрана с сайта полностью
+**Что делали:** Витал выбрал домен **`ai-lapin.com`** (дефис принят осознанно: у старого `context-group.ru` он тоже был, а связка «маркетинг + ИИ» — это ниша навсегда, не хайп-волна). Оба кандидата (`ai-lapin.com`, `lapinvital.com`) проверены: RDAP 404 = свободны, whois «No match» = записей о прежней регистрации нет, Internet Archive = НОЛЬ снимков за всю историю → домены девственные, наследства фильтров/спам-истории/чужих ссылок нет.
+- `SITE_URL` в `astro.config.mjs` → `https://ai-lapin.com` (одна строка, как и задумано).
+- **Почты на сайте больше нет вообще** (решение Витала): переписок по email не будет, все заявки падают в Telegram через `/send`. `CONTACT_EMAIL` удалён из `src/data/site.ts`, вместо него `CONTACT_TELEGRAM_URL`/`CONTACT_TELEGRAM_HANDLE`. В футере `Layout.astro` строка с mailto заменена на ссылку `@mrlapin`; в `privacy.astro` реквизит «Email» заменён на «Связь: Telegram @mrlapin» (способ связи в политике нужен, но теперь не почтовый). Следствие: **Cloudflare Email Routing из Фазы 1 отменяется**, почтовые записи новому домену не нужны.
+- `package.json` `name` → `ai-lapin`: это же имя получает воркер в Cloudflare (адаптер берёт его в `dist/server/wrangler.json`), чтобы проект в дашборде совпадал с брендом.
+
+**Проверка (независимая):** прод-билд зелёный; sitemap 27 URL на `https://ai-lapin.com/`; canonical главной на новом домене; `robots.txt` с новым Sitemap и Disallow'ами; имя воркера `ai-lapin`; `mailto`/`info@` в `dist/client` НЕ найдены ни одного; в футере отдаётся `@mrlapin`; упоминания почты в контенте Keystatic остались только там, где это описание услуги парсинга (сбор почт клиентов) — контактом не являются, не трогали.
+**Почему:** домен куплен/выбран, дальше вся Фаза 1 идёт под него; почта — лишняя точка входа и лишняя настройка DNS, раз общение только в Telegram.
+**К чему привело:** Код полностью готов под `ai-lapin.com`. Дальше Фаза 1: пуш в GitHub → Cloudflare Workers Builds → GitHub App для Keystatic → домен + ECH off → 301 с `context-group.ru` в `.htaccess` на Timeweb (1–2 месяца, потом бросить).
+
+## 2026-09-04 — CLAUDE.md → указатель на правила хаба
+**Что делали:** `CLAUDE.md` (65 строк) сокращён до 2 строк — импорт `Projects/context_group_hub/RULES.md`; содержимое перенесено туда целиком.
+**Почему:** реструктуризация правил 04.09.2026.
+**К чему привело:** правила проекта в одном месте; при первом запуске Claude Code спросит разрешение на внешний импорт — подтвердить.
+
 ## 2026-09-03 — Фаза 0 переезда: домен `lapinvital.com`, Cloudflare Workers, секреты без фолбэков, Keystatic 6
 **Что делали:** По плану `context_group_hub/Docs/PLAN_migration_com_2026-09-03.md` (согласован с Виталом: личный бренд вместо агентства, переезд 1:1 → тексты → iGaming-раздел → EN позже) подготовили код к первому пушу в публичный репо и деплою на Cloudflare.
 - **Домен — единая константа.** `context-group.com` (прошитый 19.08) оказался ЗАНЯТ третьим лицом. Новый домен `lapinvital.com` задан ОДИН раз — `SITE_URL` в `astro.config.mjs`; `robots.txt` стал роутом `src/pages/robots.txt.ts` (от `Astro.site`, + `Disallow: /keystatic`, `/api/`, `/send`, `/thanks`); 8 hidden `_next` во всех формах → относительный `/thanks`; `privacy.astro` берёт домен из `Astro.site.host`, адрес приведён к футеру (Таиланд, Районг). Email — один раз в `src/data/site.ts` (`CONTACT_EMAIL = info@lapinvital.com`), используется в футере `Layout.astro` и в политике. `grep context-group src public` → только `repo:` Keystatic.
