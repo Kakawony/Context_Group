@@ -1,0 +1,62 @@
+# Автодеплой сайта ai-lapin.com на Cloudflare Workers.
+# Триггер: любой пуш в main (включая коммиты, которые делает админка Keystatic)
+# плюс ручной запуск из вкладки Actions.
+#
+# Нужны секреты репозитория (Settings → Secrets and variables → Actions):
+#   CLOUDFLARE_API_TOKEN   — токен с правами Workers Scripts/KV/Routes + DNS зоны ai-lapin.com
+#   CLOUDFLARE_ACCOUNT_ID  — идентификатор аккаунта Cloudflare
+#
+# Переменную PUBLIC_KEYSTATIC_MODE намеренно НЕ задаём: пока не создан GitHub App
+# для самой админки, сборка идёт в локальном режиме Keystatic. Как App появится —
+# добавить сюда env PUBLIC_KEYSTATIC_MODE: github и PUBLIC_KEYSTATIC_GITHUB_APP_SLUG.
+
+name: Deploy to Cloudflare Workers
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+        env:
+          NODE_ENV: production
+
+      - name: Deploy
+        run: npx wrangler deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      - name: Smoke-test
+        run: |
+          set -e
+          for p in / /blog/ /robots.txt; do
+            code=$(curl -s -o /dev/null -m 30 -w "%{http_code}" "https://ai-lapin.com$p")
+            echo "$p -> $code"
+            [ "$code" = "200" ] || exit 1
+          done
+          code=$(curl -s -o /dev/null -m 30 -w "%{http_code}" "https://ai-lapin.com/nonexistent")
+          echo "/nonexistent -> $code"
+          [ "$code" = "404" ] || exit 1
