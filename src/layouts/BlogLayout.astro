@@ -19,7 +19,7 @@ interface Frontmatter {
 const { frontmatter, headings = [] } = Astro.props as { frontmatter: Frontmatter, headings: any[] };
 ---
 
-<Layout title={`${frontmatter.title} | Блог Context Group`} description={frontmatter.description}>
+<Layout title={`${frontmatter.title} | Блог Context Group`} description={frontmatter.description} ogType="article">
 	<AiSphere alwaysVisible={true} scale={0.33} />
 
 	<article class="blog-article">

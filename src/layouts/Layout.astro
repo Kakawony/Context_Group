@@ -10,14 +10,22 @@ interface Props {
 	ogImage?: string;
 	/** Язык страницы (ru по умолчанию). Задел под будущий раздел /en/. */
 	lang?: 'ru' | 'en';
+	/** Тип страницы для Open Graph: у статей блога должен быть article, у остальных website. */
+	ogType?: 'website' | 'article';
 }
+
+// Верификация вебмастеров (комментарий во frontmatter, чтобы не уезжать в HTML каждой страницы):
+// Яндекс — файлом /yandex_a16dbdc708051f95.html, который отдаёт роут src/pages/yandex_*.html.ts.
+// Google — записью в DNS Cloudflare, подтверждён домен целиком.
+// Мета-теги от context-group.ru удалены 06.09.2026: принадлежали прежнему хосту.
 
 const {
 	title,
 	description = "Context Group — высокотехнологичный маркетинг на территории России с применением искусственного интеллекта. Автоматизация, AI-боты, автопостинг, SEO контент-планы.",
 	noindex = false,
 	ogImage = '/og-default.png',
-	lang = 'ru'
+	lang = 'ru',
+	ogType = 'website'
 } = Astro.props;
 
 const ogLocale = lang === 'en' ? 'en_US' : 'ru_RU';
@@ -42,11 +50,6 @@ const ogImageURL = ogImage ? new URL(ogImage, Astro.site ?? Astro.url.origin).hr
 		<meta name="theme-color" content="#0d0f14" />
 		<meta name="generator" content={Astro.generator} />
 
-		<!-- Верификация вебмастеров.
-		     Яндекс — файлом /yandex_a16dbdc708051f95.html в public/ (мета-тег не нужен).
-		     Google — через DNS в Cloudflare (подтверждён домен целиком).
-		     Старые мета-теги от context-group.ru удалены 06.09.2026: они принадлежали
-		     прежнему хосту и на новом домене ничего не подтверждали. -->
 
 		<!-- Yandex.Metrika counter -->
 		<script type="text/javascript" is:inline>
@@ -108,7 +111,7 @@ const ogImageURL = ogImage ? new URL(ogImage, Astro.site ?? Astro.url.origin).hr
 		<link rel="canonical" href={canonicalURL} />
 
 		<!-- Open Graph / Facebook -->
-		<meta property="og:type" content="website" />
+		<meta property="og:type" content={ogType} />
 		<meta property="og:locale" content={ogLocale} />
 		<meta property="og:url" content={canonicalURL} />
 		<meta property="og:title" content={title} />
