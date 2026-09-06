@@ -1,5 +1,18 @@
 # CHANGELOG — Context Group
 
+## 2026-09-06 — Админка на проде переведена в GitHub-режим
+
+**Что делали:** Создан GitHub App `ai-lapin-cms` (App ID 4850404) с callback `https://ai-lapin.com/api/keystatic/github/oauth/callback`, правами Contents: write, Metadata: read, Pull requests: write и включённой авторизацией пользователя при установке. Приложение установлено на репозиторий.
+- В `.github/workflows/deploy.yml` добавлены build-переменные `PUBLIC_KEYSTATIC_MODE: github` и `PUBLIC_KEYSTATIC_GITHUB_APP_SLUG: ai-lapin-cms` — они инлайнятся в бандл на сборке.
+- В секреты воркера добавлены `KEYSTATIC_GITHUB_CLIENT_ID` и `KEYSTATIC_GITHUB_CLIENT_SECRET` (`KEYSTATIC_SECRET` был раньше). В workflow секреты Keystatic не попадают — читаются в рантайме через `getSecret`.
+- Пароль админки изменён по просьбе Витала (значение только в `.env` и секретах воркера).
+
+**Проверка:** ошибка `The Keystatic API route is running in a non-Node.js environment which is not supported with storage: { kind: 'local' }` ушла. `/keystatic` за паролем → 200; `/api/keystatic/github/login` → **307 на `github.com/login/oauth/authorize`** с верным `client_id` и `redirect_uri`; слаг `ai-lapin-cms` найден в бандле админки на проде; `/api/keystatic/tree` → 404 (в GitHub-режиме дерево читается из GitHub API браузером, роут не используется) вместо прежнего 500. Публичный сайт цел: `/`, `/blog/`, `/contacts/`, `/robots.txt` = 200, `/nonexistent` = 404.
+
+**Грабля проверки (повторная):** в zsh переменная с аргументами curl (`A="-u user:pass"`) при подстановке `$A` НЕ разбивается на аргументы — проверка ложно показала 401 на верном пароле. Такие проверки гонять через `bash <<'EOF'`, как и списки URL.
+
+**Осталось:** Виталу зайти в админку и авторизоваться через GitHub (первый вход), затем проверить сохранение правки. Приватный ключ приложения (`.pem`), сгенерированный по ошибке, удалить в настройках App — Keystatic он не нужен.
+
 ## 2026-09-06 — Защита админки паролем + аудит переезда
 
 **Что делали:**
