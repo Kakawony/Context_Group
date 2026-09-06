@@ -6,9 +6,9 @@
 #   CLOUDFLARE_API_TOKEN   — токен с правами Workers Scripts/KV/Routes + DNS зоны ai-lapin.com
 #   CLOUDFLARE_ACCOUNT_ID  — идентификатор аккаунта Cloudflare
 #
-# Переменную PUBLIC_KEYSTATIC_MODE намеренно НЕ задаём: пока не создан GitHub App
-# для самой админки, сборка идёт в локальном режиме Keystatic. Как App появится —
-# добавить сюда env PUBLIC_KEYSTATIC_MODE: github и PUBLIC_KEYSTATIC_GITHUB_APP_SLUG.
+# Keystatic собирается в GitHub-режиме: PUBLIC_KEYSTATIC_MODE и слаг приложения
+# инлайнятся в бандл на сборке, а KEYSTATIC_GITHUB_CLIENT_ID/SECRET и KEYSTATIC_SECRET
+# читаются в рантайме из секретов воркера (getSecret), в этот workflow они не попадают.
 
 name: Deploy to Cloudflare Workers
 
@@ -42,6 +42,8 @@ jobs:
         run: npm run build
         env:
           NODE_ENV: production
+          PUBLIC_KEYSTATIC_MODE: github
+          PUBLIC_KEYSTATIC_GITHUB_APP_SLUG: ai-lapin-cms
 
       - name: Deploy
         run: npx wrangler deploy
