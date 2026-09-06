@@ -42,9 +42,11 @@ const ogImageURL = ogImage ? new URL(ogImage, Astro.site ?? Astro.url.origin).hr
 		<meta name="theme-color" content="#0d0f14" />
 		<meta name="generator" content={Astro.generator} />
 
-		<!-- Верификация вебмастеров -->
-		<meta name="yandex-verification" content="ff0193ace2072ddc" />
-		<meta name="google-site-verification" content="kaoOxZxvM_GaY_sM1jOAyp-KRKYcsrYvXhIJwBPUxwk" />
+		<!-- Верификация вебмастеров.
+		     Яндекс — файлом /yandex_a16dbdc708051f95.html в public/ (мета-тег не нужен).
+		     Google — через DNS в Cloudflare (подтверждён домен целиком).
+		     Старые мета-теги от context-group.ru удалены 06.09.2026: они принадлежали
+		     прежнему хосту и на новом домене ничего не подтверждали. -->
 
 		<!-- Yandex.Metrika counter -->
 		<script type="text/javascript" is:inline>
