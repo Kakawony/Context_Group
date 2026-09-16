@@ -1,5 +1,5 @@
 import type { APIContext } from 'astro';
-import { getFile, getProject, hasBody, type R2ObjectLike } from '../../../../lib/dev/projects';
+import { devFileBytes, getFile, getProject } from '../../../../lib/dev/projects';
 import { mimeType } from '../../../../lib/dev/mime';
 import { notFound } from '../../../../lib/dev/notFound';
 
@@ -23,32 +23,25 @@ function redirect(to: string, url: URL): Response {
 }
 
 /**
- * Разбор заголовка Range. R2 сам режет и «чинит» любой диапазон, поэтому форму запроса
- * разбираем отдельно: кривой заголовок по стандарту игнорируется (обычные 200),
- * диапазон за концом файла — 416, и только корректный даёт 206.
+ * Разбор заголовка Range. KV, в отличие от R2, диапазоны не умеет — режем сами.
+ * Кривой или составной заголовок по стандарту игнорируется (обычные 200),
+ * диапазон за концом файла — 416, корректный — 206 с куском тела.
+ * Возвращает границы включительно или 'unsatisfiable'.
  */
-function parseRange(header: string | null): { start?: number; suffix?: number } | null {
+function resolveRange(header: string | null, size: number): { start: number; end: number } | 'unsatisfiable' | null {
 	const m = /^bytes=(\d*)-(\d*)$/.exec((header || '').trim());
 	if (!m) return null;
 	const [, from, to] = m;
-	if (from === '') return to === '' ? null : { suffix: Number(to) };
-	if (to !== '' && Number(to) < Number(from)) return null;
-	return { start: Number(from) };
-}
-
-function contentRange(obj: R2ObjectLike): string | null {
-	const r = obj.range;
-	if (!r) return null;
-	let start: number;
-	let length: number;
-	if (r.suffix !== undefined) {
-		length = Math.min(r.suffix, obj.size);
-		start = obj.size - length;
-	} else {
-		start = r.offset ?? 0;
-		length = r.length ?? obj.size - start;
+	if (from === '') {
+		const suffix = to === '' ? NaN : Number(to);
+		if (!Number.isFinite(suffix) || suffix === 0) return Number.isFinite(suffix) ? 'unsatisfiable' : null;
+		return { start: Math.max(0, size - suffix), end: size - 1 };
 	}
-	return `bytes ${start}-${start + length - 1}/${obj.size}`;
+	const start = Number(from);
+	if (start >= size) return 'unsatisfiable';
+	const end = to === '' ? size - 1 : Math.min(Number(to), size - 1);
+	if (end < start) return null;
+	return { start, end };
 }
 
 async function serve(context: APIContext): Promise<Response> {
@@ -70,47 +63,43 @@ async function serve(context: APIContext): Promise<Response> {
 	if (rel === 'index.html' || rel === 'index') return redirect(base, url);
 	if (rel.endsWith('.html')) return redirect(`${base}/${rel.slice(0, -5)}`, url);
 
-	// Страницы без расширения сначала ищем как <путь>.html — так на страницу один запрос к R2.
+	// Страницы без расширения сначала ищем как <путь>.html — так на страницу один запрос к KV.
 	const lastSegment = segments[segments.length - 1];
 	const candidates = rel === '' ? ['index.html'] : lastSegment.includes('.') ? [rel, `${rel}.html`] : [`${rel}.html`, rel];
 
 	for (const key of candidates) {
-		let obj;
-		try {
-			obj = await getFile(project, key, request.headers);
-		} catch (e) {
-			console.error('dev/serve:', e);
-			// 416 только если клиент и правда просил диапазон; иначе это сбой хранилища
-			// (нет привязки DEV_FILES, ошибка R2) — его нельзя маскировать под Range.
-			if (!request.headers.has('range')) throw e;
-			return new Response(null, { status: 416, headers: { 'Content-Range': 'bytes */*' } });
-		}
-		if (!obj) continue;
+		const { value, metadata } = await getFile(project, key);
+		if (!value) continue;
 
-		const headers = new Headers();
-		obj.writeHttpMetadata(headers);
-		if (!headers.get('Content-Type')) headers.set('Content-Type', mimeType(key));
-		headers.set('ETag', obj.httpEtag);
-		headers.set('Accept-Ranges', 'bytes');
-		headers.set('X-Content-Type-Options', 'nosniff');
-		// Короткий кэш: после выключения проекта файлы не должны долго жить в браузере клиента.
-		headers.set('Cache-Control', key.endsWith('.html') ? 'no-cache' : 'private, max-age=300');
+		// Размер исходного файла — из метаданных: значение в KV лежит в base64.
+		const size = metadata?.size ?? Math.floor((value.length * 3) / 4);
+		// ETag от скрипта выгрузки (хэш содержимого); нет метаданных — собираем из версии и размера.
+		const etag = `"${metadata?.etag || `${project.version}-${size.toString(16)}`}"`;
+		const headers = new Headers({
+			'Content-Type': metadata?.contentType || mimeType(key),
+			ETag: etag,
+			'Accept-Ranges': 'bytes',
+			'X-Content-Type-Options': 'nosniff',
+			// Короткий кэш: после выключения проекта файлы не должны долго жить в браузере клиента.
+			'Cache-Control': key.endsWith('.html') ? 'no-cache' : 'private, max-age=300',
+		});
 
-		if (!hasBody(obj)) return new Response(null, { status: 304, headers });
+		const ifNoneMatch = request.headers.get('if-none-match');
+		if (ifNoneMatch && ifNoneMatch.split(',').some((t) => t.trim().replace(/^W\//, '') === etag)) {
+			return new Response(null, { status: 304, headers });
+		}
 
-		const asked = parseRange(request.headers.get('range'));
-		if (asked && ((asked.start !== undefined && asked.start >= obj.size) || asked.suffix === 0)) {
-			return new Response(null, { status: 416, headers: { 'Content-Range': `bytes */${obj.size}` } });
+		const range = resolveRange(request.headers.get('range'), size);
+		if (range === 'unsatisfiable') {
+			return new Response(null, { status: 416, headers: { 'Content-Range': `bytes */${size}` } });
 		}
-		const range = asked ? contentRange(obj) : null;
-		if (range) {
-			headers.set('Content-Range', range);
-			const [, from, to] = /bytes (\d+)-(\d+)/.exec(range) || [];
-			headers.set('Content-Length', String(Number(to) - Number(from) + 1));
-		} else {
-			headers.set('Content-Length', String(obj.size));
-		}
-		const body = request.method === 'HEAD' ? null : obj.body;
+		const length = range ? range.end - range.start + 1 : size;
+		if (range) headers.set('Content-Range', `bytes ${range.start}-${range.end}/${size}`);
+		headers.set('Content-Length', String(length));
+		// HEAD не декодирует тело: заголовки уже известны из метаданных.
+		if (request.method === 'HEAD') return new Response(null, { status: range ? 206 : 200, headers });
+		const bytes = devFileBytes(value);
+		const body = range ? bytes.subarray(range.start, range.end + 1) : bytes;
 		return new Response(body, { status: range ? 206 : 200, headers });
 	}
 	return notFound(url);
