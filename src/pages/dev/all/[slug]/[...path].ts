@@ -112,6 +112,28 @@ async function serve(context: APIContext): Promise<Response> {
 		// HEAD не декодирует тело: заголовки уже известны из метаданных.
 		if (request.method === 'HEAD') return new Response(null, { status: range ? 206 : 200, headers });
 		const bytes = devFileBytes(value);
+
+		// ── ВРЕМЕННАЯ ЗАПЛАТКА 16.09.2026 (снять после перевыгрузки пакета estadel-krym) ──
+		// В выложенной версии карта офиса вставляется скриптом страницы и не получает стили Astro,
+		// поэтому iframe остаётся размером по умолчанию. В исходниках посадочных уже исправлено,
+		// но перевыложить пакет нельзя: исчерпан суточный лимит записей KV (1000 на аккаунт).
+		// Правило дописывается только этому проекту и только этой версии.
+		if (!range && key.endsWith('.html') && slug === 'estadel-krym' && project.version === '2026-09-15') {
+			const html = new TextDecoder().decode(bytes).replace(
+				'</head>',
+				'<style>.about__map iframe{display:block;width:100%;height:100%;border:0}</style></head>',
+			);
+			const patched = new TextEncoder().encode(html);
+			headers.set('Content-Length', String(patched.byteLength));
+			const response = new Response(patched, { status: 200, headers });
+			if (cache && cacheable) {
+				const stored = response.clone();
+				stored.headers.set('Cache-Control', 'public, max-age=60');
+				await cache.put(cacheKey, stored);
+			}
+			return response;
+		}
+
 		const body = range ? bytes.subarray(range.start, range.end + 1) : bytes;
 		const response = new Response(body, { status: range ? 206 : 200, headers });
 
