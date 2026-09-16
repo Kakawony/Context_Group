@@ -1,0 +1,339 @@
+---
+import DevLayout from '../../../layouts/DevLayout.astro';
+import { hasSession } from '../../../lib/dev/auth';
+import { listProjects, type DevPage, type DevProject } from '../../../lib/dev/projects';
+
+// /dev/all — список проектов (только после входа). У каждого: переключатель доступа,
+// ссылка на стартовую страницу, версия, раскрывающийся список страниц по группам.
+export const prerender = false;
+
+Astro.response.headers.set('Cache-Control', 'no-store');
+
+if (!(await hasSession(Astro.cookies))) {
+	return Astro.redirect('/dev', 303);
+}
+
+let projects: DevProject[] = [];
+let loadError = false;
+try {
+	projects = await listProjects();
+} catch (e) {
+	console.error('dev/all:', e);
+	loadError = true;
+}
+
+// Упаковщик пакета пишет заголовки страниц с HTML-сущностями (&amp;) — для показа раскодируем.
+const decode = (s = '') =>
+	s.replace(/&(amp|quot|#39|lt|gt);/g, (_, e) => ({ amp: '&', quot: '"', '#39': "'", lt: '<', gt: '>' })[e as string] as string);
+
+const groupPages = (pages: DevPage[] = []) => {
+	const groups = new Map<string, DevPage[]>();
+	for (const p of pages) {
+		const g = p.group || 'Без группы';
+		if (!groups.has(g)) groups.set(g, []);
+		groups.get(g)!.push(p);
+	}
+	return [...groups.entries()];
+};
+
+const megabytes = (bytes?: number) =>
+	bytes ? `${(bytes / 1024 / 1024).toLocaleString('ru-RU', { maximumFractionDigits: 1 })} МБ` : '';
+
+const formatDate = (iso?: string) => {
+	if (!iso) return '';
+	const d = new Date(iso);
+	return Number.isNaN(d.getTime())
+		? iso
+		: d.toLocaleString('ru-RU', { timeZone: 'Asia/Bangkok', day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+};
+---
+
+<DevLayout title="Проекты — показ клиентам">
+	<header class="dev-head">
+		<div>
+			<h1 class="dev-head__title">Проекты</h1>
+			<p class="dev-head__lead">Ссылку на включённый проект клиент открывает без пароля. Выключенный отдаёт 404. Переключение применяется за несколько секунд.</p>
+		</div>
+		<form method="post" action="/dev/logout">
+			<button type="submit" class="btn btn-secondary dev-head__logout">Выйти</button>
+		</form>
+	</header>
+
+	{loadError && <p class="dev-empty" role="alert">Не удалось прочитать список проектов из хранилища.</p>}
+	{!loadError && projects.length === 0 && (
+		<p class="dev-empty">Проектов пока нет. Выгрузка — скриптом <code>dev_upload.mjs</code> из хаба ai-lapin.</p>
+	)}
+
+	<ul class="dev-list">
+		{projects.map((p) => {
+			const entryUrl = `${p.base}${p.entry || ''}`;
+			return (
+				<li class="glass-card dev-card" id={p.slug}>
+					<div class="dev-card__top">
+						<div class="dev-card__info">
+							<h2 class="dev-card__title">{decode(p.title)}</h2>
+							{p.client && <p class="dev-card__client">{decode(p.client)}</p>}
+						</div>
+						<form method="post" action="/dev/toggle" class="dev-toggle-form">
+							<input type="hidden" name="slug" value={p.slug} />
+							<input type="hidden" name="enabled" value={p.enabled ? '0' : '1'} />
+							<button
+								type="submit"
+								class:list={['dev-toggle', { 'is-on': p.enabled }]}
+								role="switch"
+								aria-checked={p.enabled ? 'true' : 'false'}
+								aria-label={`Показывать проект «${decode(p.title)}»`}
+							>
+								<span class="dev-toggle__track" aria-hidden="true"><span class="dev-toggle__thumb"></span></span>
+								<span class="dev-toggle__text">{p.enabled ? 'Показывается' : 'Скрыт'}</span>
+							</button>
+						</form>
+					</div>
+
+					{p.description && <p class="dev-card__desc">{decode(p.description)}</p>}
+
+					<a class="dev-card__link" href={entryUrl} target="_blank" rel="noopener">{Astro.url.origin}{entryUrl}</a>
+
+					<dl class="dev-card__meta">
+						<div><dt>Версия</dt><dd>{p.version}</dd></div>
+						{p.uploadedAt && <div><dt>Выгружено</dt><dd>{formatDate(p.uploadedAt)}</dd></div>}
+						<div><dt>Страниц</dt><dd>{p.pages?.length ?? 0}</dd></div>
+						{p.files && <div><dt>Файлов</dt><dd>{p.files} · {megabytes(p.bytes)}</dd></div>}
+					</dl>
+
+					<details class="dev-pages">
+						<summary class="dev-pages__summary">Страницы проекта</summary>
+						{groupPages(p.pages).map(([group, pages]) => (
+							<div class="dev-pages__group">
+								<h3 class="dev-pages__group-title">{group}</h3>
+								<ul class="dev-pages__list">
+									{pages.map((page) => (
+										<li>
+											<a href={`${p.base}${page.path}`} target="_blank" rel="noopener">
+												<span class="dev-pages__path">{page.path}</span>
+												<span class="dev-pages__title">{decode(page.title)}</span>
+											</a>
+										</li>
+									))}
+								</ul>
+							</div>
+						))}
+					</details>
+				</li>
+			);
+		})}
+	</ul>
+</DevLayout>
+
+<style>
+	.dev-head {
+		display: flex;
+		align-items: flex-start;
+		justify-content: space-between;
+		gap: 16px;
+		margin-bottom: 32px;
+	}
+	.dev-head__title {
+		font-size: 2rem;
+		margin-bottom: 6px;
+	}
+	.dev-head__lead {
+		color: var(--text-muted);
+		font-size: 0.95rem;
+		max-width: 640px;
+	}
+	.dev-head__logout {
+		min-height: 44px;
+	}
+	.dev-empty {
+		color: var(--text-muted);
+	}
+	.dev-empty code {
+		color: var(--accent-cyan);
+	}
+	.dev-list {
+		list-style: none;
+		display: flex;
+		flex-direction: column;
+		gap: 20px;
+	}
+	.dev-card {
+		padding: 24px;
+		min-width: 0;
+	}
+	.dev-card:hover {
+		transform: none;
+	}
+	.dev-card__top {
+		display: flex;
+		align-items: flex-start;
+		justify-content: space-between;
+		gap: 16px;
+	}
+	.dev-card__info {
+		min-width: 0;
+	}
+	.dev-card__title {
+		font-size: 1.3rem;
+		overflow-wrap: break-word;
+	}
+	.dev-card__client {
+		color: var(--text-muted);
+		font-size: 0.9rem;
+		margin-top: 2px;
+	}
+	.dev-card__desc {
+		margin-top: 12px;
+		color: var(--text-muted);
+		font-size: 0.95rem;
+	}
+	.dev-card__link {
+		display: inline-block;
+		margin-top: 12px;
+		color: var(--accent-cyan);
+		text-decoration: underline;
+		overflow-wrap: anywhere;
+	}
+	.dev-card__link:hover {
+		color: var(--accent-purple);
+	}
+	.dev-card__meta {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px 24px;
+		margin-top: 16px;
+		font-size: 0.9rem;
+	}
+	.dev-card__meta dt {
+		color: var(--text-dim);
+		font-size: 0.8rem;
+	}
+	.dev-card__meta dd {
+		color: var(--text-main);
+	}
+
+	/* Переключатель */
+	.dev-toggle-form {
+		flex-shrink: 0;
+	}
+	.dev-toggle {
+		display: inline-flex;
+		align-items: center;
+		gap: 10px;
+		min-height: 44px;
+		padding: 6px 4px;
+		background: none;
+		border: none;
+		color: var(--text-muted);
+		font: inherit;
+		font-size: 0.9rem;
+		cursor: pointer;
+	}
+	.dev-toggle:focus-visible {
+		outline: 2px solid var(--accent-cyan);
+		outline-offset: 2px;
+		border-radius: 8px;
+	}
+	.dev-toggle__track {
+		position: relative;
+		width: 44px;
+		height: 24px;
+		border-radius: 12px;
+		background: var(--bg-dark-hover);
+		border: 1px solid var(--glass-border-hover);
+		transition: background-color var(--transition-fast);
+	}
+	.dev-toggle__thumb {
+		position: absolute;
+		top: 2px;
+		left: 2px;
+		width: 18px;
+		height: 18px;
+		border-radius: 50%;
+		background: var(--text-dim);
+		transition: transform var(--transition-fast), background-color var(--transition-fast);
+	}
+	.dev-toggle.is-on {
+		color: var(--text-main);
+	}
+	.dev-toggle.is-on .dev-toggle__track {
+		background: var(--grad-primary);
+		border-color: transparent;
+	}
+	.dev-toggle.is-on .dev-toggle__thumb {
+		transform: translateX(20px);
+		background: var(--text-main);
+	}
+
+	/* Список страниц */
+	.dev-pages {
+		margin-top: 16px;
+		border-top: 1px solid var(--glass-border);
+		padding-top: 12px;
+	}
+	.dev-pages__summary {
+		cursor: pointer;
+		min-height: 40px;
+		display: flex;
+		align-items: center;
+		font-weight: 600;
+		color: var(--text-main);
+	}
+	.dev-pages__summary:focus-visible {
+		outline: 2px solid var(--accent-cyan);
+		outline-offset: 2px;
+		border-radius: 4px;
+	}
+	.dev-pages__group {
+		margin-top: 12px;
+	}
+	.dev-pages__group-title {
+		font-size: 0.85rem;
+		color: var(--text-dim);
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		margin-bottom: 6px;
+	}
+	.dev-pages__list {
+		list-style: none;
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+	}
+	.dev-pages__list a {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 2px 12px;
+		padding: 6px 0;
+		font-size: 0.9rem;
+	}
+	.dev-pages__path {
+		color: var(--accent-cyan);
+		text-decoration: underline;
+		overflow-wrap: anywhere;
+	}
+	.dev-pages__list a:hover .dev-pages__path {
+		color: var(--accent-purple);
+	}
+	.dev-pages__title {
+		color: var(--text-muted);
+		min-width: 0;
+	}
+
+	@media (max-width: 767px) {
+		.dev-head {
+			flex-direction: column;
+			margin-bottom: 24px;
+		}
+		.dev-head__title {
+			font-size: 1.6rem;
+		}
+		.dev-card {
+			padding: 20px 16px;
+		}
+		.dev-card__top {
+			flex-direction: column;
+			gap: 8px;
+		}
+	}
+</style>

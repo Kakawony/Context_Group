@@ -1,0 +1,19 @@
+// Привязки воркера ai-lapin, которые адаптер сам не создаёт.
+//
+// Почему не wrangler.jsonc: файл с этим именем в корне ломает сборку
+// (virtual:keystatic-config). Этот файл подключается явно через
+// cloudflare({ configPath }) в astro.config.mjs, адаптер сливает его
+// со своими привязками (SESSION, IMAGES, ASSETS) в dist/server/wrangler.json.
+{
+	"name": "ai-lapin",
+	"compatibility_date": "2026-04-15",
+
+	// Раздел /dev: файлы проектов клиентов и их карточки (включён / выключен).
+	"r2_buckets": [{ "binding": "DEV_FILES", "bucket_name": "ai-lapin-dev" }],
+
+	// Защита входа в /dev от перебора: не больше 5 попыток в минуту с одного IP.
+	// namespace_id — произвольный номер счётчика в пределах аккаунта, ресурс не создаётся.
+	"ratelimits": [
+		{ "name": "DEV_LOGIN_LIMIT", "namespace_id": "1001", "simple": { "limit": 5, "period": 60 } }
+	]
+}

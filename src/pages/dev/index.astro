@@ -1,0 +1,147 @@
+---
+import DevLayout from '../../layouts/DevLayout.astro';
+import { checkCredentials, hasSession, startSession } from '../../lib/dev/auth';
+import { devEnv } from '../../lib/dev/projects';
+
+// /dev — вход в служебный раздел показа проектов. После входа — /dev/all.
+// Перебор: не больше 5 попыток в минуту с IP (DEV_LOGIN_LIMIT) + пауза 1 с на каждой ошибке.
+export const prerender = false;
+
+Astro.response.headers.set('Cache-Control', 'no-store');
+
+if (await hasSession(Astro.cookies)) {
+	return Astro.redirect('/dev/all', 303);
+}
+
+let error = '';
+let login = '';
+
+if (Astro.request.method === 'POST') {
+	let ip = Astro.request.headers.get('cf-connecting-ip') || '';
+	if (!ip) {
+		try {
+			ip = Astro.clientAddress;
+		} catch {
+			ip = 'unknown';
+		}
+	}
+	const limiter = devEnv.DEV_LOGIN_LIMIT;
+	// Привязки нет — вход остаётся доступен (иначе потеря конфига запирает Витала снаружи),
+	// но защита от перебора держится на паузе в 1 с, и это должно быть видно в логах.
+	if (!limiter) console.error('dev/login: привязка DEV_LOGIN_LIMIT не настроена — лимит попыток не работает');
+	const allowed = limiter ? (await limiter.limit({ key: `dev-login:${ip}` })).success : true;
+
+	if (!allowed) {
+		Astro.response.status = 429;
+		error = 'Слишком много попыток. Подождите минуту.';
+	} else {
+		let form: FormData | null = null;
+		try {
+			form = await Astro.request.formData();
+		} catch {
+			form = null;
+		}
+		const value = (k: string) => {
+			const v = form?.get(k);
+			return typeof v === 'string' ? v : '';
+		};
+		login = value('login').trim();
+		const ok = checkCredentials(login, value('password'));
+
+		if (ok === null) {
+			Astro.response.status = 503;
+			error = 'Вход не настроен.';
+		} else if (ok) {
+			await startSession(Astro.cookies);
+			return Astro.redirect('/dev/all', 303);
+		} else {
+			await new Promise((r) => setTimeout(r, 1000));
+			Astro.response.status = 401;
+			error = 'Неверный логин или пароль.';
+		}
+	}
+}
+---
+
+<DevLayout title="Вход — проекты">
+	<div class="glass-card dev-login">
+		<h1 class="dev-login__title">Проекты</h1>
+		<p class="dev-login__lead">Служебный раздел. Вход только для владельца.</p>
+		<form method="post" action="/dev" class="dev-login__form">
+			<label class="dev-field">
+				<span class="dev-field__label">Логин</span>
+				<input class="dev-field__input" type="text" name="login" value={login} autocomplete="username" required autofocus />
+			</label>
+			<label class="dev-field">
+				<span class="dev-field__label">Пароль</span>
+				<input class="dev-field__input" type="password" name="password" autocomplete="current-password" required />
+			</label>
+			{error && <p class="dev-login__error" role="alert">{error}</p>}
+			<button type="submit" class="btn btn-primary dev-login__submit"><span>Войти</span></button>
+		</form>
+	</div>
+</DevLayout>
+
+<style>
+	.dev-login {
+		max-width: 400px;
+		margin: 8vh auto 0;
+		padding: 32px;
+	}
+	.dev-login:hover {
+		transform: none;
+	}
+	.dev-login__title {
+		font-size: 1.75rem;
+		margin-bottom: 8px;
+	}
+	.dev-login__lead {
+		color: var(--text-muted);
+		font-size: 0.95rem;
+		margin-bottom: 24px;
+	}
+	.dev-login__form {
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+	}
+	.dev-field {
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+	}
+	.dev-field__label {
+		font-size: 0.85rem;
+		color: var(--text-muted);
+	}
+	.dev-field__input {
+		width: 100%;
+		min-height: 44px;
+		padding: 10px 14px;
+		border-radius: 8px;
+		border: 1px solid var(--glass-border);
+		background: var(--bg-dark-card);
+		color: var(--text-main);
+		font: inherit;
+		transition: border-color var(--transition-fast);
+	}
+	.dev-field__input:focus-visible {
+		outline: 2px solid var(--accent-cyan);
+		outline-offset: 1px;
+		border-color: var(--accent-cyan);
+	}
+	.dev-login__error {
+		color: var(--accent-purple);
+		font-size: 0.9rem;
+	}
+	.dev-login__submit {
+		min-height: 44px;
+		width: 100%;
+	}
+	@media (max-width: 767px) {
+		.dev-login {
+			margin-top: 4vh;
+			padding: 24px 20px;
+		}
+	}
+</style>

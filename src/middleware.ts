@@ -32,7 +32,18 @@ function safeEqual(a: string, b: string): boolean {
 	return diff === 0;
 }
 
+// Служебный раздел показа проектов клиентам: вход и доступ проверяются в самих роутах
+// (src/pages/dev/**), здесь только запрет индексации на ЛЮБОЙ ответ под /dev — 200, 303, 404.
+const DEV_SECTION = /^\/dev(\/|$)/;
+
 export const onRequest = defineMiddleware(async (context, next) => {
+	if (DEV_SECTION.test(context.url.pathname)) {
+		const res = await next();
+		// Заголовки ответа бывают неизменяемыми (редиректы, ответы ASSETS) — пересобираем ответ.
+		const out = new Response(res.body, res);
+		out.headers.set('X-Robots-Tag', 'noindex, nofollow');
+		return out;
+	}
 	if (!PROTECTED.test(context.url.pathname)) return next();
 
 	const user = getSecret('ADMIN_USER') || '';

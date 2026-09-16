@@ -1,0 +1,51 @@
+---
+import '../styles/global.css';
+
+// Шаблон служебного раздела /dev: токены и классы сайта, но без Метрики, навигации
+// и canonical — служебные заходы не должны попадать в статистику и индекс.
+interface Props {
+	title: string;
+}
+const { title } = Astro.props;
+---
+
+<!doctype html>
+<html lang="ru">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="robots" content="noindex, nofollow" />
+		<meta name="theme-color" content="#0d0f14" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="preload" href="/fonts/inter-400-cyrillic.woff2" as="font" type="font/woff2" crossorigin />
+		<title>{title}</title>
+		<!-- Тема как на основном сайте: сохранённый выбор или системная -->
+		<script is:inline>
+			(function () {
+				var t = null;
+				try { t = localStorage.getItem('theme'); } catch (e) {}
+				if (!t) t = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+				if (t === 'light') document.documentElement.classList.add('light');
+			})();
+		</script>
+	</head>
+	<body>
+		<main class="dev-main">
+			<div class="container">
+				<slot />
+			</div>
+		</main>
+	</body>
+</html>
+
+<style>
+	.dev-main {
+		flex: 1;
+		padding: 48px 0 64px;
+	}
+	@media (max-width: 767px) {
+		.dev-main {
+			padding: 24px 0 40px;
+		}
+	}
+</style>

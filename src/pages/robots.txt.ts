@@ -13,6 +13,7 @@ export function GET({ site }: APIContext): Response {
 		'Disallow: /api/',
 		'Disallow: /send',
 		'Disallow: /thanks',
+		'Disallow: /dev/',
 		'',
 		`Sitemap: ${new URL('/sitemap-index.xml', base).href}`,
 		'',
