@@ -63,6 +63,19 @@ async function serve(context: APIContext): Promise<Response> {
 	if (rel === 'index.html' || rel === 'index') return redirect(base, url);
 	if (rel.endsWith('.html')) return redirect(`${base}/${rel.slice(0, -5)}`, url);
 
+	// Кэш на границе Cloudflare. Чтение KV + раскодирование base64 давало 300–500 мс на ответ,
+	// и это была главная потеря в PageSpeed у страниц, которые Витал показывает клиентам.
+	// Ключ включает версию проекта: новая выгрузка не отдаёт старый кэш. Доступ проверен ВЫШЕ,
+	// поэтому у выключенного проекта до кэша дело не доходит; живёт запись 60 секунд
+	// (допустимая задержка переключателя — решение Витала 15.09.2026).
+	const cache = (globalThis as unknown as { caches?: { default?: Cache } }).caches?.default;
+	const cacheable = request.method === 'GET' && !request.headers.has('range') && !request.headers.has('if-none-match');
+	const cacheKey = new Request(`${url.origin}${url.pathname}?v=${project.version}`, { method: 'GET' });
+	if (cache && cacheable) {
+		const hit = await cache.match(cacheKey);
+		if (hit) return hit;
+	}
+
 	// Страницы без расширения сначала ищем как <путь>.html — так на страницу один запрос к KV.
 	const lastSegment = segments[segments.length - 1];
 	const candidates = rel === '' ? ['index.html'] : lastSegment.includes('.') ? [rel, `${rel}.html`] : [`${rel}.html`, rel];
@@ -100,7 +113,15 @@ async function serve(context: APIContext): Promise<Response> {
 		if (request.method === 'HEAD') return new Response(null, { status: range ? 206 : 200, headers });
 		const bytes = devFileBytes(value);
 		const body = range ? bytes.subarray(range.start, range.end + 1) : bytes;
-		return new Response(body, { status: range ? 206 : 200, headers });
+		const response = new Response(body, { status: range ? 206 : 200, headers });
+
+		if (cache && cacheable) {
+			// В кэш кладём копию с собственным сроком; браузеру уходит ответ со своими заголовками.
+			const stored = response.clone();
+			stored.headers.set('Cache-Control', 'public, max-age=60');
+			await cache.put(cacheKey, stored);
+		}
+		return response;
 	}
 	return notFound(url);
 }
