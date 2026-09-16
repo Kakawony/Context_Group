@@ -128,7 +128,7 @@ async function serve(context: APIContext): Promise<Response> {
 			const patch =
 				'<script>document.addEventListener("DOMContentLoaded",function(){' +
 				'document.querySelectorAll(".about__map").forEach(function(m){' +
-				'm.style.cssText="aspect-ratio:4/3;min-height:0;height:auto;flex:0 0 auto;align-self:stretch;width:100%;max-width:100%";' +
+				'm.style.cssText="aspect-ratio:auto;height:340px;min-height:0;flex:0 0 auto;align-self:stretch;width:100%;max-width:100%";var col=m.parentElement;if(col)col.style.alignContent="stretch";var card=col&&col.querySelector(".about__card");if(card)card.style.cssText+=";flex:1 1 auto;display:flex;flex-direction:column;justify-content:center";' +
 				'var f=m.querySelector(".about__map-facade");' +
 				'var i=document.createElement("iframe");' +
 				'i.src=f?f.getAttribute("data-map-src"):"";' +
