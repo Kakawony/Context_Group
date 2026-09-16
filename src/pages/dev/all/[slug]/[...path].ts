@@ -119,10 +119,16 @@ async function serve(context: APIContext): Promise<Response> {
 		// но перевыложить пакет нельзя: исчерпан суточный лимит записей KV (1000 на аккаунт).
 		// Правило дописывается только этому проекту и только этой версии.
 		if (!range && key.endsWith('.html') && slug === 'estadel-krym' && project.version === '2026-09-15') {
-			const html = new TextDecoder().decode(bytes).replace(
-				'</head>',
-				'<style>.about__map iframe{display:block;width:100%;height:100%;border:0}</style></head>',
-			);
+			// Приводим блок карты к виду из исходников: карта сразу видна, держит пропорцию 4:3
+			// и не растягивается на всю высоту карточки (на высоком блоке виджет Яндекса
+			// разворачивает внутри себя карточку организации поверх нашей).
+			const patch =
+				'<style>.about__map{aspect-ratio:4/3!important;min-height:0!important}' +
+				'.about__map iframe{display:block;width:100%;height:100%;border:0}' +
+				'.about__map-facade{display:none!important}</style>' +
+				'<script>document.addEventListener("DOMContentLoaded",function(){' +
+				'document.querySelectorAll(".about__map-facade").forEach(function(f){f.click()})});<\/script>';
+			const html = new TextDecoder().decode(bytes).replace('</head>', patch + '</head>');
 			const patched = new TextEncoder().encode(html);
 			headers.set('Content-Length', String(patched.byteLength));
 			const response = new Response(patched, { status: 200, headers });
