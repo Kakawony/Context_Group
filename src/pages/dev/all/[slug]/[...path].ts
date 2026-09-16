@@ -122,12 +122,21 @@ async function serve(context: APIContext): Promise<Response> {
 			// Приводим блок карты к виду из исходников: карта сразу видна, держит пропорцию 4:3
 			// и не растягивается на всю высоту карточки (на высоком блоке виджет Яндекса
 			// разворачивает внутри себя карточку организации поверх нашей).
+			// Вставляем карту сами, не полагаясь на скрипт страницы (он навешивает обработчик
+			// позже, чем срабатывала прошлая версия заплатки), и задаём размеры инлайном —
+			// так они выигрывают у правил компонента.
 			const patch =
-				'<style>.about__map{aspect-ratio:4/3!important;min-height:0!important}' +
-				'.about__map iframe{display:block;width:100%;height:100%;border:0}' +
-				'.about__map-facade{display:none!important}</style>' +
 				'<script>document.addEventListener("DOMContentLoaded",function(){' +
-				'document.querySelectorAll(".about__map-facade").forEach(function(f){f.click()})});<\/script>';
+				'document.querySelectorAll(".about__map").forEach(function(m){' +
+				'm.style.cssText="aspect-ratio:4/3;min-height:0;height:auto;align-self:start;max-width:100%";' +
+				'var f=m.querySelector(".about__map-facade");' +
+				'var i=document.createElement("iframe");' +
+				'i.src=f?f.getAttribute("data-map-src"):"";' +
+				'i.title=f?f.getAttribute("data-map-title"):"Карта";' +
+				'i.referrerPolicy="no-referrer-when-downgrade";i.allowFullscreen=true;' +
+				'i.style.cssText="display:block;width:100%;height:100%;border:0";' +
+				'if(f)f.replaceWith(i);else if(!m.querySelector("iframe"))m.append(i);' +
+				'})});<\/script>';
 			const html = new TextDecoder().decode(bytes).replace('</head>', patch + '</head>');
 			const patched = new TextEncoder().encode(html);
 			headers.set('Content-Length', String(patched.byteLength));
