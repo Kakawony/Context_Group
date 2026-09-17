@@ -113,42 +113,6 @@ async function serve(context: APIContext): Promise<Response> {
 		if (request.method === 'HEAD') return new Response(null, { status: range ? 206 : 200, headers });
 		const bytes = devFileBytes(value);
 
-		// ── ВРЕМЕННАЯ ЗАПЛАТКА 16.09.2026 (снять после перевыгрузки пакета estadel-krym) ──
-		// В выложенной версии карта офиса вставляется скриптом страницы и не получает стили Astro,
-		// поэтому iframe остаётся размером по умолчанию. В исходниках посадочных уже исправлено,
-		// но перевыложить пакет нельзя: исчерпан суточный лимит записей KV (1000 на аккаунт).
-		// Правило дописывается только этому проекту и только этой версии.
-		if (!range && key.endsWith('.html') && slug === 'estadel-krym' && project.version === '2026-09-15') {
-			// Приводим блок карты к виду из исходников: карта сразу видна, держит пропорцию 4:3
-			// и не растягивается на всю высоту карточки (на высоком блоке виджет Яндекса
-			// разворачивает внутри себя карточку организации поверх нашей).
-			// Вставляем карту сами, не полагаясь на скрипт страницы (он навешивает обработчик
-			// позже, чем срабатывала прошлая версия заплатки), и задаём размеры инлайном —
-			// так они выигрывают у правил компонента.
-			const patch =
-				'<script>document.addEventListener("DOMContentLoaded",function(){' +
-				'document.querySelectorAll(".about__map").forEach(function(m){' +
-				'm.style.cssText="aspect-ratio:auto;height:340px;min-height:0;flex:0 0 auto;align-self:stretch;width:100%;max-width:100%";var col=m.parentElement;if(col)col.style.alignContent="stretch";var card=col&&col.querySelector(".about__card");if(card)card.style.cssText+=";flex:1 1 auto;display:flex;flex-direction:column;justify-content:center";' +
-				'var f=m.querySelector(".about__map-facade");' +
-				'var i=document.createElement("iframe");' +
-				'i.src=f?f.getAttribute("data-map-src"):"";' +
-				'i.title=f?f.getAttribute("data-map-title"):"Карта";' +
-				'i.referrerPolicy="no-referrer-when-downgrade";i.allowFullscreen=true;' +
-				'i.style.cssText="display:block;width:100%;height:100%;border:0";' +
-				'if(f)f.replaceWith(i);else if(!m.querySelector("iframe"))m.append(i);' +
-				'})});<\/script>';
-			const html = new TextDecoder().decode(bytes).replace('</head>', patch + '</head>');
-			const patched = new TextEncoder().encode(html);
-			headers.set('Content-Length', String(patched.byteLength));
-			const response = new Response(patched, { status: 200, headers });
-			if (cache && cacheable) {
-				const stored = response.clone();
-				stored.headers.set('Cache-Control', 'public, max-age=60');
-				await cache.put(cacheKey, stored);
-			}
-			return response;
-		}
-
 		const body = range ? bytes.subarray(range.start, range.end + 1) : bytes;
 		const response = new Response(body, { status: range ? 206 : 200, headers });
 
